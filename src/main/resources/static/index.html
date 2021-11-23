@@ -1,0 +1,187 @@
+<html>
+<link>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/vue.js"></script>
+    <script src="/jquery.js"></script>
+    <script src="/index.js"></script>
+    <link href="/index.css" rel="stylesheet">
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+            border:0px;
+            box-sizing:border-box;
+        }
+        li{list-style-type:none;}
+        .sendInput{
+            padding-left: 5px;
+            padding-right: 5px;
+            outline: none;
+            width:calc(100% - 100px);
+            height: 40px;
+            font-size: 24px;
+            background: aliceblue;
+        }
+        .but{
+            outline:none;
+            width: 100px;
+            float: right;
+            height: 100%;
+            background: #337ab7;
+            border-radius:0px;
+            color: #fff;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .el-dialog{
+            width: 90%;
+            max-width:700px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app" v-cloak>
+    <div style="line-height: 20px; padding-left: 5px; height:20px;border-bottom: 1px solid black;width: 100%; max-width: 800px;margin: auto;border-right: 1px solid black;border-left: 1px solid black;"><a href="http://www.ttcxy.net">博客系统</a> | <a href="#">文件系统</a> | <a href="#">github</a></div>
+    <div style="line-height: 40px; padding-left: 5px; height:40px;border-bottom: 1px solid black;width: 100%; max-width: 800px;margin: auto;border-right: 1px solid black;border-left: 1px solid black;">
+        在线人数：{{userCount}}
+        <button class="but" @click="dialogVisible = true">设置</button>
+
+    </div>
+    <div id="mb" style="width: 100%; max-width: 800px;background: #fff4d5;margin: auto; height:calc(100% - 101px) ;overflow-y:scroll;overflow-x: hidden; border-right: 1px solid black;border-left: 1px solid black;">
+        <ul v-for="(item, index) in message" style="padding: 5px;width: 100%;">
+            <li style="border-bottom: 1px solid black;width: 100%;word-wrap: break-word"><strong style="color: #3a8ee6">{{item.sendName}}：</strong>{{item.text}} <p style="color: darkgrey;text-align:right">{{item.createDate}}</p></li>
+        </ul>
+    </div>
+    <div style="width: 100%; max-width: 800px;margin: auto; height: 40px;border-top: 1px solid black;border-right: 1px solid black;border-left: 1px solid black;">
+        <input  v-model="text" type="text" class="sendInput"/>
+        <button class="but" @click="send()">发送</button>
+    </div>
+
+    <el-dialog :show-close="false" title="提示.如果用户名不存在直接创建用户" :visible.sync="dialogVisible" >
+        <span>
+            <el-input placeholder="用户" v-model="username">
+                <template slot="prepend">用户</template>
+            </el-input>
+            <el-input placeholder="密码" v-model="password" style="margin-top: 15px;">
+                <template slot="prepend">密码</template>
+            </el-input>
+        </span>
+
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="dialogVisible = false,setting()">确 定</el-button>
+          </span>
+    </el-dialog>
+</div>
+</body>
+<script>
+    new Vue({
+
+        el: '#app',
+        data: {
+            dialogVisible: false,
+            path:"ws://" + window.location.host + "/websocket",
+            socket:null,
+            message: [],
+            text:"",
+            userCount:"",
+            username:"",
+            password:""
+        },mounted () {
+            this.getUsername()
+            this.init()
+        },methods: {
+            getUsername(){
+                let _this = this;
+                $.ajax({
+                    url: "/get-username",
+                    type: 'get',
+                    contentType: 'application/json',
+                    dataType: 'text',
+                    async: false, // 同步
+                    success: function (result) {
+                        _this.username = result
+                    }
+                });
+            },
+            init() {
+                if(typeof(WebSocket) === "undefined"){
+                    alert("您的浏览器不支持socket")
+                }else{
+                    // 实例化socket
+                    this.socket = new WebSocket(this.path)
+                    // 监听socket连接
+                    this.socket.onopen = this.open
+                    // 监听socket错误信息
+                    this.socket.onerror = this.error
+                    // 监听socket消息
+                    this.socket.onmessage = this.getMessage
+
+
+                }
+            },
+            open() {
+                console.log("socket连接成功")
+            },
+            error() {
+                console.log("连接错误")
+            },
+            getMessage(msg) {
+                console.log(msg.data)
+                let parse = JSON.parse(msg.data);
+                if(parse.type == "userCount"){
+                    this.userCount = parse.text
+                }else{
+                    this.message.push(parse)
+                }
+                this.$nextTick(function(){
+                    let elementById = document.getElementById("mb");
+                    elementById.scrollTop = elementById.scrollHeight;
+                })
+            },
+            setting(){
+
+                let _this = this
+                $.ajax({
+                    url: "/add-username/" + this.username + "/" + _this.password,
+                    type: 'get',
+                    contentType: 'application/json',
+                    dataType: 'text',
+                    async: false, // 同步
+                    success: function (result) {
+                        alert(result)
+                    }
+                });
+            },
+            send() {
+                if (this.text == ""){
+                    return
+                }
+                if (this.username == "" || this.username == null){
+                    alert("请设置昵称")
+                    return
+                }
+
+                if (this.text.length > 250){
+                    alert("长度不能超过250")
+                    return
+                }
+
+                this.socket.send(JSON.stringify({message:this.text}))
+                this.text = ""
+            },
+            close() {
+                console.log("socket连接关闭")
+            }
+        },
+        destroyed () {
+            // 销毁监听
+            this.socket.onclose = this.close
+        }
+    })
+</script>
+</html>

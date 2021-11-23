@@ -4,9 +4,9 @@
     <!-- Configure the database connection here -->
     <jdbc>
         <driver>com.mysql.cj.jdbc.Driver</driver>
-        <url>jdbc:mysql://106.54.189.191:3306/tang2?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=true</url>
+        <url>jdbc:mysql://localhost:3306/chat?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=true</url>
         <user>root</user>
-        <password>Mima135654..</password>
+        <password>mima135654..</password>
     </jdbc>
 
     <generator>

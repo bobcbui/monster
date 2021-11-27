@@ -7,6 +7,7 @@ package net.ttcxy.chat.db;
 import net.ttcxy.chat.db.tables.Group;
 import net.ttcxy.chat.db.tables.GroupMember;
 import net.ttcxy.chat.db.tables.Member;
+import net.ttcxy.chat.db.tables.Message;
 
 
 /**
@@ -29,4 +30,9 @@ public class Tables {
      * The table <code>chat.member</code>.
      */
     public static final Member MEMBER = Member.MEMBER;
+
+    /**
+     * The table <code>chat.message</code>.
+     */
+    public static final Message MESSAGE = Message.MESSAGE;
 }

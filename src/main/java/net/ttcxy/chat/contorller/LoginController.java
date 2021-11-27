@@ -29,16 +29,20 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class LoginController {
 
-    public static Cache<String,String> fifoCache = CacheUtil.newTimedCache(6000);
+    private final TokenProvider tokenProvider;
+
+    private final MemberService memberService;
+
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Autowired
-    private TokenProvider tokenProvider;
-
-    @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private AuthenticationManagerBuilder authenticationManagerBuilder;
+    public LoginController(TokenProvider tokenProvider,
+                           MemberService memberService,
+                           AuthenticationManagerBuilder authenticationManagerBuilder) {
+        this.tokenProvider = tokenProvider;
+        this.memberService = memberService;
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
+    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<JwtToken> authorize(@Valid @RequestBody LoginParam loginParam) {
@@ -52,12 +56,12 @@ public class LoginController {
 
     @PostMapping("register")
     public ResponseResult<?> register(@RequestBody RegisterParam param){
-        String mail = param.getMail();
-        if (Validator.isEmail(mail)){
+        String username = param.getUsername();
+        if (Validator.isEmail(username)){
             Member member = BeanUtil.toBean(param, Member.class);
             String password = param.getPassword();
             member.setPassword(new BCryptPasswordEncoder().encode(password));
-            member.setMail(mail);
+            member.setUsername(username);
             int count = memberService.insertMember(member);
             if (count > 0){
                 return ResponseResult.success("注册成功");
@@ -73,19 +77,19 @@ public class LoginController {
      */
     static class JwtToken {
 
-        private String jwtToken;
+        private String token;
 
-        JwtToken(String jwtToken) {
-            this.jwtToken = jwtToken;
+        JwtToken(String token) {
+            this.token = token;
         }
 
-        @JsonProperty("jwt_token")
-        String getJwtToken() {
-            return jwtToken;
+        @JsonProperty("token")
+        String getToken() {
+            return token;
         }
 
-        void setJwtToken(String jwtToken) {
-            this.jwtToken = jwtToken;
+        void setToken(String token) {
+            this.token = token;
         }
     }
 }

@@ -7,8 +7,6 @@ import net.ttcxy.chat.db.tables.pojos.Member;
 import net.ttcxy.chat.db.tables.records.MemberRecord;
 import net.ttcxy.chat.entity.CurrentMember;
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,59 +26,36 @@ import static net.ttcxy.chat.db.tables.Member.MEMBER;
 @Service
 public class MemberService implements UserDetailsService {
 
-    private static Map<String, Member> memberMap = new HashMap<>();
-
-    static {
-        Member member1 = new Member();
-        member1.setId("1");
-        member1.setUsername("user1");
-        member1.setNickname("user1");
-        member1.setMail("792190997@qq.com");
-        member1.setPassword("$2a$10$WiuebtAwq/sg5ivzD9Z4k.eHdYonJpJ6C4K6/6SypWRHBEPfWB1hq");
-
-        Member member2 = new Member();
-        member2.setId("2");
-        member2.setUsername("user2");
-        member2.setNickname("user1");
-        member2.setMail("17674785177@qq.com");
-        member2.setPassword("$2a$10$WiuebtAwq/sg5ivzD9Z4k.eHdYonJpJ6C4K6/6SypWRHBEPfWB1hq");
-        memberMap.put("792190997@qq.com",member1);
-        memberMap.put("17674785177@qq.com",member1);
-    }
+    private final DSLContext create;
 
     @Autowired
-    private MemberService memberService;
+    public MemberService(DSLContext create) {
+        this.create = create;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails details = memberService.selectByMail(username);
+        UserDetails details = selectMemberByName(username);
         if (details != null){
-            return memberService.selectByMail(username);
+            return details;
         }
         throw new UsernameNotFoundException("用户不存在");
     }
-
-    @Autowired
-    DSLContext create;
 
     public int insertMember(Member member) {
         return create.insertInto(Tables.MEMBER)
                 .columns(MEMBER.ID,
                         MEMBER.USERNAME,
-                        MEMBER.NICKNAME,
-                        MEMBER.MAIL,
                         MEMBER.PASSWORD,
                         MEMBER.CREATE_TIME)
                 .values(IdUtil.objectId(),
                         member.getUsername(),
-                        member.getNickname(),
-                        member.getMail(),
                         member.getPassword(),
                         LocalDateTime.now()).execute();
     }
 
-    public UserDetails selectByMail(String mail) {
-        List<Member> members = create.select().from(MEMBER).where(MEMBER.MAIL.eq(mail)).fetchInto(Member.class);
+    public UserDetails selectMemberByName(String username) {
+        List<Member> members = create.select().from(MEMBER).where(MEMBER.USERNAME.eq(username)).fetchInto(Member.class);
         for (Member member : members) {
             CurrentMember currentMember = new CurrentMember();
             currentMember.setMember(member);
@@ -88,6 +63,4 @@ public class MemberService implements UserDetailsService {
         }
         return null;
     }
-
-
 }

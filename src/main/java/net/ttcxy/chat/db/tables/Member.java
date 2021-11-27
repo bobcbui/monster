@@ -13,7 +13,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -28,7 +28,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Member extends TableImpl<MemberRecord> {
 
-    private static final long serialVersionUID = -717939751;
+    private static final long serialVersionUID = -1889472022;
 
     /**
      * The reference instance of <code>chat.member</code>
@@ -52,16 +52,6 @@ public class Member extends TableImpl<MemberRecord> {
      * The column <code>chat.member.username</code>.
      */
     public final TableField<MemberRecord, String> USERNAME = createField(DSL.name("username"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
-
-    /**
-     * The column <code>chat.member.nickname</code>.
-     */
-    public final TableField<MemberRecord, String> NICKNAME = createField(DSL.name("nickname"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
-
-    /**
-     * The column <code>chat.member.mail</code>.
-     */
-    public final TableField<MemberRecord, String> MAIL = createField(DSL.name("mail"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
 
     /**
      * The column <code>chat.member.password</code>.
@@ -138,11 +128,11 @@ public class Member extends TableImpl<MemberRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<String, String, String, String, String, LocalDateTime> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row4<String, String, String, LocalDateTime> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

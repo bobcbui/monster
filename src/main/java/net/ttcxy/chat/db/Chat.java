@@ -10,6 +10,7 @@ import java.util.List;
 import net.ttcxy.chat.db.tables.Group;
 import net.ttcxy.chat.db.tables.GroupMember;
 import net.ttcxy.chat.db.tables.Member;
+import net.ttcxy.chat.db.tables.Message;
 
 import org.jooq.Catalog;
 import org.jooq.Table;
@@ -22,7 +23,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Chat extends SchemaImpl {
 
-    private static final long serialVersionUID = -1310414412;
+    private static final long serialVersionUID = -2016612579;
 
     /**
      * The reference instance of <code>chat</code>
@@ -45,6 +46,11 @@ public class Chat extends SchemaImpl {
     public final Member MEMBER = Member.MEMBER;
 
     /**
+     * The table <code>chat.message</code>.
+     */
+    public final Message MESSAGE = Message.MESSAGE;
+
+    /**
      * No further instances allowed
      */
     private Chat() {
@@ -62,6 +68,7 @@ public class Chat extends SchemaImpl {
         return Arrays.<Table<?>>asList(
             Group.GROUP,
             GroupMember.GROUP_MEMBER,
-            Member.MEMBER);
+            Member.MEMBER,
+            Message.MESSAGE);
     }
 }

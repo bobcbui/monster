@@ -14,12 +14,10 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Member implements Serializable {
 
-    private static final long serialVersionUID = -368276142;
+    private static final long serialVersionUID = 83978865;
 
     private String        id;
     private String        username;
-    private String        nickname;
-    private String        mail;
     private String        password;
     private LocalDateTime createTime;
 
@@ -28,8 +26,6 @@ public class Member implements Serializable {
     public Member(Member value) {
         this.id = value.id;
         this.username = value.username;
-        this.nickname = value.nickname;
-        this.mail = value.mail;
         this.password = value.password;
         this.createTime = value.createTime;
     }
@@ -37,15 +33,11 @@ public class Member implements Serializable {
     public Member(
         String        id,
         String        username,
-        String        nickname,
-        String        mail,
         String        password,
         LocalDateTime createTime
     ) {
         this.id = id;
         this.username = username;
-        this.nickname = nickname;
-        this.mail = mail;
         this.password = password;
         this.createTime = createTime;
     }
@@ -65,24 +57,6 @@ public class Member implements Serializable {
 
     public Member setUsername(String username) {
         this.username = username;
-        return this;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public Member setNickname(String nickname) {
-        this.nickname = nickname;
-        return this;
-    }
-
-    public String getMail() {
-        return this.mail;
-    }
-
-    public Member setMail(String mail) {
-        this.mail = mail;
         return this;
     }
 
@@ -110,8 +84,6 @@ public class Member implements Serializable {
 
         sb.append(id);
         sb.append(", ").append(username);
-        sb.append(", ").append(nickname);
-        sb.append(", ").append(mail);
         sb.append(", ").append(password);
         sb.append(", ").append(createTime);
 

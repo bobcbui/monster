@@ -29,7 +29,7 @@ public class CurrentMember implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getMail();
+        return member.getUsername();
     }
 
     @Override

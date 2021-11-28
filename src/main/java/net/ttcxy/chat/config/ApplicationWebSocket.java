@@ -72,6 +72,12 @@ public class ApplicationWebSocket {
             }else{
                 strings.add(memberId);
             }
+
+            // 发送这个群的消息给他
+            List<Message> messages = groupMessage.get(groupId);
+            if (messages != null){
+                sendMessage(JSONObject.toJSONString(messages));
+            }
         }
 
         System.out.printf("成功建立连接~ 当前在线人数为:%s%n", memberSocketList.size());
@@ -84,6 +90,8 @@ public class ApplicationWebSocket {
         applicationWebSockets.remove(this);
         System.out.printf("成功关闭连接~ 当前在线人数为:%s%n", memberSocketList.size());
     }
+
+
     @OnMessage
     public void onMessage(String message, Session session) {
         String sessionId = session.getId();
@@ -93,7 +101,8 @@ public class ApplicationWebSocket {
         JSONObject jsonObject = null;
         try{
             jsonObject = JSONObject.parseObject(message);
-            String to = jsonObject.getString("to");// 群组
+            // 发送到那个群组
+            String to = jsonObject.getString("to");
             String messageText = jsonObject.getString("messageText");
 
             List<Message> lsMessage = groupMessage.get(to);
@@ -110,10 +119,22 @@ public class ApplicationWebSocket {
             }
 
             Set<String> groupMemberList = groupMember.get(to);
+
+            List<Message> messages = groupMessage.get(to);
+            if (messages == null){
+                messages = new ArrayList<>();
+                messages.add(msg);
+                groupMessage.put(to,messages);
+            }else{
+                messages.add(msg);
+            }
+
             for (String memberId : groupMemberList) {
                 Set<ApplicationWebSocket> applicationWebSockets = memberSocketList.get(memberId);
                 for (ApplicationWebSocket applicationWebSocket : applicationWebSockets) {
-                    applicationWebSocket.sendMessage(JSONObject.toJSONString(msg));
+                    ArrayList<Message> arrayList = new ArrayList<>();
+                    arrayList.add(msg);
+                    applicationWebSocket.sendMessage(JSONObject.toJSONString(arrayList));
                 }
             }
         }catch (Exception e){
@@ -130,7 +151,7 @@ public class ApplicationWebSocket {
         System.out.println("发生错误");
     }
     /**
-     * 指定发消息
+     * 发送消息每次发送一个List
      */
     public void sendMessage(String message) {
         try {

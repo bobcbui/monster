@@ -1,3 +1,5 @@
 /target/
 /.idea/
 /web-chat/.vscode/
+/generator/target/
+/service/target/

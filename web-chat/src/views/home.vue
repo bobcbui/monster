@@ -1,11 +1,11 @@
 <template>
-  <p v-for="(item,index) in $store.state.newMessage" :key="index">{{item.from}}:{{item}}</p>
+    <p v-for="(item,index) in $store.state.newMessage" :key="index">{{item.from}}:{{item}}</p>
 </template>
 
 <script>
 import { inject } from "vue";
 export default {
-  name: "home_index",
+  name: "home",
   data() {
     return {
       groupId:this.$route.params.groupId,
@@ -47,6 +47,9 @@ export default {
 }
 .message{
   padding-bottom: 10px;
+}
+p{
+    padding: 10px;
 }
 
 </style>

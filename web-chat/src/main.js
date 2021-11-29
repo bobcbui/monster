@@ -2,15 +2,13 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-//import './index.scss'
+import './index.scss'
 import './permission'
 import { provide } from "vue";
-
 
 const app = createApp(App)
 
 app.use(router).use(store).mount('#app')
-
 
 var websocket = {};
 
@@ -22,8 +20,10 @@ window.onload = function () {
     console.log('webSocketInit')
     app.provide('ws',websocket)
 };
+
+
 function webSocketInit() {
-    websocket = new WebSocket("ws://192.168.0.108:9090/tang/ws?jwt="+localStorage.getItem("token"));
+    websocket = new WebSocket(import.meta.env.VITE_WS + "/tang/ws?jwt="+localStorage.getItem("token"));
     //成功建立连接
     websocket.onopen = function () {
         websocket.send(JSON.stringify({"messageText":"成功连接到服务器"}));
@@ -31,16 +31,16 @@ function webSocketInit() {
     };
     //接收到消息
     websocket.onmessage = function (event) {
-        //store.message = event.data
-        JSON.parse(event.data)
-        
-        if(store.state.message[JSON.parse(event.data).from] == undefined){
-            store.state.message[JSON.parse(event.data).from] = [JSON.parse(event.data)]
-        }else{
-            store.state.message[JSON.parse(event.data).from].push(JSON.parse(event.data))
-        }
-        store.state.newMessage[JSON.parse(event.data).from] = JSON.parse(event.data)
-        console.log(JSON.stringify(store.state.message))
+        let messageList = JSON.parse(event.data)
+        console.log(event.data)
+        messageList.forEach((item,index) => {
+            let to = item.to
+            if(store.state.message[to] == undefined){
+                store.state.message[to] = [item]
+            }else{
+                store.state.message[to].push(item)
+            }
+        })
     };
     //连接发生错误
     websocket.onerror = function () {

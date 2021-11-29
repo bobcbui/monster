@@ -8,19 +8,23 @@ const routes = [
         children: [
             {
                 path: '/',
-                name: 'home_index',
+                name: 'home',
                 component: () => import('../views/home.vue')
             },
             {
                 path: '/group/:groupId',
-                name: 'group_index',
-                component: () => import('../views/group.vue')
+                name: 'group_message',
+                component: () => import('../views/group_message.vue')
             },
         ]
     },{
         path: '/login',
-        name: 'login_index',
+        name: 'login',
         component: () => import('../views/login.vue'),
+    },{
+        path: '/register',
+        name: 'register',
+        component: () => import('../views/register.vue'),
     }
 ]
 const router = createRouter({

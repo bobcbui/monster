@@ -1,14 +1,24 @@
 <template>
-  <input type="text" v-model="loginFrom.mail">
-  <input type="text" v-model="loginFrom.password">
-  <button @click="login">登录</button>
+  <div class="login">
+    <h1 align="center">登录</h1>
+    <input type="text" class="W100" v-model="loginFrom.mail">
+    <br> <br>
+    <input type="text" class="W100" v-model="loginFrom.password">
+     <br> <br>
+    <button  class="W100" @click="login">登录</button>
+     <br> <br>
+     <div>
+       <a href="/register">注册</a><a href="#" style="float:right">忘记密码</a>
+     </div>
+     
+  </div>
 </template>
 
 <script>
 import request from '../utils/request'
 import jwt_decode from "jwt-decode"
 export default {
-  name: "login_index",
+  name: "login",
   data() {
     return {
         loginFrom:{
@@ -30,8 +40,8 @@ export default {
               method: 'post',
               data:this.loginFrom
               }).then((response) => {
-                  let tokenData = jwt_decode(response.jwt_token)
-                  localStorage.setItem("token",response.jwt_token)
+                  let tokenData = jwt_decode(response.token)
+                  localStorage.setItem("token",response.token)
                   localStorage.setItem("member",JSON.stringify(tokenData.member))
                   location.href = '/'
               })
@@ -45,17 +55,13 @@ export default {
 </script>
 
 <style scoped>
-.send-but{
-  position:fixed;
-  bottom: 0px;
+.login{
+  max-width: 500px;
+  width: 100%;
+  margin: auto;
 }
-.message-body{
-  height: 500px;
-  width: 300px;
-  background: rgb(167, 166, 166);
+.W100{
+  width: 100%;
+  box-sizing: border-box;
 }
-.message{
-  padding-bottom: 10px;
-}
-
 </style>

@@ -1,11 +1,13 @@
 <template>
-  <nav>
-    <a class="m-5">聊天软件</a>
-    <a class="m-5" href="/login">登录</a>
-  </nav>
-  <div>
-    <router-view/>
-  </div>
+  <table class="head-table" border="1" cellspacing="1">
+    <tr align="center">
+      <td width=100px>消息</td>
+      <td width=100px>通讯录</td>
+      <td width=100px>添加好友</td>
+      <td width=100px>个人中心</td>
+    </tr>
+  </table>
+  <router-view/>
 </template>
 
 <script>
@@ -15,27 +17,14 @@ export default {
     return {
      
     };
-  },
-  computed: {
-    
-  },
-  created() {
-
-  },
-  methods: {
-    
-  },
-  mounted(){
-   
   }
 };
 </script>
 
 <style scoped>
-.m-5{
-  margin: 5px;
-}
-nav{
-  border-bottom: 1px solid red;
+.head-table{
+  margin: auto;
+  width: 100%;
+  max-width: 800px;
 }
 </style>

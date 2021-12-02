@@ -1,8 +1,8 @@
 <template>
   <div class="login">
     <h1>注册</h1>
-    用户名：
-    <input type="text" class="W100" v-model="loginFrom.username" />
+    邮箱号：
+   <span>注意只有邮箱号才能注册</span> <input type="text" class="W100" v-model="loginFrom.username" />
     <br />密码：
     <input type="text" class="W100" v-model="loginFrom.password" />
     <br />确认密码：
@@ -33,17 +33,33 @@ export default {
   created() {},
   methods: {
     register() {
-      if (this.password == loginFrom.password) {
-        request({
-          url: "/api/register",
-          method: "post",
-          data: this.loginFrom,
-        }).then((response) => {
-          location.href = "/login";
-        });
-      } else {
-        alert("两次密码不一致");
-      }
+		
+	if(this.loginFrom.username == ""){
+		alert("用户名不能为空");
+	}else{
+		var regEmail = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+		if (regEmail.test(this.loginFrom.username)) {
+			
+			if(this.password =="" || this.loginFrom.password == ""){
+				alert("密码或确认密码不能为空");
+			}else{
+				if(this.password == this.loginFrom.password){
+					request({
+					  url: "/api/register",
+					  method: "post",
+					  data: this.loginFrom,
+					}).then((response) => {
+					  location.href = "/login";
+					  alert("注册成功");
+					});
+				}else{
+					 alert("两次密码不一致");
+				}
+			}
+		}else{
+			alert("用户名格式不对");
+		}
+	}	
     },
   },
   mounted() {},

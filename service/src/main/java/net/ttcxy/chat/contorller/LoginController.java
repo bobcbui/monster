@@ -1,7 +1,9 @@
 package net.ttcxy.chat.contorller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.lang.Validator;
+import cn.hutool.core.util.IdUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.ttcxy.chat.api.ApiException;
 import net.ttcxy.chat.api.ResponseCode;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.sql.Time;
 
 @RestController
 @RequestMapping("/api")
@@ -63,6 +66,8 @@ public class LoginController {
             String password = param.getPassword();
             member.setPassword(new BCryptPasswordEncoder().encode(password));
             member.setUsername(username);
+            member.setId(IdUtil.objectId());
+            member.setCreateTime(new DateTime());
             int count = memberService.insertMember(member);
             if (count > 0){
                 return ResponseResult.success("注册成功");

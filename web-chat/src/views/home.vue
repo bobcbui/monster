@@ -1,7 +1,7 @@
 <template>
   <div style="height: calc(100% - 21px);  margin: auto;width: 100%;max-width: 800px;">
     <div style="height: calc(100% );width:100%; overflow-y: scroll;border:1px solid black;border-bottom:0px">
-      <p v-for="(item,index) in $store.state.newMessage" :key="index" style="padding: 5px;" @click="toMessage(item.gangId)">{{item.gangName}} ：{{item.text}}</p>
+      <p v-for="(item,index) in $store.state.newMessage" :key="index" style="padding: 3px;border: 1px solid #625a5a;margin: 3px;border-radius: 10px;" @click="toMessage(item.gangId)"><strong>{{item.gangName}}</strong> <br>{{item.text}}</p>
     </div>
   </div>
 </template>
@@ -11,11 +11,11 @@ export default {
   name: "home",
   data() {
     return {
-      groupId:this.$route.params.groupId,
+      gangId:this.$route.params.gangId,
       formData:{
-        to:this.$route.params.groupId,
+        to:this.$route.params.gangId,
         messageText:"",
-        type:"group"
+        type:"gang"
       }
     };
   },
@@ -28,7 +28,7 @@ export default {
   methods: {
     toMessage(id){
       this.$router.push({
-        path: '/group/'+ id
+        path: '/gang/'+ id
         })
     }
     

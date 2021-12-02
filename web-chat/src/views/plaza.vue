@@ -17,12 +17,13 @@
       "
     >
       <p
-        v-for="(item, index) in groupList"
+        v-for="(item, index) in gangList"
         :key="index"
         style="padding: 5px"
-        @click="join(item.id)"
+        
       >
-        {{ item.name }} <button style="float:right">加入</button>
+      <router-link style="padding:0 5px" :to="'/gang/'+item.id">{{ item.name }}</router-link>
+         <button style="float:right" @click="add(item.id)">添加</button>
       </p>
     </div>
   </div>
@@ -31,10 +32,10 @@
 <script>
 import request from "../utils/request";
 export default {
-  name: "group_list",
+  name: "plaza",
   data() {
     return {
-      groupList: [],
+      gangList: [],
     };
   },
   computed: {},
@@ -42,19 +43,18 @@ export default {
   methods: {
     loadGangList() {
       request({
-        url: "/gang/list",
+        url: "/plaza/gang/list",
         method: "get",
       }).then((response) => {
-        this.groupList = response.data;
+        this.gangList = response.data;
       });
     },
-    join(id) {
+    add(id,type) {
       request({
-        url: "/gang/insert",
-        method: "post",
-        data:{id:id}
+        url: "/plaza/gang/"+id,
+        method: "post"
       }).then((response) => {
-        alert(jrcg)
+        alert(response.data)
       });
     },
   },

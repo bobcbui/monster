@@ -1,9 +1,8 @@
 <template>
   <div class="head-table">
     <router-link style="padding:0 5px" to="/">消息</router-link>
-    <router-link style="padding:0 5px" to="/gang">群列表</router-link>
-    <router-link style="padding:0 5px" to="/">私信</router-link>
-    <router-link style="padding:0 5px" to="/setting">个人中心</router-link>
+    <router-link style="padding:0 5px" to="/plaza">列表</router-link>
+    <router-link style="padding:0 5px" to="/setting">我的</router-link>
   </div>
   <router-view/>
 </template>

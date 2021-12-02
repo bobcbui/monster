@@ -19,7 +19,6 @@ import java.util.List;
 @Service
 public class MemberService implements UserDetailsService {
 
-
     private final MemberMapper memberMapper;
 
     @Autowired

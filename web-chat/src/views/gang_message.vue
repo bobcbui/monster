@@ -1,8 +1,8 @@
 <template>
   <div style="height: calc(100% - 21px);  margin: auto;width: 100%;max-width: 800px;">
     <div style="height: calc(100% - 30px);width:100%; overflow-y: scroll;border:1px solid black">
-      <p v-for="(item, index) in $store.state.message[groupId]" :key="index">
-        {{ item.from }}:{{ item.text }}
+      <p v-for="(item, index) in $store.state.message[gangId]" :key="index">
+        <strong>{{ item.from }}</strong> : {{ item.text }}
       </p>
     </div>
     <div style="height: 30px;">
@@ -24,14 +24,14 @@
 
 <script>
 export default {
-  name: "group_message",
+  name: "gang_message",
   data() {
     return {
-      groupId: this.$route.params.groupId,
+      gangId: this.$route.params.gangId,
       formData: {
-        to: this.$route.params.groupId,
+        to: this.$route.params.gangId,
         text: "",
-        type: "group",
+        type: "gang",
       }
     };
   },

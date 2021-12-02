@@ -12,14 +12,14 @@ const routes = [
                 component: () => import('../views/home.vue')
             },
             {
-                path: '/group/:groupId',
-                name: 'group_message',
-                component: () => import('../views/group_message.vue')
+                path: '/gang/:gangId',
+                name: 'gang_message',
+                component: () => import('../views/gang_message.vue')
             },
             {
-                path: '/gang',
-                name: 'gang_list',
-                component: () => import('../views/group_list.vue')
+                path: '/plaza',
+                name: 'plaza',
+                component: () => import('../views/plaza.vue')
             },
             {
                 path: '/setting',

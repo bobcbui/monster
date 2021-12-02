@@ -31,7 +31,7 @@ public class ApplicationWebSocket {
     // SessionId对应的用户
     private static final Map<String, CurrentMember> sessionMember = new HashMap<>();
     // 这个群有哪些用户
-    private static final Map<String, Set<String>> gangMember = new HashMap<>();
+    public static final Map<String, Set<String>> gangMember = new HashMap<>();
     // 这个群有哪些消息 最近 200 条消息
     private static final Map<String, List<JSONObject>> gangMessage = new HashMap<>();
     // gangId

@@ -1,9 +1,12 @@
 <template>
-    <p v-for="(item,index) in $store.state.newMessage" :key="index">{{item.from}}:{{item}}</p>
+  <div style="height: calc(100% - 21px);  margin: auto;width: 100%;max-width: 800px;">
+    <div style="height: calc(100% );width:100%; overflow-y: scroll;border:1px solid black;border-bottom:0px">
+      <p v-for="(item,index) in $store.state.newMessage" :key="index" style="padding: 5px;" @click="toMessage(item.gangId)">{{item.gangName}} ：{{item.text}}</p>
+    </div>
+  </div>
 </template>
 
 <script>
-import { inject } from "vue";
 export default {
   name: "home",
   data() {
@@ -13,8 +16,7 @@ export default {
         to:this.$route.params.groupId,
         messageText:"",
         type:"group"
-      },
-      ws:inject('ws')
+      }
     };
   },
   computed: {
@@ -24,8 +26,10 @@ export default {
 
   },
   methods: {
-    send(){
-      this.ws.send(JSON.stringify(this.formData))
+    toMessage(id){
+      this.$router.push({
+        path: '/group/'+ id
+        })
     }
     
   },
@@ -47,9 +51,6 @@ export default {
 }
 .message{
   padding-bottom: 10px;
-}
-p{
-    padding: 10px;
 }
 
 </style>

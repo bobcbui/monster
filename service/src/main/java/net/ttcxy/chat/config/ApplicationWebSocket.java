@@ -4,11 +4,12 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import net.ttcxy.chat.entity.CurrentMember;
-import net.ttcxy.chat.entity.model.GroupMember;
+import net.ttcxy.chat.entity.model.Gang;
+import net.ttcxy.chat.entity.model.GangMember;
 import net.ttcxy.chat.entity.model.Member;
 import net.ttcxy.chat.entity.model.Message;
 import net.ttcxy.chat.security.jwt.TokenProvider;
-import net.ttcxy.chat.service.GroupService;
+import net.ttcxy.chat.service.GangService;
 import net.ttcxy.chat.util.SpringUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -30,9 +31,12 @@ public class ApplicationWebSocket {
     // SessionId对应的用户
     private static final Map<String, CurrentMember> sessionMember = new HashMap<>();
     // 这个群有哪些用户
-    private static final Map<String, Set<String>> groupMember = new HashMap<>();
+    private static final Map<String, Set<String>> gangMember = new HashMap<>();
     // 这个群有哪些消息 最近 200 条消息
-    private static final Map<String, List<Message>> groupMessage = new HashMap<>();
+    private static final Map<String, List<JSONObject>> gangMessage = new HashMap<>();
+    // gangId
+    public static final Map<String, Gang> gangMap = new HashMap<>();
+
 
     private Session session;
 
@@ -42,7 +46,7 @@ public class ApplicationWebSocket {
         this.session = session;
 
         TokenProvider tokenProvider = SpringUtil.getBean(TokenProvider.class);
-        GroupService groupService = SpringUtil.getBean(GroupService.class);
+        GangService gangService = SpringUtil.getBean(GangService.class);
 
         String jwt = (String) endpointConfig.getUserProperties().get("jwt");
         Authentication authentication = tokenProvider.getAuthentication(jwt);
@@ -63,20 +67,20 @@ public class ApplicationWebSocket {
         }
 
         // 将当前用户添加到所在的群
-        List<GroupMember> memberGroupIdList = groupService.selectMemberGroup(memberId);
-        for (GroupMember gm : memberGroupIdList) {
-            String groupId = gm.getGroupId();
-            Set<String> strings = groupMember.get(groupId);
+        List<GangMember> memberGangIdList = gangService.selectMemberGang(memberId);
+        for (GangMember gm : memberGangIdList) {
+            String gangId = gm.getGangId();
+            Set<String> strings = gangMember.get(gangId);
             if (strings == null){
                 strings = new HashSet<>();
                 strings.add(memberId);
-                groupMember.put(groupId, strings);
+                gangMember.put(gangId, strings);
             }else{
                 strings.add(memberId);
             }
 
             // 发送这个群的消息给他
-            List<Message> messages = groupMessage.get(groupId);
+            List<JSONObject> messages = gangMessage.get(gangId);
             if (messages != null){
                 sendMessage(JSONObject.toJSONString(messages));
             }
@@ -105,36 +109,44 @@ public class ApplicationWebSocket {
             jsonObject = JSONObject.parseObject(message);
             // 发送到那个群组
             String to = jsonObject.getString("to");
-            String messageText = jsonObject.getString("messageText");
+            String messageText = jsonObject.getString("text");
 
-            List<Message> lsMessage = groupMessage.get(to);
-            Message msg = new Message();
-            msg.setTo(to);
-            msg.setFrom(member.getId());
-            msg.setCreateTime(DateUtil.date());
-            msg.setText(messageText);
-            msg.setId(IdUtil.objectId());
-            msg.setType(1);
+            Gang gang = gangMap.get(to);
+
+
+            List<JSONObject> lsMessage = gangMessage.get(to);
+            JSONObject msg = new JSONObject();
+            msg.put("to",to);
+            msg.put("from",member.getId());
+            msg.put("createTime",DateUtil.date());
+            msg.put("text",messageText);
+            msg.put("id",IdUtil.objectId());
+            msg.put("type",1);
+            msg.put("gangName",gang.getName());
+            msg.put("gangId",gang.getId());
             if (lsMessage == null){
                 lsMessage = new ArrayList<>(200);
                 lsMessage.add(msg);
             }
 
-            Set<String> groupMemberList = groupMember.get(to);
+            Set<String> gangMemberList = gangMember.get(to);
 
-            List<Message> messages = groupMessage.get(to);
+            List<JSONObject> messages = gangMessage.get(to);
             if (messages == null){
                 messages = new ArrayList<>();
                 messages.add(msg);
-                groupMessage.put(to,messages);
+                gangMessage.put(to,messages);
             }else{
                 messages.add(msg);
             }
+            if (messages.size() > 100){
+                messages.remove(0);
+            }
 
-            for (String memberId : groupMemberList) {
+            for (String memberId : gangMemberList) {
                 Set<ApplicationWebSocket> applicationWebSockets = memberSocketList.get(memberId);
                 for (ApplicationWebSocket applicationWebSocket : applicationWebSockets) {
-                    ArrayList<Message> arrayList = new ArrayList<>();
+                    ArrayList<JSONObject> arrayList = new ArrayList<>();
                     arrayList.add(msg);
                     applicationWebSocket.sendMessage(JSONObject.toJSONString(arrayList));
                 }

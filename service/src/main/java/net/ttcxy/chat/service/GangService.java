@@ -1,25 +1,25 @@
 package net.ttcxy.chat.service;
 
-import net.ttcxy.chat.entity.model.Group;
-import net.ttcxy.chat.entity.model.GroupMember;
-import net.ttcxy.chat.entity.model.GroupMemberExample;
-import net.ttcxy.chat.mapper.GroupMapper;
-import net.ttcxy.chat.mapper.GroupMemberMapper;
+import net.ttcxy.chat.entity.model.Gang;
+import net.ttcxy.chat.entity.model.GangMember;
+import net.ttcxy.chat.entity.model.GangMemberExample;
+import net.ttcxy.chat.mapper.GangMapper;
+import net.ttcxy.chat.mapper.GangMemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class GroupService {
+public class GangService {
 
 
-    private final GroupMapper groupMapper;
+    private final GangMapper groupMapper;
 
-    private final GroupMemberMapper groupMemberMapper;
+    private final GangMemberMapper groupMemberMapper;
 
     @Autowired
-    public GroupService(GroupMapper groupMapper, GroupMemberMapper groupMemberMapper) {
+    public GangService(GangMapper groupMapper, GangMemberMapper groupMemberMapper) {
         this.groupMapper = groupMapper;
         this.groupMemberMapper = groupMemberMapper;
     }
@@ -27,7 +27,7 @@ public class GroupService {
     /**
      * 查询所有的群列表
      */
-    public List<Group> selectAllGroup() {
+    public List<Gang> selectAllGang() {
         return groupMapper.selectByExample(null);
     }
 
@@ -35,8 +35,8 @@ public class GroupService {
      * 通过用户ID查询成员加入的群
      * @param memberId 成员ID
      */
-    public List<GroupMember> selectMemberGroup(String memberId){
-        GroupMemberExample gme = new GroupMemberExample();
+    public List<GangMember> selectMemberGang(String memberId){
+        GangMemberExample gme = new GangMemberExample();
         gme.createCriteria().andMemberIdEqualTo(memberId);
         return groupMemberMapper.selectByExample(gme);
     }

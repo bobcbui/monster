@@ -11,48 +11,48 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 27/11/2021 22:44:48
+ Date: 02/12/2021 20:24:22
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for group
+-- Table structure for gang
 -- ----------------------------
-DROP TABLE IF EXISTS `group`;
-CREATE TABLE `group`  (
+DROP TABLE IF EXISTS `gang`;
+CREATE TABLE `gang`  (
   `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `create_time` timestamp(0) NULL DEFAULT NULL
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of group
+-- Records of gang
 -- ----------------------------
-INSERT INTO `group` VALUES ('1', 'Java交流群', NULL);
-INSERT INTO `group` VALUES ('2', 'Python交流群', NULL);
-INSERT INTO `group` VALUES ('3', '程序员交流群', NULL);
-INSERT INTO `group` VALUES ('4', 'Web前端交流群', NULL);
+INSERT INTO `gang` VALUES ('1', 'Java交流群', NULL);
+INSERT INTO `gang` VALUES ('2', 'Python交流群', NULL);
+INSERT INTO `gang` VALUES ('3', '程序员交流群', NULL);
+INSERT INTO `gang` VALUES ('4', 'Web前端交流群', NULL);
 
 -- ----------------------------
--- Table structure for group_member
+-- Table structure for gang_member
 -- ----------------------------
-DROP TABLE IF EXISTS `group_member`;
-CREATE TABLE `group_member`  (
+DROP TABLE IF EXISTS `gang_member`;
+CREATE TABLE `gang_member`  (
   `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `group_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `gang_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `member_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `create_time` timestamp(0) NULL DEFAULT NULL
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of group_member
+-- Records of gang_member
 -- ----------------------------
-INSERT INTO `group_member` VALUES ('1', '1', '1', NULL);
-INSERT INTO `group_member` VALUES ('2', '1', '2', NULL);
-INSERT INTO `group_member` VALUES ('3', '2', '1', NULL);
-INSERT INTO `group_member` VALUES ('4', '2', '2', NULL);
+INSERT INTO `gang_member` VALUES ('1', '1', '1', NULL);
+INSERT INTO `gang_member` VALUES ('2', '1', '2', NULL);
+INSERT INTO `gang_member` VALUES ('3', '2', '1', NULL);
+INSERT INTO `gang_member` VALUES ('4', '2', '2', NULL);
 
 -- ----------------------------
 -- Table structure for member

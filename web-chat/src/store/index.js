@@ -14,6 +14,9 @@ export default createStore({
         // 最新的一条消息
         newMessage:{
            
+        },
+        ws:{
+            
         }
     }
     

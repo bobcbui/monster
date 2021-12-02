@@ -16,6 +16,16 @@ const routes = [
                 name: 'group_message',
                 component: () => import('../views/group_message.vue')
             },
+            {
+                path: '/gang',
+                name: 'gang_list',
+                component: () => import('../views/group_list.vue')
+            },
+            {
+                path: '/setting',
+                name: 'setting',
+                component: () => import('../views/setting.vue')
+            },
         ]
     },{
         path: '/login',

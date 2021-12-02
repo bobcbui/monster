@@ -1,12 +1,10 @@
 <template>
-  <table class="head-table" border="1" cellspacing="1">
-    <tr align="center">
-      <td width=100px>消息</td>
-      <td width=100px>通讯录</td>
-      <td width=100px>添加好友</td>
-      <td width=100px>个人中心</td>
-    </tr>
-  </table>
+  <div class="head-table">
+    <router-link style="padding:0 5px" to="/">消息</router-link>
+    <router-link style="padding:0 5px" to="/gang">群列表</router-link>
+    <router-link style="padding:0 5px" to="/">私信</router-link>
+    <router-link style="padding:0 5px" to="/setting">个人中心</router-link>
+  </div>
   <router-view/>
 </template>
 
@@ -23,8 +21,12 @@ export default {
 
 <style scoped>
 .head-table{
+  border:1px solid black;
+  border-bottom: 0px;
   margin: auto;
   width: 100%;
   max-width: 800px;
+  text-align: center;
+  border-top: 0;
 }
 </style>

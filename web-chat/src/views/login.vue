@@ -22,7 +22,7 @@ export default {
   data() {
     return {
         loginFrom:{
-            mail:"792190997@qq.com",
+            mail:"user1",
             password:"mima135654.."
         }
     };

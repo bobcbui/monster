@@ -40,6 +40,7 @@ export default {
   methods: {
     send() {
       this.$store.state.ws.send(JSON.stringify(this.formData));
+	  this.formData.text = "";
     },
   },
   mounted() {},

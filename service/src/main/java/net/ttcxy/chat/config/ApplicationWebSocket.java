@@ -92,9 +92,11 @@ public class ApplicationWebSocket {
     @OnClose
     public void onClose() {
         CurrentMember currentMember = sessionMember.get(session.getId());
-        Set<ApplicationWebSocket> applicationWebSockets = memberSocketList.get(currentMember.getMember().getId());
-        applicationWebSockets.remove(this);
-        System.out.printf("成功关闭连接~ 当前在线人数为:%s%n", memberSocketList.size());
+        if (currentMember != null){
+            Set<ApplicationWebSocket> applicationWebSockets = memberSocketList.get(currentMember.getMember().getId());
+            applicationWebSockets.remove(this);
+            System.out.printf("成功关闭连接~ 当前在线人数为:%s%n", memberSocketList.size());
+        }
     }
 
 

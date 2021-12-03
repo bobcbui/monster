@@ -39,7 +39,7 @@ export default {
 	}
   },
   mounted(){
-   // alert(JSON.stringify(this.$store.state.message))
+    alert(JSON.stringify(this.$store.state.login))
   }
 
 };

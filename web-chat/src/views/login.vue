@@ -43,10 +43,9 @@ export default {
               }).then((response) => {
                   let tokenData = jwt_decode(response.token)
                   localStorage.setItem("token",response.token)
-                  localStorage.setItem("member",JSON.stringify(tokenData.member))
+                  localStorage.setItem("member",JSON.stringify(tokenData.member.member))
                   location.href = '/'
-              }),
-			  data
+              })
       },
      selectId(){
 		 request({

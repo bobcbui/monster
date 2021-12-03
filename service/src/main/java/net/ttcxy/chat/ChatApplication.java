@@ -5,8 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {"net.ttcxy.chat"})
-@MapperScan(basePackages ={"net.ttcxy.chat.mapper"})
-@MapperScan(basePackages = {"net.ttcxy.chat.dao"})
+@MapperScan(basePackages = {"net.ttcxy.chat.dao","net.ttcxy.chat.mapper"})
 public class ChatApplication {
 
     public static void main(String[] args) {

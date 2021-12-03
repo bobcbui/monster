@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.ttcxy.chat.dao.MemberDao">
+  <resultMap id="BaseResultMap" type="net.ttcxy.chat.pojo.Member">
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="usernametwo" jdbcType="VARCHAR" property="usernametwo" />
+    <result column="letters" jdbcType="BOOLEAN" property="letters" />
+    <result column="introduction" jdbcType="VARCHAR" property="introduction" />
+    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+  </resultMap>
+  <insert id="insert" parameterType="net.ttcxy.chat.pojo.Member">
+    insert into member (id, username, `password`, 
+      create_time, gender, usernametwo, 
+      letters, introduction, avatar
+      )
+    values (#{id,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{gender,jdbcType=INTEGER}, #{usernametwo,jdbcType=VARCHAR}, 
+      #{letters,jdbcType=BOOLEAN}, #{introduction,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="net.ttcxy.chat.pojo.Member">
+    insert into member
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="password != null">
+        `password`,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="usernametwo != null">
+        usernametwo,
+      </if>
+      <if test="letters != null">
+        letters,
+      </if>
+      <if test="introduction != null">
+        introduction,
+      </if>
+      <if test="avatar != null">
+        avatar,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="usernametwo != null">
+        #{usernametwo,jdbcType=VARCHAR},
+      </if>
+      <if test="letters != null">
+        #{letters,jdbcType=BOOLEAN},
+      </if>
+      <if test="introduction != null">
+        #{introduction,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null">
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectIdByUsernameMember" resultType="java.lang.Integer">
+    select id from member
+    where username = #{username}
+  </select>
+
+
+</mapper>

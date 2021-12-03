@@ -11,7 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeneratorApplication {
+public class
+GeneratorApplication {
 
     public static void main(String[] args) throws XMLParserException, IOException, InvalidConfigurationException, SQLException, InterruptedException {
         //MBG 执行过程中的警告信息

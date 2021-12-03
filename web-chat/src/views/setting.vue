@@ -5,6 +5,7 @@
       <p>简介：askdsfasdfasdfasdfasdfasdf的JFK</p>
       <p>性别：女（暂时无法修改性别）</p>
       <p>是否可以私信：是 , 否</p>
+	  <button @click="hi()">nihao </button>
     </div>
   </div>
 </template>
@@ -18,7 +19,7 @@ export default {
         to:this.$route.params.groupId,
         messageText:"",
         type:"group"
-      }
+      },
     };
   },
   computed: {
@@ -32,12 +33,17 @@ export default {
       this.$router.push({
         path: '/group/'+ id
     })
-    }
+    },
+	hi(){
+		alert(this.$store.state.login.id);
+	}
   },
   mounted(){
    // alert(JSON.stringify(this.$store.state.message))
   }
+
 };
+
 </script>
 
 <style scoped>

@@ -23,7 +23,8 @@ export default {
     return {
         loginFrom:{
             mail:"user1",
-            password:"mima135654.."
+            password:"mima135654..",
+			id: "",
         }
     };
   },
@@ -38,15 +39,22 @@ export default {
           request({
               url: '/api/authenticate',
               method: 'post',
-              data:this.loginFrom
+              data:this.loginFrom,
               }).then((response) => {
                   let tokenData = jwt_decode(response.token)
                   localStorage.setItem("token",response.token)
                   localStorage.setItem("member",JSON.stringify(tokenData.member))
                   location.href = '/'
-              })
-      }
-    
+              }),
+			  data
+      },
+     selectId(){
+		 request({
+			 url: '/other/selectId',
+			 method:'get',
+			 data:this.loginFrom.mail,
+		 })
+	 },
   },
   mounted(){
    

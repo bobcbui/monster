@@ -1,6 +1,7 @@
 package net.ttcxy.chat.service;
 
 
+import net.ttcxy.chat.dao.MemberDao;
 import net.ttcxy.chat.entity.CurrentMember;
 import net.ttcxy.chat.entity.model.Member;
 import net.ttcxy.chat.entity.model.MemberExample;
@@ -21,9 +22,11 @@ public class MemberService implements UserDetailsService {
 
     private final MemberMapper memberMapper;
 
+    private final MemberDao memberDao;
     @Autowired
-    public MemberService(MemberMapper memberMapper) {
+    public MemberService(MemberMapper memberMapper, MemberDao memberDao) {
         this.memberMapper = memberMapper;
+        this.memberDao = memberDao;
     }
 
     @Override
@@ -50,4 +53,14 @@ public class MemberService implements UserDetailsService {
         }
         return null;
     }
+
+    /**
+     * 查询id 通过账号
+     * @param username
+     * @return
+     */
+    public int selectIdByUsernameMember(String username){
+        return memberDao.selectIdByUsernameMember(username);
+    }
+
 }

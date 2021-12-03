@@ -3,11 +3,13 @@ package net.ttcxy.chat.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import net.ttcxy.chat.config.ApplicationWebSocket;
+import net.ttcxy.chat.dao.MemberDao;
 import net.ttcxy.chat.entity.model.Gang;
 import net.ttcxy.chat.entity.model.GangMember;
 import net.ttcxy.chat.entity.model.GangMemberExample;
 import net.ttcxy.chat.mapper.GangMapper;
 import net.ttcxy.chat.mapper.GangMemberMapper;
+import net.ttcxy.chat.pojo.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ public class GangService {
     private final GangMapper groupMapper;
 
     private final GangMemberMapper groupMemberMapper;
+
 
     @Autowired
     public GangService(GangMapper groupMapper, GangMemberMapper groupMemberMapper) {
@@ -66,4 +69,6 @@ public class GangService {
         }
         return groupMemberMapper.insert(gangMember);
     }
+
+
 }

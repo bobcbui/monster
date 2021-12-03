@@ -56,11 +56,11 @@ public class MemberService implements UserDetailsService {
 
     /**
      * 查询id 通过账号
-     * @param username
+     * @param a
      * @return
      */
-    public int selectIdByUsernameMember(String username){
-        return memberDao.selectIdByUsernameMember(username);
+    public int selectIdByUsernameMember(String a){
+        return memberDao.selectIdByUsernameMember(a);
     }
 
 }

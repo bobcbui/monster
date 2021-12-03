@@ -17,7 +17,7 @@ public class OtherController {
         this.memberService = memberService;
     }
     @RequestMapping("/selectId")
-    public int selectIdByUsernameMember(String username){
-        return memberService.selectIdByUsernameMember(username);
+    public int selectIdByUsernameMember(String a){
+        return memberService.selectIdByUsernameMember(a);
     }
 }

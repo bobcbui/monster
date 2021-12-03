@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(100% - 21px);  margin: auto;width: 100%;max-width: 800px;">
+  <div style="height: calc(100% - 22px);  margin: auto;width: 100%;max-width: 800px;background:https://img.tukuppt.com/ad_preview/00/17/33/5c99ce18e74f3.jpg!/fw/980;">
     <div style="height: 100%;width:100%; overflow-y: scroll;padding:5px; border:1px solid black;border-bottom:0px">
       <p>用户名：ask的JFK</p>
       <p>简介：askdsfasdfasdfasdfasdfasdf的JFK</p>
@@ -39,7 +39,7 @@ export default {
 	}
   },
   mounted(){
-    alert(JSON.stringify(this.$store.state.login))
+   // alert(JSON.stringify(this.$store.state.message))
   }
 
 };

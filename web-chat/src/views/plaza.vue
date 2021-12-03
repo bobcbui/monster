@@ -1,7 +1,7 @@
 <template>
   <div
     style="
-      height: calc(100% - 21px);
+      height: calc(100% - 22px);
       margin: auto;
       width: 100%;
       max-width: 800px;

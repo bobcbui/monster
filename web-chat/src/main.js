@@ -54,7 +54,7 @@ function webSocketInit() {
 
     return ws;
 }
-if(window.location.pathname != '/login'){
+if(window.location.pathname != '/login' && window.location.pathname != '/register'){
     if(localStorage.getItem("token") == null){
         window.location.href = '/login'
     }

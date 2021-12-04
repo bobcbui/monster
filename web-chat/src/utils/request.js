@@ -34,7 +34,7 @@ service.interceptors.response.use(
     error => {
         if(error.response.status === 401){
             alert("登入失败，请重新登入")
-			 location.assign("/login");
+			location.assign("/login");
             return Promise.reject(error);
         }
         if(error.response.status === 404){

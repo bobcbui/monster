@@ -11,10 +11,12 @@
 
 body,html,#app{
     height: 100%;
-    -webkit-tap-highlight-color:transparent
+    -webkit-tap-highlight-color:transparent;
+    background-color: #ebd3a6;
 }
 
 p{
     padding: 5px;
     word-break: break-all;
 }
+

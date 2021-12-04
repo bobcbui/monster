@@ -3,7 +3,7 @@
     <router-link style="padding:0 5px" to="/">消息</router-link>
     <router-link style="padding:0 5px" to="/plaza">列表</router-link>
     <router-link style="padding:0 5px" to="/setting">我的</router-link>
-	<button @click="tuichu()">退出</button>
+    <router-link style="padding:0 5px" to="/login">退出</router-link>
   </div>
   <router-view/>
 </template>
@@ -17,11 +17,8 @@ export default {
     };
   },
   methods:{
-	  tuichu(){
-		  localStorage.clear();
-		  this.$router.push("/login");
-	  }
-  }
+
+}
 };
 </script>
 

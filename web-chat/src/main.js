@@ -54,3 +54,8 @@ function webSocketInit() {
 
     return ws;
 }
+if(window.location.pathname != '/login'){
+    if(localStorage.getItem("token") == null){
+        window.location.href = '/login'
+    }
+}

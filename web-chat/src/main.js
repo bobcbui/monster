@@ -5,6 +5,7 @@ import store from './store'
 import './index.scss'
 import './permission'
 
+
 const app = createApp(App)
 app.use(router).use(store).mount('#app')
 var ws = {};

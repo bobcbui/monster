@@ -44,7 +44,7 @@ CREATE TABLE `gang_member` (
 
 /*Data for the table `gang_member` */
 
-insert  into `gang_member`(`id`,`gang_id`,`member_id`,`create_time`) values ('61a8cf2517439a410960300e','3','2','2021-12-02 13:50:29'),('61a8cf2617439a410960300f','4','2','2021-12-02 13:50:31'),('61a8d15b17439a4109603061','5','2','2021-12-02 13:59:56'),('61a8d15d17439a4109603062','6','2','2021-12-02 13:59:58'),('61a8e2a77be9d79d22e43828','6','1','2021-12-02 15:13:44'),('61a8e3027be9d79d22e43831','5','1','2021-12-02 15:15:15'),('61a8e32d7be9d79d22e43834','3','1','2021-12-02 15:15:58'),('61a8e3bd7be9d79d22e4383d','4','1','2021-12-02 15:18:22');
+insert  into `gang_member`(`id`,`gang_id`,`member_id`,`create_time`) values ('61a8cf2517439a410960300e','3','2','2021-12-02 13:50:29'),('61a8cf2617439a410960300f','4','2','2021-12-02 13:50:31'),('61a8d15b17439a4109603061','5','2','2021-12-02 13:59:56'),('61a8d15d17439a4109603062','6','2','2021-12-02 13:59:58'),('61a8e2a77be9d79d22e43828','6','1','2021-12-02 15:13:44'),('61a8e3027be9d79d22e43831','5','1','2021-12-02 15:15:15'),('61a8e32d7be9d79d22e43834','3','1','2021-12-02 15:15:58'),('61a8e3bd7be9d79d22e4383d','4','1','2021-12-02 15:18:22'),('61a9b9657be9a328b90db600','1','1','2021-12-03 06:29:57'),('61a9b9677be9a328b90db601','2','1','2021-12-03 06:30:00'),('61aa17fa7be92f260e80b2c8','4','61aa17e87be92f260e80b2c6','2021-12-03 13:13:30');
 
 /*Table structure for table `member` */
 
@@ -57,14 +57,14 @@ CREATE TABLE `member` (
   `create_time` timestamp NULL DEFAULT NULL,
   `gender` int DEFAULT NULL COMMENT '0是女  1是男',
   `usernametwo` varchar(32) DEFAULT NULL COMMENT '里面的名字',
-  `letters` tinyint(1) DEFAULT NULL COMMENT '是否可以私信',
+  `letters` tinyint(1) DEFAULT '1' COMMENT '是否可以私信',
   `introduction` text COMMENT '简介',
   `avatar` varchar(100) DEFAULT NULL COMMENT '头像url'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 /*Data for the table `member` */
 
-insert  into `member`(`id`,`username`,`password`,`create_time`,`gender`,`usernametwo`,`letters`,`introduction`,`avatar`) values ('1','user1','$2a$10$WiuebtAwq/sg5ivzD9Z4k.eHdYonJpJ6C4K6/6SypWRHBEPfWB1hq',NULL,NULL,NULL,NULL,NULL,NULL),('2','user2','$2a$10$WiuebtAwq/sg5ivzD9Z4k.eHdYonJpJ6C4K6/6SypWRHBEPfWB1hq',NULL,NULL,NULL,NULL,NULL,NULL),('61a963877be98403e19eda60','980507010@qq.com','$2a$10$mgFnomKjeUBakQf1kMePoOzMV5DQh3NrcFZ126lNIBoH8xnA3H.Eu','2021-12-03 00:23:36',NULL,NULL,NULL,NULL,NULL),('61a963d07be98403e19eda63','456@qq.com','$2a$10$2bhdq.zOM4DYAx6UuEnS3.DUkPaHBjK/vcYC4JAL8RiI/GIhEidLS','2021-12-03 00:24:48',NULL,NULL,NULL,NULL,NULL),('61a965427be98403e19eda6a','qqq@qq.com','$2a$10$E9rdvfA6cnhSZ.AFnytDveUl9P2.daI8pXI.uE/4LJY8hBK.4Wvz6','2021-12-03 00:30:59',NULL,NULL,NULL,NULL,NULL);
+insert  into `member`(`id`,`username`,`password`,`create_time`,`gender`,`usernametwo`,`letters`,`introduction`,`avatar`) values ('1','user1','$2a$10$WiuebtAwq/sg5ivzD9Z4k.eHdYonJpJ6C4K6/6SypWRHBEPfWB1hq',NULL,1,'管理员1',0,'hi，你们好啊',NULL),('2','user2','$2a$10$WiuebtAwq/sg5ivzD9Z4k.eHdYonJpJ6C4K6/6SypWRHBEPfWB1hq',NULL,0,'管理员2',1,'hi，你们好啊',NULL),('61a963877be98403e19eda60','980507010@qq.com','$2a$10$mgFnomKjeUBakQf1kMePoOzMV5DQh3NrcFZ126lNIBoH8xnA3H.Eu','2021-12-03 00:23:36',1,'浪漫',1,'hi，你们好啊',NULL),('61a963d07be98403e19eda63','456@qq.com','$2a$10$2bhdq.zOM4DYAx6UuEnS3.DUkPaHBjK/vcYC4JAL8RiI/GIhEidLS','2021-12-03 00:24:48',NULL,NULL,1,'hi，你们好啊',NULL),('61a965427be98403e19eda6a','qqq@qq.com','$2a$10$E9rdvfA6cnhSZ.AFnytDveUl9P2.daI8pXI.uE/4LJY8hBK.4Wvz6','2021-12-03 00:30:59',NULL,NULL,1,'hi，你们好啊',NULL),('61aa17e87be92f260e80b2c6','2848447728@qq.com','$2a$10$B0yXja9ulQrjgoBIRKuIDebmVH4sqrxsTyQW6bm6V6Q7yhrSLbamy','2021-12-03 13:13:13',NULL,NULL,1,'hi，你们好啊',NULL);
 
 /*Table structure for table `message` */
 

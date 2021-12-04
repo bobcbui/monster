@@ -1,11 +1,14 @@
 <template>
-  <div style="height: calc(100% - 22px);  margin: auto;width: 100%;max-width: 800px;background:https://img.tukuppt.com/ad_preview/00/17/33/5c99ce18e74f3.jpg!/fw/980;">
+  <div style="height: calc(100% - 21px);  margin: auto;width: 100%;max-width: 800px;">
     <div style="height: 100%;width:100%; overflow-y: scroll;padding:5px; border:1px solid black;border-bottom:0px">
-      <p>用户名：ask的JFK</p>
-      <p>简介：askdsfasdfasdfasdfasdfasdf的JFK</p>
-      <p>性别：女（暂时无法修改性别）</p>
-      <p>是否可以私信：是 , 否</p>
-	  <button @click="hi()">nihao </button>
+
+      <p>用户名: {{usernametwo}}</p>
+	  <p>性别：{{xbb}}</p>
+      <p>简介：{{introduction}}</p>
+      <p>是否可以私信：{{letter}}</p>
+
+	  
+
     </div>
   </div>
 </template>
@@ -20,6 +23,12 @@ export default {
         messageText:"",
         type:"group"
       },
+	  usernametwo:this.$store.state.login.usernametwo,
+	  username: this.$store.state.login.username,
+	  xbb: "",
+	  introduction: this.$store.state.login.introduction,
+	  letter: "",
+	  
     };
   },
   computed: {
@@ -35,11 +44,26 @@ export default {
     })
     },
 	hi(){
-		alert(this.$store.state.login.id);
-	}
+		alert(this.$store.state.login.gender);
+	},
   },
   mounted(){
-   // alert(JSON.stringify(this.$store.state.message))
+    alert(JSON.stringify(this.$store.state.login));
+	if (this.$store.state.login.gender == null){
+		this.xbb = "未设置";
+	}else{
+		if (this.$store.state.login.gender == 1){
+			this.xbb = "男";
+		}else{
+			this.xbb = "女";
+		}
+	};
+	if(this.$store.state.login.letter == true){
+		this.letter = "是";
+	}else{
+		this.letter = "否";
+	}
+
   }
 
 };

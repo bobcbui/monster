@@ -19,7 +19,10 @@
       <p
         v-for="(item, index) in gangList"
         :key="index"
-        style="padding: 5px"
+        style="margin: 5px;
+    padding: 5px;
+    border: 1px solid;
+    border-radius: 5px;"
         
       >
       <router-link style="padding:0 5px" :to="'/gang/'+item.id">{{ item.name }}</router-link>

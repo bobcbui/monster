@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div class="login" style="padding:10px">
     <h1>注册</h1>
     邮箱号：
    <span>注意只有邮箱号才能注册</span> <input type="text" class="W100" v-model="loginFrom.username" />

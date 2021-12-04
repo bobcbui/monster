@@ -120,6 +120,7 @@ public class ApplicationWebSocket {
             JSONObject msg = new JSONObject();
             msg.put("to",to);
             msg.put("from",member.getId());
+            msg.put("fromName",member.getUsername());
             msg.put("createTime",DateUtil.date());
             msg.put("text",messageText);
             msg.put("id",IdUtil.objectId());

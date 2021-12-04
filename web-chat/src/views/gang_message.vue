@@ -1,13 +1,13 @@
 <template>
   <div style="height: calc(100% - 22px);  margin: auto;width: 100%;max-width: 800px;">
-    <div style="height: calc(100% - 30px);width:100%; overflow-y: scroll;border:1px solid black;background: #ebd3a6;">
-      <p v-for="(item, index) in $store.state.message[gangId]" :key="index" style="    border: 1px solid black;
+    <div style="height: calc(100% - 50px);width:100%; overflow-y: scroll;border:1px solid black;background: #ebd3a6;">
+      <p v-for="(item, index) in $store.state.message[gangId]" :key="index" style="border: 1px solid black;background: #dfd4c9;
     margin: 5px;
     border-radius: 5px;">
-        <strong>{{ item.from }}</strong> <br> {{ item.text }}
+        <strong>{{ item.fromName }}</strong> <br> {{ item.text }}
       </p>
     </div>
-    <div style="height: 30px;">
+    <div style="height: 50px;">
       <input type="text" v-model="formData.text" style="    width: calc(100% - 35px);padding:2px;background: #e7e7e7;
     height: 100%;
     border: 1px solid black;
@@ -19,7 +19,7 @@
     border-top: 0px;
     border-left: 0px;
     border-bottom: 0px;
-    line-height: 30px;width: 35px;">发送</div>
+    line-height: 50px;width: 35px;">发送</div>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div class="login" style="padding:10px">
     <h1 align="center">登录</h1>
     <input type="text" class="W100" v-model="loginFrom.mail">
     <br> <br>

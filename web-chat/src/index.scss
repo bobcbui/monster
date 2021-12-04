@@ -5,7 +5,10 @@
     resize: none;
     outline: none;
     cursor: pointer;
-    
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 
@@ -20,3 +23,7 @@ p{
     word-break: break-all;
 }
 
+a{
+    text-decoration: none;
+    color: black;
+}

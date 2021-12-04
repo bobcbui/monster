@@ -87,5 +87,8 @@
     select id from member
     where username = #{username}
   </select>
+    <select id="selectDataTimeById" resultType="cn.hutool.core.date.DateTime">
+      select createTime from member where id = #{id}
+    </select>
 
 </mapper>

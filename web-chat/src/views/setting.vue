@@ -21,6 +21,7 @@
       <p>性别：{{ xbb }}</p>
       <p>简介：{{ introduction }}</p>
       <p>是否可以私信：{{ letter }}</p>
+	  <p>入驻时间: {{ time }} </p>
     </div>
   </div>
 </template>
@@ -40,11 +41,15 @@ export default {
       xbb: "",
       introduction: this.$store.state.login.introduction,
       letter: "",
+	  time: this.$store.state.login.createTime,
     };
   },
+
   computed: {},
   created() {},
   methods: {
+
+	
     toMessage(id) {
       this.$router.push({
         path: "/group/" + id,
@@ -56,6 +61,7 @@ export default {
   },
   mounted() {
     console.log(JSON.stringify(this.$store.state.login));
+	//alert(this.$store.state.login);
     if (this.$store.state.login.gender == null) {
       this.xbb = "未设置";
     } else {
@@ -69,7 +75,18 @@ export default {
       this.letter = "是";
     } else {
       this.letter = "否";
-    }
+    };
+	if( this.$store.state.login.createTime != null){
+		var time = new Date(this.$store.state.login.createTime);
+		var y = time.getFullYear();
+		var m = time.getMonth()+1;
+		var d = time.getDate();
+		var h = time.getHours();
+		var mm = time.getMinutes();
+		var s = time.getSeconds();
+		this.time =y+':'+m+':'+d+'  '+h+':'+mm+':'+s;
+	}
+
   },
 };
 </script>

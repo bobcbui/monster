@@ -1,6 +1,7 @@
 package net.ttcxy.chat.service;
 
 
+import cn.hutool.core.date.DateTime;
 import net.ttcxy.chat.dao.MemberDao;
 import net.ttcxy.chat.entity.CurrentMember;
 import net.ttcxy.chat.entity.model.Member;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -63,4 +65,17 @@ public class MemberService implements UserDetailsService {
         return memberDao.selectIdByUsernameMember(a);
     }
 
+    /**
+     * 通过id 查询注册日期
+     * 然后把data返回对应格式
+     * 再变成String类型
+     * @param id
+     * @return
+     */
+    public String selectDataTimeById(String id){
+        DateTime dateTime = memberDao.selectDataTimeById(id);
+        SimpleDateFormat f = new SimpleDateFormat( "yyyy 年 MM 月 dd 日 HH 点 mm 分 ss 秒");
+        String format = f.format(dateTime);
+        return format;
+    }
 }

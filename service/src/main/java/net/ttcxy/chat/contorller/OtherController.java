@@ -20,4 +20,9 @@ public class OtherController {
     public int selectIdByUsernameMember(String a){
         return memberService.selectIdByUsernameMember(a);
     }
+
+    @RequestMapping("/selectTime/{id}")
+    public String selectDataTimeById(String id){
+        return memberService.selectDataTimeById(id);
+    }
 }

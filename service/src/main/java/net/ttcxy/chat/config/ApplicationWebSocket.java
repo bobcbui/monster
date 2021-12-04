@@ -121,6 +121,7 @@ public class ApplicationWebSocket {
             msg.put("to",to);
             msg.put("from",member.getId());
             msg.put("fromName",member.getUsername());
+            msg.put("username",member.getUsernametwo());
             msg.put("createTime",DateUtil.date());
             msg.put("text",messageText);
             msg.put("id",IdUtil.objectId());

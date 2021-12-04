@@ -66,6 +66,7 @@ public class LoginController {
             String password = param.getPassword();
             member.setPassword(new BCryptPasswordEncoder().encode(password));
             member.setUsername(username);
+            member.setUsernametwo("未设置用户名");
             member.setId(IdUtil.objectId());
             member.setCreateTime(new DateTime());
             int count = memberService.insertMember(member);

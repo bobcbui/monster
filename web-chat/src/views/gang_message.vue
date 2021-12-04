@@ -4,7 +4,7 @@
       <p v-for="(item, index) in $store.state.message[gangId]" :key="index" style="border: 1px solid black;background: #dfd4c9;
     margin: 5px;
     border-radius: 5px;">
-        <strong>{{ item.fromName }}</strong> <br> {{ item.text }}
+        <strong>{{ item.username }}</strong> <br> {{ item.text }}
       </p>
     </div>
     <div style="height: 50px;">
@@ -34,7 +34,8 @@ export default {
         to: this.$route.params.gangId,
         text: "",
         type: "gang",
-      }
+      },
+	  usernametwo:this.$store.state.login.usernametwo,
     };
   },
   computed: {},
@@ -48,7 +49,10 @@ export default {
 	    this.formData.text = "";
     },
   },
-  mounted() {},
+  mounted() {
+	
+	  
+  },
 };
 </script>
 

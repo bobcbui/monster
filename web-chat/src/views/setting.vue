@@ -22,7 +22,11 @@
       <p>简介：{{ introduction }}</p>
       <p>是否可以私信：{{ letter }}</p>
 	  <p>入驻时间: {{ time }} </p>
-    <var-slider v-model="value" />
+    <var-input
+      placeholder="请输入文本"
+      :rules="[v => v.length > 6 || '文本长度必须大于6']"
+      v-model="value"
+    />
     </div>
   </div>
 </template>
@@ -33,7 +37,7 @@ export default {
   name: "home",
   data() {
     return {
-      value:10,
+      value:"",
       groupId: this.$route.params.groupId,
       formData: {
         to: this.$route.params.groupId,

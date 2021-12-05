@@ -22,11 +22,7 @@
       <p>简介：{{ introduction }}</p>
       <p>是否可以私信：{{ letter }}</p>
 	  <p>入驻时间: {{ time }} </p>
-    <var-input
-      placeholder="请输入文本"
-      :rules="[v => v.length > 6 || '文本长度必须大于6']"
-      v-model="value"
-    />
+    <button @click="hi()">按钮</button>
 <br>
 
     <var-collapse v-model="value" @change="changeHandle">
@@ -37,6 +33,7 @@
   </div>
 </template>
 <script>
+import { Dialog } from '@varlet/ui'
 import { ref } from 'vue'
 export default {
   name: "home",
@@ -57,22 +54,20 @@ export default {
 	  time: this.$store.state.login.createTime,
     };
   },
-
   computed: {},
   created() {},
   methods: {
-
-	
     toMessage(id) {
       this.$router.push({
         path: "/group/" + id,
       });
     },
     hi() {
-      alert(this.$store.state.login.gender);
+       Dialog("this.$store.state.login.gender")
     },
   },
   mounted() {
+   
     console.log(JSON.stringify(this.$store.state.login));
 	//alert(this.$store.state.login);
     if (this.$store.state.login.gender == null) {

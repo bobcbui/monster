@@ -15,7 +15,6 @@ window.onload = function () {
     }
     store.state.ws = webSocketInit();
     console.log('webSocketInit')
-    
 };
 
 function webSocketInit() {

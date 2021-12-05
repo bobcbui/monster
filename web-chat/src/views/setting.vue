@@ -22,14 +22,18 @@
       <p>简介：{{ introduction }}</p>
       <p>是否可以私信：{{ letter }}</p>
 	  <p>入驻时间: {{ time }} </p>
+    <var-slider v-model="value" />
     </div>
   </div>
 </template>
 <script>
+import { Input,Dialog,Slider    } from '@varlet/ui'
+import { ref } from 'vue'
 export default {
   name: "home",
   data() {
     return {
+      value:10,
       groupId: this.$route.params.groupId,
       formData: {
         to: this.$route.params.groupId,
@@ -60,6 +64,10 @@ export default {
     },
   },
   mounted() {
+    Dialog({
+  title: '兰亭序',
+  message: '兰亭临帖 行书如行云流水',
+})
     console.log(JSON.stringify(this.$store.state.login));
 	//alert(this.$store.state.login);
     if (this.$store.state.login.gender == null) {

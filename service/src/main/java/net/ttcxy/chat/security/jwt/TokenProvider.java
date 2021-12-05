@@ -19,6 +19,9 @@ import java.security.Key;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+/**
+ * token验证
+ */
 @Component
 public class TokenProvider implements InitializingBean {
 
@@ -74,10 +77,12 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parser()
+        Claims claims = (Claims)Jwts.parserBuilder()
                 .setSigningKey(key)
-                .parseClaimsJws(token)
+                .build()
+                .parse(token)
                 .getBody();
+
         JSONObject json = (JSONObject) JSON.toJSON(claims.get(USER_INFO_KEY));
         CurrentMember javaObject = JSON.toJavaObject(json, CurrentMember.class);
         return new UsernamePasswordAuthenticationToken(javaObject, token, null);
@@ -85,7 +90,7 @@ public class TokenProvider implements InitializingBean {
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(key).parseClaimsJws(authToken);
+            Jwts.parserBuilder().setSigningKey(key).build().parse(authToken);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT signature.");
@@ -97,5 +102,9 @@ public class TokenProvider implements InitializingBean {
             log.info("JWT token compact of handler are invalid.");
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+
     }
 }

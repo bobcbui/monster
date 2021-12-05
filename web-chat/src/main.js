@@ -4,10 +4,12 @@ import router from './router'
 import store from './store'
 import './index.scss'
 import './permission'
+import Varlet from '@varlet/ui'
+import '@varlet/ui/es/style.js'
 
 
 const app = createApp(App)
-app.use(router).use(store).mount('#app')
+app.use(router).use(store).use(Varlet).mount('#app')
 var ws = {};
 window.onload = function () {
     if (!'WebSocket' in window) {

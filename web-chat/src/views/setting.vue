@@ -27,17 +27,22 @@
       :rules="[v => v.length > 6 || '文本长度必须大于6']"
       v-model="value"
     />
+<br>
+
+    <var-collapse v-model="value" @change="changeHandle">
+      <var-collapse-item title="标题" name="1">内容</var-collapse-item>
+      <var-collapse-item title="标题" name="2">内容</var-collapse-item>
+    </var-collapse>
     </div>
   </div>
 </template>
 <script>
-import { Input,Dialog,Slider    } from '@varlet/ui'
 import { ref } from 'vue'
 export default {
   name: "home",
   data() {
     return {
-      value:"",
+      value:ref(['1']),
       groupId: this.$route.params.groupId,
       formData: {
         to: this.$route.params.groupId,
@@ -68,10 +73,6 @@ export default {
     },
   },
   mounted() {
-    Dialog({
-  title: '兰亭序',
-  message: '兰亭临帖 行书如行云流水',
-})
     console.log(JSON.stringify(this.$store.state.login));
 	//alert(this.$store.state.login);
     if (this.$store.state.login.gender == null) {

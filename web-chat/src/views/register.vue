@@ -1,12 +1,23 @@
 <template>
   <div class="login" style="padding:10px">
     <h1>注册</h1>
-    邮箱号：
-   <span>注意只有邮箱号才能注册</span> <input type="text" class="W100" v-model="loginFrom.username" />
-    <br />密码：
-    <input type="text" class="W100" v-model="loginFrom.password" />
-    <br />确认密码：
-    <input type="text" class="W100" v-model="password" />
+   <var-input
+     placeholder="请输入邮箱"
+     type = username
+     v-model="loginFrom.username"
+   />
+    <br />
+	<var-input
+	  placeholder="密码"
+	  type = username
+	  v-model="loginFrom.password"
+	/>
+    <br />
+	<var-input
+	  placeholder="确认密码"
+	  type = username
+	  v-model="this.password"
+	/>
     <br /><br />
     <button  class="W100" @click="register">注册</button> 
     <br /><br />
@@ -35,7 +46,7 @@ export default {
     register() {
 		
 	if(this.loginFrom.username == ""){
-		alert("用户名不能为空");
+		alert("邮箱不能为空");
 	}else{
 		var regEmail = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
 		if (regEmail.test(this.loginFrom.username)) {

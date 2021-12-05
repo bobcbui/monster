@@ -7,6 +7,9 @@ import './permission'
 import varlet from '@varlet/ui'
 import '@varlet/ui/es/style.js'
 
+import { Input } from '@varlet/ui'
+
+createApp().use(Input)
 
 const app = createApp(App)
 app.use(router).use(store).use(varlet).mount('#app')

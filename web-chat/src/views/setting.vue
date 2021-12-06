@@ -17,29 +17,20 @@
         border-bottom: 0px;
       "
     >
-      <p>用户名: {{ usernametwo }}</p>
+      <p>用户名: {{ usernametwo }} <button @click="hi()" style="float:right">修改信息</button></p>
       <p>性别：{{ xbb }}</p>
       <p>简介：{{ introduction }}</p>
       <p>是否可以私信：{{ letter }}</p>
-	  <p>入驻时间: {{ time }} </p>
-    <button @click="hi()">按钮</button>
-<br>
-
-    <var-collapse v-model="value" @change="changeHandle">
-      <var-collapse-item title="标题" name="1">内容</var-collapse-item>
-      <var-collapse-item title="标题" name="2">内容</var-collapse-item>
-    </var-collapse>
+      <p>入驻时间: {{ time }}</p>
+      
     </div>
   </div>
 </template>
 <script>
-import { Dialog } from '@varlet/ui'
-import { ref } from 'vue'
 export default {
   name: "home",
   data() {
     return {
-      value:ref(['1']),
       groupId: this.$route.params.groupId,
       formData: {
         to: this.$route.params.groupId,
@@ -51,7 +42,7 @@ export default {
       xbb: "",
       introduction: this.$store.state.login.introduction,
       letter: "",
-	  time: this.$store.state.login.createTime,
+      time: this.$store.state.login.createTime,
     };
   },
   computed: {},
@@ -63,13 +54,10 @@ export default {
       });
     },
     hi() {
-       Dialog("this.$store.state.login.gender")
+      alert("this.$store.state.login.gender");
     },
   },
   mounted() {
-   
-    console.log(JSON.stringify(this.$store.state.login));
-	//alert(this.$store.state.login);
     if (this.$store.state.login.gender == null) {
       this.xbb = "未设置";
     } else {
@@ -83,18 +71,17 @@ export default {
       this.letter = "是";
     } else {
       this.letter = "否";
-    };
-	if( this.$store.state.login.createTime != null){
-		var time = new Date(this.$store.state.login.createTime);
-		var y = time.getFullYear();
-		var m = time.getMonth()+1;
-		var d = time.getDate();
-		var h = time.getHours();
-		var mm = time.getMinutes();
-		var s = time.getSeconds();
-		this.time =y+':'+m+':'+d+'  '+h+':'+mm+':'+s;
-	}
-
+    }
+    if (this.$store.state.login.createTime != null) {
+      var time = new Date(this.$store.state.login.createTime);
+      var y = time.getFullYear();
+      var m = time.getMonth() + 1;
+      var d = time.getDate();
+      var h = time.getHours();
+      var mm = time.getMinutes();
+      var s = time.getSeconds();
+      this.time = y + ":" + m + ":" + d + "  " + h + ":" + mm + ":" + s;
+    }
   },
 };
 </script>

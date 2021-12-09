@@ -1,25 +1,64 @@
 <template>
-  <div style="height: calc(100% - 22px);  margin: auto;width: 100%;max-width: 800px;">
-    <div style="height: calc(100% - 50px);width:100%; overflow-y: scroll;border:1px solid black;background: #ebd3a6;">
-      <p v-for="(item, index) in $store.state.message[gangId]" :key="index" style="border: 1px solid black;background: #dfd4c9;
-    margin: 5px;
-    border-radius: 5px;">
-        <strong>{{ item.username }}</strong> <br> {{ item.text }}
+  <div
+    style="
+      height: calc(100% - 22px);
+      margin: auto;
+      width: 100%;
+      max-width: 800px;
+    "
+  >
+    <div
+      style="
+        height: calc(100% - 50px);
+        width: 100%;
+        overflow-y: scroll;
+        border: 1px solid black;
+        background: #ebd3a6;
+      "
+    >
+      <p
+        v-for="(item, index) in $store.state.message[gangId]"
+        :key="index"
+        style="
+          border: 1px solid black;
+          background: #dfd4c9;
+          margin: 5px;
+          border-radius: 5px;
+        "
+      >
+        <strong>{{ item.fromName }}</strong> <br />
+        {{ item.text }}
       </p>
     </div>
-    <div style="height: 50px;">
-      <input type="text" v-model="formData.text" style="    width: calc(100% - 35px);padding:2px;background: #e7e7e7;
-    height: 100%;
-    border: 1px solid black;
-    border-bottom: 0px;
-    border-top: 0"/>
-      <div @click="send()" style="float: right;
-    height: 100%;
-    border: 1px solid black;
-    border-top: 0px;
-    border-left: 0px;
-    border-bottom: 0px;
-    line-height: 50px;width: 35px;">发送</div>
+    <div style="height: 50px">
+      <input
+        type="text"
+        v-model="formData.text"
+        style="
+          width: calc(100% - 35px);
+          padding: 2px;
+          background: #e7e7e7;
+          height: 100%;
+          border: 1px solid black;
+          border-bottom: 0px;
+          border-top: 0;
+        "
+      />
+      <div
+        @click="send()"
+        style="
+          float: right;
+          height: 100%;
+          border: 1px solid black;
+          border-top: 0px;
+          border-left: 0px;
+          border-bottom: 0px;
+          line-height: 50px;
+          width: 35px;
+        "
+      >
+        发送
+      </div>
     </div>
   </div>
 </template>
@@ -35,31 +74,27 @@ export default {
         text: "",
         type: "gang",
       },
-	  usernametwo:this.$store.state.login.usernametwo,
+      usernametwo: this.$store.state.login.usernametwo,
     };
   },
   computed: {},
   created() {},
   methods: {
     send() {
-      if(this.formData.text == ""){
+      if (this.formData.text == "") {
         return;
       }
       this.$store.state.ws.send(JSON.stringify(this.formData));
-	    this.formData.text = "";
+      this.formData.text = "";
     },
   },
-  mounted() {
-	
-	  
-  },
+  mounted() {},
 };
 </script>
 
 <style scoped>
-
-.srk{
-  border: 0px ;
+.srk {
+  border: 0px;
   height: 100%;
   width: 100%;
 }

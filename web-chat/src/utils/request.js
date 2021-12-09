@@ -32,6 +32,7 @@ service.interceptors.response.use(
         }
     },
     error => {
+        alert(JSON.stringify(error))
         if(error.response.status === 401){
             alert("登入失败，请重新登入")
 			location.assign("/login");

@@ -53,21 +53,22 @@ public class GangService {
      * 添加成员到当前gang
      */
     public int insertGangMember(String gangId, String memberId) {
-        GangMember gangMember = new GangMember();
-        gangMember.setId(IdUtil.objectId());
-        gangMember.setGangId(gangId);
-        gangMember.setMemberId(memberId);
-        gangMember.setCreateTime(DateUtil.date());
-
-        Set<String> strings = ApplicationWebSocket.gangMember.get(gangId);
-        if (strings == null){
-            strings = new HashSet<>();
-            strings.add(memberId);
-            ApplicationWebSocket.gangMember.put(gangId,strings);
-        }else{
-            strings.add(memberId);
-        }
-        return groupMemberMapper.insert(gangMember);
+//        GangMember gangMember = new GangMember();
+//        gangMember.setId(IdUtil.objectId());
+//        gangMember.setGangId(gangId);
+//        gangMember.setMemberId(memberId);
+//        gangMember.setCreateTime(DateUtil.date());
+//
+//        Set<String> strings = ApplicationWebSocket.gangMember.get(gangId);
+//        if (strings == null){
+//            strings = new HashSet<>();
+//            strings.add(memberId);
+//            ApplicationWebSocket.gangMember.put(gangId,strings);
+//        }else{
+//            strings.add(memberId);
+//        }
+//        return groupMemberMapper.insert(gangMember);
+        return 0;
     }
 
 

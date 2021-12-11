@@ -1,28 +1,19 @@
-*{
-    padding: 0;
+html,body{
     margin: 0;
-    box-sizing: border-box;
-    resize: none;
-    outline: none;
-    cursor: pointer;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-}
-
-
-body,html,#app{
+    padding: 0;
     height: 100%;
-    -webkit-tap-highlight-color:transparent;
-    background-color: #ebd3a6;
 }
-
-p{
-    padding: 5px;
-    word-break: break-all;
+*{
+    box-sizing: border-box;
 }
-
+#app{
+    margin: auto;
+    height: 100%;
+    width: 100%;
+    max-width: 1000px;
+    max-height: 800px;           
+    padding:70px
+}
 a{
     text-decoration: none;
     color: black;

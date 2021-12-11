@@ -9,18 +9,21 @@ const routes = [
             {
                 path: '/',
                 name: 'home',
-                component: () => import('../views/home.vue')
+                component: () => import('../views/home.vue'),
+                children:[
+                    {
+                        path: '/gang/:gangId',
+                        name: 'gang_message',
+                        component: () => import('../views/gang_message.vue')
+                    }, {
+                        path: '/plaza',
+                        name: 'plaza',
+                        component: () => import('../views/plaza.vue')
+                    },
+                ]
             },
-            {
-                path: '/gang/:gangId',
-                name: 'gang_message',
-                component: () => import('../views/gang_message.vue')
-            },
-            {
-                path: '/plaza',
-                name: 'plaza',
-                component: () => import('../views/plaza.vue')
-            },
+            
+           
             {
                 path: '/setting',
                 name: 'setting',
@@ -31,6 +34,10 @@ const routes = [
         path: '/login',
         name: 'login',
         component: () => import('../views/login.vue'),
+    },{
+        path: '/demo',
+        name: 'demo',
+        component: () => import('../views/demo.vue'),
     },{
         path: '/register',
         name: 'register',

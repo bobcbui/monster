@@ -2,27 +2,27 @@
   <div id="body">
     <div id="message">
       <div id="message-head">
-          <!-- <div id="message-tx">头像</div> -->
+          <div id="message-tx">头像</div>
           <div id="message-nc">昵称</div>
           <button class="head-button float-right">编辑</button>
       </div>
       <div id="message-body">
-          <div class="b1-p1-mb-1 br-5" v-for="(item,index) in messageList" :key="index" @click="toGang(item[item.length-1].gangId)">
-              <strong>{{item[item.length-1].gangName}}</strong>
-              <span style="float:right">{{item[item.length-1].createTime}}</span>
+          <div class="b1-p1-mb-1 br-5" v-for="(item,index) in messageList" :key="index">
+              <strong>asdf</strong>
+              <span style="float:right">时间</span>
               <br>
-              <span style="color: #8d8d8d;">{{item[item.length-1].fromName}}：{{item[item.length-1].text}}</span>
+              <span>一点：asdfasdfasdf</span>
           </div>
+          
       </div>
     </div>
     <div id="r-body">
       <div id="r-body-head">
+          <button class="head-button">群列表</button>
           <button class="head-button float-right">退出</button>
           <button class="head-button float-right">设置</button>
       </div>
-      <div id="r-body-body">
-        <router-view />
-      </div>
+      <div id="r-body-body">应用Body</div>
     </div>
   </div>
 </template>
@@ -32,22 +32,33 @@ export default {
   name: "demo",
   data() {
     return {
-        messageList:this.$store.state.message
+        messageList:[{},{},{},{}]
     };
   },
   computed: {},
   created() {},
-  methods: {
-    toGang(id){
-      window.location.href = '/gang/'+id
-    }
-  },
+  methods: {},
   mounted() {},
 };
 </script>
 
 <style scoped>
-
+html,body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+*{
+    box-sizing: border-box;
+}
+#app{
+    margin: auto;
+    height: 100%;
+    width: 100%;
+    max-width: 1000px;
+    max-height: 800px;           
+    padding:70px
+}
 #body{
     border: 1px solid black;
     height: 100%;
@@ -60,7 +71,6 @@ export default {
 }
 #message-tx{
     padding: 3px;
-    border-radius: 5px;
     border: 1px solid red;
     height: 40px;
     width: 40px;
@@ -70,7 +80,6 @@ export default {
     padding-left: 5px;
     float: left;
     font-weight:bold;
-    line-height: 40px;
 }
 #r-body{
     height: 100%;
@@ -91,6 +100,7 @@ export default {
 #r-body-body{
     height: calc(100% - 50px);
     background-color: blanchedalmond;
+    padding: 4px;
 }
 
 

@@ -1,66 +1,21 @@
 <template>
-  <div
-    style="
-      height: calc(100% - 22px);
-      margin: auto;
-      width: 100%;
-      max-width: 800px;
-    "
-  >
-    <div
-      style="
-        height: calc(100% - 50px);
-        width: 100%;
-        overflow-y: scroll;
-        border: 1px solid black;
-        background: #ebd3a6;
-      "
-    >
-      <p
+
+    <div style="height: calc(100% - 200px);overflow-y: scroll;">
+      <div
+        class="message-item"
         v-for="(item, index) in $store.state.message[gangId]"
         :key="index"
-        style="
-          border: 1px solid black;
-          background: #dfd4c9;
-          margin: 5px;
-          border-radius: 5px;
-        "
+        style=""
       >
         <strong>{{ item.fromName }}</strong> <br />
         {{ item.text }}
-      </p>
-    </div>
-    <div style="height: 50px">
-      <input
-        type="text"
-        v-model="formData.text"
-        style="
-          width: calc(100% - 35px);
-          padding: 2px;
-          background: #e7e7e7;
-          height: 100%;
-          border: 1px solid black;
-          border-bottom: 0px;
-          border-top: 0;
-        "
-      />
-      <div
-        @click="send()"
-        style="
-          float: right;
-          height: 100%;
-          border: 1px solid black;
-          border-top: 0px;
-          border-left: 0px;
-          border-bottom: 0px;
-          line-height: 50px;
-          width: 35px;
-        "
-      >
-        发送
       </div>
     </div>
-  </div>
+    <div style="height:200px;padding:5px;background: #d6d0c1;    border-top: 1px solid black;">
+      <textarea v-model="formData.text" class="message-input"></textarea>
+      <button @click="send()" class="send-but">发送</button>
+    </div>
+
 </template>
 
 <script>
@@ -77,8 +32,16 @@ export default {
       usernametwo: this.$store.state.login.usernametwo,
     };
   },
-  computed: {},
-  created() {},
+  computed: {
+    
+  },
+  created() {
+
+  },
+  activated() {
+
+  },
+
   methods: {
     send() {
       if (this.formData.text == "") {
@@ -88,14 +51,26 @@ export default {
       this.formData.text = "";
     },
   },
-  mounted() {},
+  mounted() {
+    
+  },
 };
 </script>
 
 <style scoped>
-.srk {
-  border: 0px;
+.message-item {
+  border: 1px solid black;
+  background: #dfd4c9;
+  border-radius: 5px;
+  margin: 4px;
+}
+.message-input {
+  width: calc(100% - 55px);
   height: 100%;
-  width: 100%;
+}
+.send-but{
+  float: right;
+  height: 100%;
+  width: 50px;
 }
 </style>

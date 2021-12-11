@@ -31,9 +31,9 @@ public class ApplicationWebSocket {
     // SessionId对应的用户
     private static final Map<String, CurrentMember> sessionMember = new HashMap<>();
     // 这个群有哪些用户
-    public static final Map<String, Set<String>> gangMember = new HashMap<>();
+    //public static final Map<String, Set<String>> gangMember = new HashMap<>();
     // 这个群有哪些消息 最近 200 条消息
-    private static final Map<String, List<JSONObject>> gangMessage = new HashMap<>();
+    public static final Map<String, List<JSONObject>> gangMessage = new HashMap<>();
     // gangId
     public static final Map<String, Gang> gangMap = new HashMap<>();
 
@@ -46,7 +46,6 @@ public class ApplicationWebSocket {
         this.session = session;
 
         TokenProvider tokenProvider = SpringUtil.getBean(TokenProvider.class);
-        GangService gangService = SpringUtil.getBean(GangService.class);
 
         String jwt = (String) endpointConfig.getUserProperties().get("jwt");
         Authentication authentication = tokenProvider.getAuthentication(jwt);
@@ -66,25 +65,10 @@ public class ApplicationWebSocket {
             applicationWebSockets.add(this);
         }
 
-        // 将当前用户添加到所在的群
-        List<GangMember> memberGangIdList = gangService.selectMemberGang(memberId);
-        for (GangMember gm : memberGangIdList) {
-            String gangId = gm.getGangId();
-            Set<String> strings = gangMember.get(gangId);
-            if (strings == null){
-                strings = new HashSet<>();
-                strings.add(memberId);
-                gangMember.put(gangId, strings);
-            }else{
-                strings.add(memberId);
-            }
-
-            // 发送这个群的消息给他
-            List<JSONObject> messages = gangMessage.get(gangId);
-            if (messages != null){
-                sendMessage(JSONObject.toJSONString(messages));
-            }
+        for (Map.Entry<String, List<JSONObject>> stringListEntry : gangMessage.entrySet()) {
+            sendMessage(JSONObject.toJSONString(stringListEntry.getValue()));
         }
+
 
         System.out.printf("成功建立连接~ 当前在线人数为:%s%n", memberSocketList.size());
         System.out.println(this);
@@ -133,8 +117,6 @@ public class ApplicationWebSocket {
                 lsMessage.add(msg);
             }
 
-            Set<String> gangMemberList = gangMember.get(to);
-
             List<JSONObject> messages = gangMessage.get(to);
             if (messages == null){
                 messages = new ArrayList<>();
@@ -147,9 +129,8 @@ public class ApplicationWebSocket {
                 messages.remove(0);
             }
 
-            for (String memberId : gangMemberList) {
-                Set<ApplicationWebSocket> applicationWebSockets = memberSocketList.get(memberId);
-                for (ApplicationWebSocket applicationWebSocket : applicationWebSockets) {
+            for (Map.Entry<String, Set<ApplicationWebSocket>> stringSetEntry : memberSocketList.entrySet()) {
+                for (ApplicationWebSocket applicationWebSocket : stringSetEntry.getValue()) {
                     ArrayList<JSONObject> arrayList = new ArrayList<>();
                     arrayList.add(msg);
                     applicationWebSocket.sendMessage(JSONObject.toJSONString(arrayList));

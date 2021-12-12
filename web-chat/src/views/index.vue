@@ -42,7 +42,8 @@ export default {
             }else{
                 this.$store.state.message[to].push(item)
             }
-            this.$store.state.newMessage[to] = item
+            this.$store.state.gang[to] = item
+            localStorage.setItem("gang",JSON.stringify(this.$store.state.gang))
         })
     },
     websocketsend(Data) {

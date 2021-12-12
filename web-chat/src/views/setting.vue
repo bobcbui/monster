@@ -13,7 +13,6 @@
         width: 100%;
         overflow-y: scroll;
         padding: 5px;
-        border: 1px solid black;
         border-bottom: 0px;
       "
     >
@@ -22,6 +21,8 @@
       <p>简介：{{ introduction }}</p>
       <p>是否可以私信：{{ letter }}</p>
       <p>入驻时间: {{ time }}</p>
+
+      <div><button @click="tc">退出</button></div>
       
     </div>
   </div>
@@ -52,6 +53,9 @@ export default {
       this.$router.push({
         path: "/group/" + id,
       });
+    },
+     tc(){
+      this.$router.push('/login')
     },
     hi() {
       alert("this.$store.state.login.gender");

@@ -68,7 +68,10 @@ export default {
       });
     },
   },
-  mounted() {},
+  mounted() {
+    localStorage.removeItem("token", "");
+    localStorage.removeItem("member", "");
+  },
 };
 </script>
 

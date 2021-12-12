@@ -1,33 +1,21 @@
 <template>
-  <div
-    style="
-      height: calc(100% - 22px);
-      margin: auto;
-      width: 100%;
-      max-width: 800px;
-    "
-  >
+  <div style="overflow-y: scroll; height: 100%" id="plaza">
     <div
-      style="
-        height: calc(100%);
-        width: 100%;
-        overflow-y: scroll;
-        border: 1px solid black;
-        border-bottom: 0px;
-      "
+      class="b1-p1-mb-1 br-5 m-t-l-r-5"
+      v-for="(item, index) in messageList"
+      :key="index"
+      @click="toGang(item[item.length - 1].gangId)" style="height: 70px;overflow: hidden;" :class="{'active':gangId == item[item.length-1].gangId}"
     >
-      <p
-        v-for="(item, index) in gangList"
-        :key="index"
-        style="margin: 5px;
-    padding: 5px;
-    border: 1px solid;
-    border-radius: 5px;"
-        
+      <strong>{{ item[item.length - 1].gangName }}</strong>
+      <span style="float: right">{{
+        timeFromNow(item[item.length - 1].createTime)
+      }}</span>
+      <br />
+      <span style="color: #8d8d8d"
+        >{{ item[item.length - 1].fromName }}：{{
+          item[item.length - 1].text
+        }}</span
       >
-      <router-link style="padding:0 5px" :to="'/gang/'+item.id">{{ item.name }}</router-link>
-         <button style="float:right" @click="add(item.id)">添加</button>
-      </p>
     </div>
   </div>
 </template>
@@ -38,32 +26,20 @@ export default {
   name: "plaza",
   data() {
     return {
-      gangList: [],
+      messageList: this.$store.state.message,
     };
   },
   computed: {},
   created() {},
   methods: {
-    loadGangList() {
-      request({
-        url: "/plaza/gang/list",
-        method: "get",
-      }).then((response) => {
-        this.gangList = response.data;
-      });
+    toGang(id) {
+      this.$router.push('/gang/'+id)
     },
-    add(id,type) {
-      request({
-        url: "/plaza/gang/"+id,
-        method: "post"
-      }).then((response) => {
-        alert(response.data)
-      });
+    timeFromNow(oldTime) {
+      return oldTime;
     },
   },
-  mounted() {
-    this.loadGangList();
-  }
+  mounted() {},
 };
 </script>
 
@@ -79,5 +55,8 @@ export default {
 }
 .message {
   padding-bottom: 10px;
+}
+.active{
+  background: rgb(228, 228, 228);
 }
 </style>

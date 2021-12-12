@@ -16,19 +16,19 @@ const routes = [
                         name: 'gang_message',
                         component: () => import('../views/gang_message.vue')
                     }, {
-                        path: '/plaza',
+                        path: '/',
                         name: 'plaza',
                         component: () => import('../views/plaza.vue')
+                    },{
+                        path: '/setting',
+                        name: 'setting',
+                        component: () => import('../views/setting.vue')
                     },
                 ]
             },
             
            
-            {
-                path: '/setting',
-                name: 'setting',
-                component: () => import('../views/setting.vue')
-            },
+            
         ]
     },{
         path: '/login',

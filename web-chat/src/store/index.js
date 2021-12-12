@@ -11,8 +11,8 @@ export default createStore({
         message: {
             
         },
-        // 最新的一条消息
-        newMessage:{
+        // 群
+        gang:{
            
         },
         ws:{

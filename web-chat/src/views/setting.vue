@@ -16,14 +16,16 @@
         border-bottom: 0px;
       "
     >
-      <p>用户名: {{ usernametwo }} <button @click="hi()" style="float:right">修改信息</button></p>
-      <p>性别：{{ xbb }}</p>
-      <p>简介：{{ introduction }}</p>
-      <p>是否可以私信：{{ letter }}</p>
-      <p>入驻时间: {{ time }}</p>
-
-      <div><button @click="tc">退出</button></div>
+      <p style="margin: 0;">名称: <input :value="usernametwo" style="width: 100%;" :disabled="disabled"></p>
+      <p style="margin: 0;">性别: <input :value="xbb" style="width: 100%;"  :disabled="disabled"></p>
+      <p style="margin: 0;">私信: <input :value="letter" style="width: 100%;"  :disabled="disabled"></p>
+      <p style="margin: 0;">简介: <textarea :value="introduction" style="width: 100%;"  :disabled="disabled"></textarea></p>
       
+      <p style="margin: 0;">
+        <button v-if="disabled" @click="xgai()">修改信息</button>
+        <button v-if="!disabled" @click="baocun()">保存</button>
+        <button @click="tc" style="float:right">退出</button>
+      </p>
     </div>
   </div>
 </template>
@@ -32,6 +34,7 @@ export default {
   name: "home",
   data() {
     return {
+      disabled:true,
       groupId: this.$route.params.groupId,
       formData: {
         to: this.$route.params.groupId,
@@ -49,6 +52,12 @@ export default {
   computed: {},
   created() {},
   methods: {
+    xgai(){
+      this.disabled = false
+    },
+    baocun(){
+      this.disabled = true
+    },
     toMessage(id) {
       this.$router.push({
         path: "/group/" + id,
@@ -105,5 +114,8 @@ export default {
 }
 p {
   padding: 10px;
+}
+.des{
+  display:;
 }
 </style>

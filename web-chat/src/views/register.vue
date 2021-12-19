@@ -3,7 +3,7 @@
     <h1>注册</h1>
     <input
       class="W100"
-      placeholder="请输入邮箱"
+      placeholder="用户名（任意字符）"
       v-model="loginFrom.username"
     />
     <br /><br />
@@ -47,27 +47,21 @@ export default {
       if (this.loginFrom.username == "") {
         alert("邮箱不能为空");
       } else {
-        var regEmail =
-          /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
-        if (regEmail.test(this.loginFrom.username)) {
-          if (this.password == "" || this.loginFrom.password == "") {
-            alert("密码或确认密码不能为空");
-          } else {
-            if (this.password == this.loginFrom.password) {
-              request({
-                url: "/api/register",
-                method: "post",
-                data: this.loginFrom,
-              }).then((response) => {
-                location.href = "/login";
-                alert("注册成功");
-              });
-            } else {
-              alert("两次密码不一致");
-            }
-          }
+        if (this.password == "" || this.loginFrom.password == "") {
+          alert("密码或确认密码不能为空");
         } else {
-          alert("用户名格式不对");
+          if (this.password == this.loginFrom.password) {
+            request({
+              url: "/api/register",
+              method: "post",
+              data: this.loginFrom,
+            }).then((response) => {
+              location.href = "/login";
+              alert("注册成功");
+            });
+          } else {
+            alert("两次密码不一致");
+          }
         }
       }
     },

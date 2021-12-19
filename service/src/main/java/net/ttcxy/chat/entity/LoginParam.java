@@ -2,18 +2,18 @@ package net.ttcxy.chat.entity;
 
 public class LoginParam {
 
-    private String mail;
+    private String username;
 
     private String password;
 
     private Boolean rememberMe;
 
-    public String getMail() {
-        return mail;
+    public String getUsername() {
+        return username;
     }
 
-    public void setMail(String mail) {
-        this.mail = mail;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

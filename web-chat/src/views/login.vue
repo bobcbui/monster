@@ -3,8 +3,8 @@
     <h1 align="center">登录</h1>
     <input
       class="W100"
-      placeholder="请输入邮箱"
-      v-model="loginFrom.mail"
+      placeholder="用户名（任意字符）"
+      v-model="loginFrom.username"
     />
     <br /><br />
 
@@ -32,16 +32,14 @@ export default {
   data() {
     return {
       loginFrom: {
-        mail: "",
-        password: "",
-        id: "",
-        ymail: "",
+        username: "",
+        password: ""
       },
     };
   },
   methods: {
     login() {
-      if (this.loginFrom.mail == "") {
+      if (this.loginFrom.username == "") {
         alert("未输入邮箱");
       } else {
         if (this.loginFrom.password == "") {

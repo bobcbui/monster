@@ -115,7 +115,4 @@ export default {
 p {
   padding: 10px;
 }
-.des{
-  display:;
-}
 </style>

@@ -8,8 +8,6 @@
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.41/vue.global.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue-router/4.1.5/vue-router.global.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vuex/4.1.0/vuex.global.js"></script>
-	<script src=""></script>
-	
 	<style>
 		body {
 			margin: 0;
@@ -71,6 +69,9 @@
 			background: #efecec;
 		}
 
+		a:link { color: rgb(0, 81, 202); text-decoration: none; }/* 未访问的链接 */
+    	a:visited { color: rgb(0, 81, 202); text-decoration: line-through; } /* 已访问的链接 */
+
 		@media(max-width:768px) {
 			aside {
 				width: 100%;
@@ -96,10 +97,11 @@
 	</div>
 </body>
 <script type="module">
+	import view_home from './view/home.js'
+	import view_add from './view/add.js'
 	import view_index from './view/index.js'
 	import view_non from './view/non.js'
 	import view_message from './view/message.js'
-
 	import axios from "./lib/axios.min.js"
 
 
@@ -108,11 +110,18 @@
 			path: '/', component: view_index,
 			children: [
 				{
-					path: "/", component: view_non
+					path: "/", name: "non" , component: view_non
 				},
 				{
-					path: "/message", component: view_message
+					path: "/:username/message", name: "message", component: view_message
+				},
+				{
+					path: "/home", name: "home", component: view_home
+				},
+				{
+					path: "/add", name: "add", component: view_add
 				}
+				
 			]
 		},
 	]
@@ -124,15 +133,11 @@
 
 	const app = Vue.createApp({})
 
-
-
 	let store = Vuex.createStore({
 		state: {
 			indexItem: "main"
 		}
 	})
-
-	
 
 	router.afterEach((to) => {
 		try {
@@ -142,14 +147,12 @@
 				} else {
 					store.state.indexItem = "main"
 				}
-
 			}
 			console.log(store.state)
 		} catch (e) {
 			console.log(e)
 		}
 	})
-
 	app.use(router)
 	app.use(store)
 	app.mount('#app')

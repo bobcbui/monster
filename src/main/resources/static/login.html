@@ -36,11 +36,13 @@
 	<div id="app">
 		<div style="margin: auto;width:200px">
 			<p>密码：</p>
-			<input type="text" v-model="loginForm.username" placeholder="用户名">
+			<input type="text" style="width: 100px;"  v-model="loginForm.username" placeholder="用户名">
 			<p>用户名：</p>
-			<input type="password" v-model="loginForm.password" placeholder="密码" />
+			<input type="password" style="width: 100px;"  v-model="loginForm.password" placeholder="密码" />
 			<br><br>
-			<button @click="login()">登录</button>
+			<button style="width: 100px;"  @click="login()">登录</button>
+			<br>
+			<a href="/register.html"></a>
 		</div>
 	</div>
 </body>
@@ -64,13 +66,13 @@
 					data: this.loginForm,
 				}).then(response => {
 					localStorage.setItem("token", response.data)
+					location.href = '/index.html'
 				}).catch(function (error) {
 					console.log(error);
 				});
 			}
 		}
 	}
-
 	Vue.createApp(app).mount('#app')
 </script>
 

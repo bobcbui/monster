@@ -1,13 +1,11 @@
 import axios from '../lib/axios.min.js'
 
-
 var service = axios.create();
 
 	//请求前拦截
 	service.interceptors.request.use(
 		config => {
 			config.headers.Token = localStorage.getItem("token")
-			alert("localStorage"+localStorage.getItem("token"))
 			return config;
 		},
 		error => {

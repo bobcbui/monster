@@ -1,7 +1,8 @@
 let template = // html
 `
-<div>
-non
+<div style='padding:10px'>
+<input>&nbsp;<button>添加</button>
+
 </div>
 `
 export default {

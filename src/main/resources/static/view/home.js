@@ -1,7 +1,7 @@
 let template = // html
 `
 <div>
-non
+home
 </div>
 `
 export default {

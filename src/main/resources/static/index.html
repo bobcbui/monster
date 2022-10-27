@@ -8,7 +8,8 @@
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.41/vue.global.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue-router/4.1.5/vue-router.global.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vuex/4.1.0/vuex.global.js"></script>
-	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src=""></script>
+	
 	<style>
 		body {
 			margin: 0;
@@ -99,6 +100,8 @@
 	import view_non from './view/non.js'
 	import view_message from './view/message.js'
 
+	import axios from "./lib/axios.min.js"
+
 
 	const routes = [
 		{
@@ -129,6 +132,7 @@
 		}
 	})
 
+	
 
 	router.afterEach((to) => {
 		try {

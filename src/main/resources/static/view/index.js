@@ -29,6 +29,8 @@ let template = // html
         </main>
     </section>
 `
+
+import request from '../lib/request.js'
 export default {
     template: template,
     data: function () {
@@ -44,7 +46,7 @@ export default {
             url: "/api/other",
             method: "GET",
           }).then((response) => {
-            alert(JSON.stringify(response))
+            
           });
     }
 }

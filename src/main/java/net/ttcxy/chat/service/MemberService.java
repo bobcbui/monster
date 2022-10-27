@@ -4,7 +4,6 @@ package net.ttcxy.chat.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.hutool.crypto.digest.BCrypt;
 import net.ttcxy.chat.entity.model.CtsMember;
 import net.ttcxy.chat.repository.CtsMemberRepository;
 

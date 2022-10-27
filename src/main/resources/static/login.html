@@ -71,20 +71,6 @@
 		}
 	}
 
-	
-const request = axios.create({
-    baseURL: import.meta.env.VITE_BASE_API,
-    timeout: 30000
-});
-
-axios.interceptors.request.use(function (config) {
-    config.headers.Token = localStorage.getItem("token")
-    alert("")
-    return config;
-}, function (error) {
-    return Promise.reject(error);
-});
-
 	Vue.createApp(app).mount('#app')
 </script>
 

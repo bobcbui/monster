@@ -1,6 +1,5 @@
 package net.ttcxy.chat.code;
 
-import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;

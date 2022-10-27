@@ -14,16 +14,16 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.ttcxy.chat.code.api.ApiException;
-import net.ttcxy.chat.entity.model.CtsMember;
 import org.springframework.util.AntPathMatcher;
+
+import net.ttcxy.chat.entity.model.CtsMember;
 
 @WebFilter(urlPatterns = "/*", filterName = "allFilter")
 public class JwtFilter implements Filter {
 
     private final static AntPathMatcher matcher = new AntPathMatcher();  
 
-    private final static Map<String, CtsMember> memberMap = new HashMap<>();
+    public final static Map<String, CtsMember> memberMap = new HashMap<>();
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -43,7 +43,7 @@ public class JwtFilter implements Filter {
         }
 
         // 是否不需要登陆
-        String[] openUrls = new String[]{"/api/authenticate","/api/register"};
+        String[] openUrls = new String[]{"/api/authenticate","/api/register","","/"};
         
         for (String url : openUrls) {
             if(matcher.match(url,requestURI)){
@@ -56,7 +56,7 @@ public class JwtFilter implements Filter {
         CtsMember member = memberMap.get(token);
 
         if(member == null){
-            response.sendRedirect("/login.html");
+            response.setStatus(401);
             return;
         }
         request.setAttribute("member",member);

@@ -8,7 +8,7 @@ import net.ttcxy.chat.entity.model.CtsMember;
 
 
 @Repository
-public interface CtsMemberRepository extends CrudRepository<CtsMember, Integer> {
+public interface CtsMemberRepository extends CrudRepository<CtsMember, Long> {
 
     CtsMember findByUsername(String username);
 

@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import net.ttcxy.chat.code.api.ApiException;
 import net.ttcxy.chat.entity.model.CtsMember;
 import net.ttcxy.chat.entity.param.RegisterParam;
@@ -25,16 +27,24 @@ public class LoginController {
     public String authorize(@RequestBody JSONObject loginParam) {
         String username = loginParam.getString("username");
         String password = loginParam.getString("password");
+        password = BCrypt.hashpw(password);
         CtsMember member = memberService.findByUsername(username);
-        if(member.getPassword().equals(password)){
+        if(BCrypt.checkpw(password, member.getPassword())){
             return IdUtil.fastSimpleUUID();
         }
         throw new ApiException("密码或用户名不正确！");
     }
 
     @PostMapping("register")
-    public String register(@RequestBody RegisterParam param){
-        return "注册成功";
+    public CtsMember register(@RequestBody JSONObject loginParam){
+        String username = loginParam.getString("username");
+        String password = loginParam.getString("password");
+        password = BCrypt.hashpw(password);
+        CtsMember member = new CtsMember();
+        member.setUsername(username);
+        member.setCreateTime(DateUtil.date());
+        member.setPassword(password);
+        return memberService.save(member);
     }
 
 }

@@ -1,0 +1,28 @@
+server:
+  port: 9090
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:~/chat
+    username: as
+    password: as
+  jpa:
+    database: h2
+    hibernate:
+      ddl-auto: 'update'
+    show-sql: true
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+      settings:
+        web-admin-password: as
+  main:
+    allow-circular-references: true
+  jackson:
+    default-property-inclusion: non-null
+    date-format: yyyy.MM.dd
+    time-zone: GMT+8
+    locale: zh_CN
+  mvc:
+    throwExceptionIfNoHandlerFound: true

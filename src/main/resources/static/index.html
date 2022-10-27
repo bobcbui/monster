@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.41/vue.global.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/vue-router/4.1.5/vue-router.global.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/vuex/4.1.0/vuex.global.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<style>
+		body {
+			margin: 0;
+		}
+
+		html,
+		body,
+		#app {
+			height: 100%;
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		main {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			z-index: 1;
+			height: 100%;
+			width: calc(100% - 300px) !important;
+			border: 1px solid #24649f;
+			background-color: aliceblue;
+			overflow-y: auto;
+		}
+
+		section {
+			height: 100%;
+			position: relative;
+		}
+
+		aside {
+			z-index: 2;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 300px;
+			border: 1px solid #24649f;
+			height: 100%;
+			border-right: 0;
+		}
+
+		ul {
+			padding: 0;
+			margin: 0;
+		}
+
+		li {
+			list-style-type: none;
+			padding-left: 10px;
+			line-height: 42px;
+			white-space: nowrap;
+		}
+
+		li:hover {
+			background: #efecec;
+		}
+
+		@media(max-width:768px) {
+			aside {
+				width: 100%;
+				background: #f4f4f5;
+				border-right: 1px solid #24649f;
+
+			}
+
+			main {
+				width: 100% !important;
+			}
+
+			.z-index-top {
+				z-index: 3;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app">
+		<router-view></router-view>
+	</div>
+</body>
+<script type="module">
+	import view_index from './view/index.js'
+	import view_non from './view/non.js'
+	import view_message from './view/message.js'
+
+
+	const routes = [
+		{
+			path: '/', component: view_index,
+			children: [
+				{
+					path: "/", component: view_non
+				},
+				{
+					path: "/message", component: view_message
+				}
+			]
+		},
+	]
+
+	const router = VueRouter.createRouter({
+		history: VueRouter.createWebHashHistory(),
+		routes,
+	})
+
+	const app = Vue.createApp({})
+
+
+
+	let store = Vuex.createStore({
+		state: {
+			indexItem: "main"
+		}
+	})
+
+
+	router.afterEach((to) => {
+		try {
+			if (document.body.clientWidth <= 768) {
+				if (to.path === "/") {
+					store.state.indexItem = "aside"
+				} else {
+					store.state.indexItem = "main"
+				}
+
+			}
+			console.log(store.state)
+		} catch (e) {
+			console.log(e)
+		}
+	})
+
+	app.use(router)
+	app.use(store)
+	app.mount('#app')
+</script>
+
+</html>

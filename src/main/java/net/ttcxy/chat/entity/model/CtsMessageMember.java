@@ -12,13 +12,20 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-public class CtsGroup {
+public class CtsMessageMember {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    private String name;
+    // 发送者的URL
+    private String sourceUrl;
+    
+    // 接受者的URL
+    private String memberUrl;
+
+    // 内容
+    private String html;
 
     private Date createTime;
 

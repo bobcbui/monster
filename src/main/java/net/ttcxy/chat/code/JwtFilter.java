@@ -23,7 +23,7 @@ public class JwtFilter implements Filter {
 
     private final static AntPathMatcher matcher = new AntPathMatcher();  
 
-    public final static Map<String, CtsMember> memberMap = new HashMap<>();
+    
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -43,7 +43,7 @@ public class JwtFilter implements Filter {
         }
 
         // 是否不需要登陆
-        String[] openUrls = new String[]{"/api/authenticate","/api/register","","/","/api/ws/*"};
+        String[] openUrls = new String[]{"/api/authenticate","/api/register","","/","/api/ws/*","/token"};
         
         for (String url : openUrls) {
             if(matcher.match(url,requestURI)){
@@ -53,7 +53,7 @@ public class JwtFilter implements Filter {
         }
 
         String token = request.getHeader("token");
-        CtsMember member = memberMap.get(token);
+        CtsMember member = ApplicationData.memberMap.get(token);
 
         if(member == null){
             response.setStatus(401);

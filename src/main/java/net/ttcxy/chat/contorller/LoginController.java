@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.BCrypt;
-import net.ttcxy.chat.code.JwtFilter;
+import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
 import net.ttcxy.chat.entity.model.CtsMember;
 import net.ttcxy.chat.service.MemberService;
@@ -31,7 +31,7 @@ public class LoginController {
         CtsMember member = memberService.findByUsername(username);
         if(BCrypt.checkpw(loginParam.getString("password"),member.getPassword())){
             String token = IdUtil.fastSimpleUUID();
-            JwtFilter.memberMap.put(token, member);
+            ApplicationData.memberMap.put(token, member);
             return token;
         }
         throw new ApiException("密码或用户名不正确！");

@@ -19,8 +19,6 @@ public class CtsMember{
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    private String address;
-
     private String username;
 
     private String password;

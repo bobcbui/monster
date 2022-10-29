@@ -5,23 +5,26 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 
 @Getter
 @Setter
 @Entity
-public class CtsMessage {
+public class CtsMessageGroup {
 
     @Id
-    @GeneratedValue
-    private String id;
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
 
-    private String memberId;
+    // 发送者的URL
+    private String sourceUrl;
+    
+    // 接受者的URL
+    private String groupUrl;
 
-    // memberId , groupId
-    private String subscribeId;
-
+    // 内容
     private String html;
 
     private Date createTime;

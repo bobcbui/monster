@@ -69,8 +69,18 @@
 			background: #efecec;
 		}
 
-		a:link { color: rgb(0, 81, 202); text-decoration: none; }/* 未访问的链接 */
-    	a:visited { color: rgb(0, 81, 202); text-decoration: line-through; } /* 已访问的链接 */
+		a:link {
+			color: rgb(0, 81, 202);
+			text-decoration: none;
+		}
+
+		/* 未访问的链接 */
+		a:visited {
+			color: rgb(0, 81, 202);
+			text-decoration: line-through;
+		}
+
+		/* 已访问的链接 */
 
 		@media(max-width:768px) {
 			aside {
@@ -87,12 +97,16 @@
 			.z-index-top {
 				z-index: 3;
 			}
+
+			[v-cloak] {
+				display: none;
+			}
 		}
 	</style>
 </head>
 
 <body>
-	<div id="app">
+	<div id="app" v-cloak>
 		<router-view></router-view>
 	</div>
 </body>
@@ -110,10 +124,10 @@
 			path: '/', component: view_index,
 			children: [
 				{
-					path: "/", name: "non" , component: view_non
+					path: "/", name: "non", component: view_non
 				},
 				{
-					path: "/:username/message", name: "message", component: view_message
+					path: "/message", name: "message", component: view_message
 				},
 				{
 					path: "/home", name: "home", component: view_home
@@ -121,7 +135,6 @@
 				{
 					path: "/add", name: "add", component: view_add
 				}
-				
 			]
 		},
 	]
@@ -135,7 +148,11 @@
 
 	let store = Vuex.createStore({
 		state: {
-			indexItem: "main"
+			indexItem: "main",
+			ws: null,
+			subscribe:{
+
+			}
 		}
 	})
 

@@ -17,9 +17,9 @@ public class CtsRelationGroup {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    private String memberId;
+    private String memberUrl;
 
-    private String beGroupUrl;
+    private String groupUrl;
 
     private String nickname;
 

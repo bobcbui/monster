@@ -43,7 +43,7 @@ public class JwtFilter implements Filter {
         }
 
         // 是否不需要登陆
-        String[] openUrls = new String[]{"/api/authenticate","/api/register","","/","/api/ws/*","/token"};
+        String[] openUrls = new String[]{"","/","/*","/ws/*","/token"};
         
         for (String url : openUrls) {
             if(matcher.match(url,requestURI)){

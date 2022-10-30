@@ -1,8 +1,6 @@
 package net.ttcxy.chat.code;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -43,7 +41,7 @@ public class JwtFilter implements Filter {
         }
 
         // 是否不需要登陆
-        String[] openUrls = new String[]{"","/","/*","/ws/*","/token"};
+        String[] openUrls = new String[]{"","/","/*","/ws/*","/token","/group/create"};
         
         for (String url : openUrls) {
             if(matcher.match(url,requestURI)){
@@ -52,14 +50,13 @@ public class JwtFilter implements Filter {
             }
         }
 
-        String token = request.getHeader("token");
-        CtsMember member = ApplicationData.memberMap.get(token);
+        CtsMember member = (CtsMember)request.getSession().getAttribute("member");
 
         if(member == null){
             response.setStatus(401);
             return;
         }
-        request.setAttribute("member",member);
+        
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

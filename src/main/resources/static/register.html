@@ -61,7 +61,7 @@
 			register() {
 				axios({
 					method: 'post',
-					url: '/api/register',
+					url: '/register',
 					data: this.loginForm,
 				}).then(response => {
 					alert(response.data)

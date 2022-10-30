@@ -18,9 +18,9 @@ public class CtsMessageGroup {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    private String groupUrl;
+    private Long receiveGroupId;
     
-    private String memberUrl;
+    private Long memberId;
 
     private String text;
 

@@ -1,5 +1,6 @@
 package net.ttcxy.chat.entity.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -13,13 +14,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class CtsMember{
+public class CtsMember implements Serializable{
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
     private String username;
+
+    private String nickname;
 
     private String password;
 

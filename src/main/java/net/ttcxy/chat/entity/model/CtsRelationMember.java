@@ -17,14 +17,10 @@ public class CtsRelationMember {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    private String memberId;
+    private Long memberId;
 
-    private String beMemberUrl;
+    private Long beMemberId;
 
-    private String nickname;
-
-    private String headPortraitUrl;
-
-    private boolean isPass;
+    private boolean pass;
 
 }

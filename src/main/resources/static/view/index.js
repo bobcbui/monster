@@ -6,12 +6,13 @@ let template = // html
 			<a style="padding-right:10px" @click='selectTag("xx")'>消息</a>
 			<a style="padding-right:10px" @click='selectTag("hy")'>好友</a>
 			<a style="padding-right:10px" @click='selectTag("qz")'>群组</a>
+			<router-link style="padding-right:10px" to="/create">创建</router-link>
 			<router-link style="padding-right:10px" to="/add">添加</router-link>
 			<router-link  style="float:right" to="/home">我的</router-link>
 		</div>
 		<div style="height:calc(100% - 70px); background-color:rgba(255, 190, 117, 0.3)">
 			<ul>
-				<li v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({name:'message',query: {url:item.url}})">
+				<li v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({name:'message',query: {type:item.type,receiveId:item.receiveId}})">
 					💬{{item.username}}
 				</li>
 			</ul>
@@ -44,9 +45,9 @@ export default {
 					{ username: "许昌许昌v" ,url:"cvcv"}
 				],
 				groupList: [
-					{ username: "Java学习交流群" ,url:"erer"},
-					{ username: "游戏交流群" ,url:"qqq"}, 
-					{ username: "社会主义交流群" ,url:"ggg"}
+					{ username: "Java学习交流群" ,type:"groupMessage",receiveId:"1"},
+					{ username: "游戏交流群" ,type:"groupMessage",receiveId:"2"}, 
+					{ username: "社会主义交流群" ,type:"groupMessage",receiveId:"3"}
 				],
 				memberList: [
 					{ username: "黄磊" ,url:"bb"}, 
@@ -73,7 +74,7 @@ export default {
 		},
 		initWebSocket() {
 			try {
-				this.$store.state.ws = new WebSocket("ws://localhost:9090/api/ws/" + localStorage.getItem("token"));
+				this.$store.state.ws = new WebSocket("ws://localhost:9090/socket/" + localStorage.getItem("token"));
 				this.$store.state.ws.onmessage = this.websocketonmessage;
 				this.$store.state.ws.onopen = this.websocketonopen;
 				this.$store.state.ws.onerror = this.websocketonerror;
@@ -103,6 +104,6 @@ export default {
 	},
 	created() {
 		this.initWebSocket();
-		this.list = this.allList.messageList
+		this.list = this.allList.groupList
 	}
 }

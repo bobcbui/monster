@@ -1,35 +1,49 @@
 package net.ttcxy.chat.controller;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import com.alibaba.fastjson.JSONObject;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
+import net.ttcxy.chat.entity.model.CtsGroup;
 import net.ttcxy.chat.entity.model.CtsMember;
-import net.ttcxy.chat.service.MemberService;
+import net.ttcxy.chat.entity.model.CtsRelationGroup;
+import net.ttcxy.chat.repository.GroupRepository;
+import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.repository.RelationGroupRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping
 public class FastController {
 
     @Autowired
-    MemberService memberService;
+    GroupRepository groupRepository;
+
+    @Autowired
+    RelationGroupRepository relationGroupRepository;
+
+    @Autowired
+    HttpServletRequest request;
+
+    @Autowired
+    MemberRepository memberRepository;
+
 
     @PostMapping("/authenticate")
-    public String authorize(@RequestBody JSONObject loginParam) {
+    public void authorize(@RequestBody JSONObject loginParam) {
         String username = loginParam.getString("username");
         String password = loginParam.getString("password");
-        CtsMember member = memberService.findByUsername(username);
+        CtsMember member = memberRepository.findByUsername(username);
         if(BCrypt.checkpw(password, member.getPassword())){
-            String token = IdUtil.fastSimpleUUID();
-            ApplicationData.memberMap.put(token, member);
-            return token;
+            request.getSession().setAttribute("member", member);
         }
         throw new ApiException("密码或用户名不正确！");
     }
@@ -43,23 +57,30 @@ public class FastController {
         member.setUsername(username);
         member.setCreateTime(new Date());
         member.setPassword(password);
-        return memberService.save(member);
+        return memberRepository.save(member);
     }
 
-    @GetMapping("token")
-    public String token(HttpServletRequest request) {
-        String checkToken = IdUtil.fastSimpleUUID();
-        String token = request.getHeader("token");
-        CtsMember member = ApplicationData.memberMap.get(token);
-        ApplicationData.checkToken.put(checkToken,member.getUsername());
-       return checkToken;
+    @PostMapping("group/create")
+    public CtsGroup addGroup(@RequestBody JSONObject object){
+        String nickname = object.getString("nickname");
+        CtsMember member = getMember();
+        CtsGroup group = new CtsGroup();
+        group.setCreateMemberId(member.getId());
+        group.setNickname(nickname);
+        group.setCreateTime(DateUtil.date());
+
+        group = groupRepository.save(group);
+
+        CtsRelationGroup relationGroup = new CtsRelationGroup();
+        relationGroup.setMemberId(member.getId());
+        relationGroup.setBeGroupId(group.getId());
+        relationGroup.setPass(true);
+        relationGroupRepository.save(relationGroup);
+
+        return group;
     }
 
-    @GetMapping("{username}")
-    public Boolean check(@PathVariable("username")String username, @RequestParam("token")String token) {
-        return Optional
-                .ofNullable(ApplicationData.checkToken.get(token))
-                .orElse("")
-                .equals(username);
+    public CtsMember getMember(){
+        return (CtsMember)request.getSession().getAttribute("member");
     }
 }

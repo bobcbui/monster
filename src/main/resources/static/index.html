@@ -115,6 +115,7 @@
 	import view_add from './view/add.js'
 	import view_index from './view/index.js'
 	import view_non from './view/non.js'
+	import view_create from './view/create.js'
 	import view_message from './view/message.js'
 	import axios from "./lib/axios.min.js"
 
@@ -125,6 +126,9 @@
 			children: [
 				{
 					path: "/", name: "non", component: view_non
+				},
+				{
+					path: "/create", name: "create", component: view_create
 				},
 				{
 					path: "/message", name: "message", component: view_message

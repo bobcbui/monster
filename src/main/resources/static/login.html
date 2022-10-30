@@ -62,7 +62,7 @@
 			login() {
 				axios({
 					method: 'post',
-					url: '/api/authenticate',
+					url: '/authenticate',
 					data: this.loginForm,
 				}).then(response => {
 					localStorage.setItem("token", response.data)

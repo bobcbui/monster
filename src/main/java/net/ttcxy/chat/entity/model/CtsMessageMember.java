@@ -18,14 +18,11 @@ public class CtsMessageMember {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    // 发送者的URL
-    private String sourceUrl;
-    
-    // 接受者的URL
-    private String memberUrl;
+    private Long receiveMemberId;
 
-    // 内容
-    private String html;
+    private Long memberId;
+
+    private String text;
 
     private Date createTime;
 

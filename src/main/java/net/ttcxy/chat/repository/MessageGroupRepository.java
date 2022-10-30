@@ -8,7 +8,7 @@ import net.ttcxy.chat.entity.model.CtsMessageGroup;
 
 
 @Repository
-public interface CtsMessageGroupRepository extends CrudRepository<CtsMessageGroup, Long> {
+public interface MessageGroupRepository extends CrudRepository<CtsMessageGroup, Long> {
 
 
 }

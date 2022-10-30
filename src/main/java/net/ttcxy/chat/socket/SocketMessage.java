@@ -10,8 +10,6 @@ import javax.websocket.server.ServerEndpoint;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
-import net.ttcxy.chat.entity.model.CtsMessageGroup;
-import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.repository.CtsMessageGroupRepository;
 import net.ttcxy.chat.repository.CtsRelationGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +17,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@ServerEndpoint(value = "/socket/group")
+@ServerEndpoint(value = "/socket")
 @Component
-public class SocketGroup {
+public class SocketSend {
 
     @Autowired
     CtsRelationGroupRepository relationGroupRepository;
@@ -29,29 +27,20 @@ public class SocketGroup {
     @Autowired
     CtsMessageGroupRepository messageGroupRepository;
 
-    Map<String, List<Session>> groupSessionList = new HashMap<>();
+    Map<String, List<Session>> recipientUrlSession = new HashMap<>();
 
     @SneakyThrows
     @OnOpen
     public void onOpen(Session session) {
         String token = session.getPathParameters().get("token");
         String memberUrl = session.getPathParameters().get("memberUrl");
-        String groupUrl =  session.getPathParameters().get("groupUrl");
         String body = HttpUtil.get(memberUrl + "?memberUrl=" + memberUrl);
         if (!"true".equals(body)){
             session.getAsyncRemote().sendText("token 无效");
             session.close();
             return;
         }
-
-        CtsRelationGroup groupUrlAndMemberUrl = relationGroupRepository.findByGroupUrlAndMemberUrl(groupUrl, memberUrl);
-        if (groupUrlAndMemberUrl == null){
-            session.getAsyncRemote().sendText("你无法建立连接");
-            session.close();
-            return;
-        }
-
-        putSession(groupUrl,session);
+        putSession(memberUrl,session);
         System.out.println("连接成功："+token);
     }
 
@@ -66,28 +55,21 @@ public class SocketGroup {
         JSONObject object = JSONObject.parseObject(message);
         String messageType = object.getString("type");
         String text = object.getString("text");
-        String toUrl = object.getString("toUrl");
+        String recipientUrl = object.getString("recipientUrl");
+        String memberUrl = session.getPathParameters().get("memberUrl");
 
         Date date = new Date();
 
         JSONObject request = new JSONObject();
-        request.put("toUrl",toUrl);
+        request.put("toUrl",recipientUrl);
         request.put("text",text);
         request.put("time",date.getTime());
-        request.put("fromUrl",session.getPathParameters().get("memberUrl"));
+        request.put("fromUrl",memberUrl);
 
-        String groupUrl =  session.getPathParameters().get("groupUrl");
-        for (Session groupSession : groupSessionList.get(groupUrl)) {
-            groupSession.getAsyncRemote().sendText(request.toJSONString());
+
+        for (Session recipientSession : recipientUrlSession.get(recipientUrl)) {
+            recipientSession.getAsyncRemote().sendText(request.toJSONString());
         }
-
-        CtsMessageGroup messageGroup = new CtsMessageGroup();
-        messageGroup.setGroupUrl(groupUrl);
-        messageGroup.setMemberUrl(session.getPathParameters().get("memberUrl"));
-        messageGroup.setText(text);
-        messageGroup.setCreateTime(date);
-        messageGroupRepository.save(messageGroup);
-
     }
 
     @OnError
@@ -96,7 +78,7 @@ public class SocketGroup {
     }
 
     private void putSession(String groupUrl,Session session){
-        List<Session> sessionList = groupSessionList.get(groupUrl);
+        List<Session> sessionList = recipientUrlSession.get(groupUrl);
         if (sessionList == null){
             sessionList = new ArrayList<>();
         }

@@ -10,19 +10,20 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.springframework.stereotype.Component;
 
+import net.ttcxy.chat.code.ApplicationData;
+import net.ttcxy.chat.entity.model.CtsMember;
+
 /**
- * 发送消息使用
+ * 本地用户接收消息使用
  */
-@ServerEndpoint(value = "/socket/message/{id}")
+@ServerEndpoint(value = "/socket/local/{token}")
 @Component
-public class SocketMessage {
+public class SocketLocal {
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("id") String memberId) {
-        String url = session.getPathParameters().get("url");
-        String token = session.getPathParameters().get("token");
-         //TODO 1、URL + TOKEN 验证TOKEN
-        //TODO 2、判断用户是否存在，不存在存储用户信息
+    public void onOpen(Session session, @PathParam("token") String token) {
+        CtsMember member = ApplicationData.tokenMemberMap.get(token);
+        //TODO 发送历史消息给SESSIOn
     }
 
     @OnClose
@@ -32,7 +33,7 @@ public class SocketMessage {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-
+        //TODO 好友消息
     }
 
     @OnError

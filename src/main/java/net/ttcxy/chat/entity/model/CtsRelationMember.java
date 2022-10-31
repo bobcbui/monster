@@ -17,9 +17,9 @@ public class CtsRelationMember {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    private Long memberId;
+    private Long memberUrl;
 
-    private Long beMemberId;
+    private Long beMemberUrl;
 
     private boolean pass;
 

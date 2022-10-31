@@ -17,10 +17,10 @@ public class CtsRelationGroup {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    private Long memberId;
+    private String memberUrl;
 
-    private Long beGroupId;
+    private String beGroupUrl;
 
-    private boolean pass;
+    private Boolean pass;
 
 }

@@ -41,7 +41,7 @@ public class JwtFilter implements Filter {
         }
 
         // 是否不需要登陆
-        String[] openUrls = new String[]{"","/","/*","/ws/*","/token","/group/create"};
+        String[] openUrls = new String[]{"","/","/*","/ws/*","/group/create","/username/*/token/*"};
         
         for (String url : openUrls) {
             if(matcher.match(url,requestURI)){

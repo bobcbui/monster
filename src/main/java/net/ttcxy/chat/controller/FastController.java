@@ -1,9 +1,23 @@
 package net.ttcxy.chat.controller;
 
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.fastjson.JSONObject;
+
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.BCrypt;
-import com.alibaba.fastjson.JSONObject;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
 import net.ttcxy.chat.entity.model.CtsGroup;
@@ -12,13 +26,6 @@ import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping
@@ -44,6 +51,7 @@ public class FastController {
         CtsMember member = memberRepository.findByUsername(username);
         if(BCrypt.checkpw(password, member.getPassword())){
             request.getSession().setAttribute("member", member);
+            return;
         }
         throw new ApiException("密码或用户名不正确！");
     }
@@ -60,6 +68,22 @@ public class FastController {
         return memberRepository.save(member);
     }
 
+    @PostMapping("token")
+    public String createToken(){
+        String token = IdUtil.fastSimpleUUID();
+        ApplicationData.tokenSocketMap.put(token, getMember());
+        return token;
+    }
+
+    @GetMapping("username/{username}/token/{token}")
+    public ResponseEntity<?> checkToken(@PathVariable("username")String username, @PathVariable("token")String token){
+        CtsMember ctsMember = ApplicationData.tokenSocketMap.get(token);
+        if(ctsMember != null && ctsMember.getUsername().equals(username)){
+            return ResponseEntity.ok(ctsMember);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @PostMapping("group/create")
     public CtsGroup addGroup(@RequestBody JSONObject object){
         String nickname = object.getString("nickname");
@@ -68,16 +92,26 @@ public class FastController {
         group.setCreateMemberId(member.getId());
         group.setNickname(nickname);
         group.setCreateTime(DateUtil.date());
-
         group = groupRepository.save(group);
 
         CtsRelationGroup relationGroup = new CtsRelationGroup();
-        relationGroup.setMemberId(member.getId());
-        relationGroup.setBeGroupId(group.getId());
+        relationGroup.setMemberUrl("http://localhost:9090/"+member.getUsername());
+        relationGroup.setBeGroupUrl("http://localhost:9090/group/"+group.getId());
         relationGroup.setPass(true);
         relationGroupRepository.save(relationGroup);
 
         return group;
+    }
+
+    @PostMapping("group/join")
+    public CtsRelationGroup joinGroup(@RequestBody JSONObject object){
+        String groupUrl = object.getString("groupUrl");
+        CtsMember member = getMember();
+        CtsRelationGroup relationGroup = new CtsRelationGroup();
+        relationGroup.setMemberUrl("http://localhost:9090/"+member.getUsername());
+        relationGroup.setBeGroupUrl(groupUrl);
+        relationGroup.setPass(true);
+        return relationGroupRepository.save(relationGroup);
     }
 
     public CtsMember getMember(){

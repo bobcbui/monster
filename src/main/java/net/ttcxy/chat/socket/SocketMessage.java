@@ -23,6 +23,7 @@ public class SocketMessage {
         String token = session.getPathParameters().get("token");
          //TODO 1、URL + TOKEN 验证TOKEN
         //TODO 2、判断用户是否存在，不存在存储用户信息
+        session.getAsyncRemote().sendText("token");
     }
 
     @OnClose

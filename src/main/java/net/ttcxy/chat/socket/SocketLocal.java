@@ -20,10 +20,12 @@ import net.ttcxy.chat.entity.model.CtsMember;
 @Component
 public class SocketLocal {
 
+
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) {
         CtsMember member = ApplicationData.tokenMemberMap.get(token);
         //TODO 发送历史消息给SESSIOn
+        
     }
 
     @OnClose

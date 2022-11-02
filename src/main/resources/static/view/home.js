@@ -15,11 +15,6 @@ export default {
 
 	},
 	created() {
-		request({
-			url: "/api/other",
-			method: "GET",
-		}).then((response) => {
-
-		});
+	
 	}
 }

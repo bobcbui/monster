@@ -15,12 +15,11 @@ import java.util.Date;
 public class CtsGroup {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private String id;
 
     private String nickname;
 
-    private Long createMemberId;
+    private String createMemberId;
 
     private Date createTime;
 

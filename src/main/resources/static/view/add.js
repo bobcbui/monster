@@ -1,25 +1,25 @@
 let template = // html
 `
 <div style='padding:10px'>
-<input>&nbsp;<button>添加</button>
-
-</div>
-
+    
 创建群
-<div style='padding:10px'>
+<br>
 群名：<input v-model='groupName'>
 <br>
 <button @click='create()'>创建</button>
-
 <br>
 加入群
-<div style='padding:10px'>
-群路径：<input v-model='groupUrl'>
 <br>
-<button @click='create()'>创建</button>
+群路径：
+<br>
+<input v-model='groupUrl'>
+<br>
+<button @click='join()'>创建</button>
 
 </div>
+
 `
+import request from '../lib/request.js'
 export default {
     template: template,
     data: function(){

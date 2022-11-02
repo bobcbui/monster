@@ -1,28 +1,27 @@
 package net.ttcxy.chat.entity.model;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 加入了哪些群
+ */
 @Getter
 @Setter
 @Entity
-public class CtsMessageMember {
-
+public class CtsMemberGroup {
+    
     @Id
     private String id;
 
-    private String receiveMemberId;
-
     private String memberId;
 
-    private String text;
+    private String groupId;
 
-    private Date createTime;
-
+    private String groupName;
 }

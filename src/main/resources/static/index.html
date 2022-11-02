@@ -115,7 +115,6 @@
 	import view_add from './view/add.js'
 	import view_index from './view/index.js'
 	import view_non from './view/non.js'
-	import view_create from './view/create.js'
 	import view_message from './view/message.js'
 	import axios from "./lib/axios.min.js"
 
@@ -128,10 +127,7 @@
 					path: "/", name: "non", component: view_non
 				},
 				{
-					path: "/create", name: "create", component: view_create
-				},
-				{
-					path: "/message", name: "message", component: view_message
+					path: "/message/:username", name: "message", component: view_message
 				},
 				{
 					path: "/home", name: "home", component: view_home
@@ -153,7 +149,9 @@
 	let store = Vuex.createStore({
 		state: {
 			indexItem: "main",
-			ws: null,
+			socketLocal: null,
+			socketMessage:null,
+			socketGroupList:[],
 			subscribe:{
 
 			}

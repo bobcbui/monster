@@ -14,12 +14,11 @@ import lombok.Setter;
 public class CtsRelationMember {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private String id;
 
-    private Long memberUrl;
+    private String memberUrl;
 
-    private Long beMemberUrl;
+    private String beMemberUrl;
 
     private boolean pass;
 

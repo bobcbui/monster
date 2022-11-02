@@ -15,12 +15,11 @@ import java.util.Date;
 public class CtsMessageGroup {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private String id;
 
-    private Long receiveGroupId;
+    private String receiveGroupId;
     
-    private Long memberId;
+    private String memberId;
 
     private String text;
 

@@ -6,7 +6,6 @@ let template = // html
 			<a style="padding-right:10px" @click='selectTag("xx")'>消息</a>
 			<a style="padding-right:10px" @click='selectTag("hy")'>好友</a>
 			<a style="padding-right:10px" @click='selectTag("qz")'>群组</a>
-			<router-link style="padding-right:10px" to="/create">创建</router-link>
 			<router-link style="padding-right:10px" to="/add">添加</router-link>
 			<router-link  style="float:right" to="/home">我的</router-link>
 		</div>
@@ -40,25 +39,16 @@ export default {
 			list: [],
 			allList: {
 				messageList: [
-					{ username: "为什么四道口附近",url:"asdf" }, 
-					{ username: "df对方的" ,url:"dfdf"}, 
-					{ username: "许昌许昌v" ,url:"cvcv"}
 				],
 				groupList: [
-					{ username: "Java学习交流群" ,type:"groupMessage",receiveId:"1"},
-					{ username: "游戏交流群" ,type:"groupMessage",receiveId:"2"}, 
-					{ username: "社会主义交流群" ,type:"groupMessage",receiveId:"3"}
 				],
 				memberList: [
-					{ username: "黄磊" ,url:"bb"}, 
-					{ username: "黄行" ,url:"nnn"}, 
-					{ username: "哈克" ,url:"jj"}
 				]
 			}
 		}
 	},
 	destroyed() {
-		this.$store.state.ws.close() //离开路由之后断开websocket连接
+		this.$store.state.socketLocal.close() //离开路由之后断开websocket连接
 	},
 	methods: {
 		selectTag(tag) {
@@ -74,11 +64,11 @@ export default {
 		},
 		initWebSocket() {
 			try {
-				this.$store.state.ws = new WebSocket("ws://localhost:9090/socket/" + localStorage.getItem("token"));
-				this.$store.state.ws.onmessage = this.websocketonmessage;
-				this.$store.state.ws.onopen = this.websocketonopen;
-				this.$store.state.ws.onerror = this.websocketonerror;
-				this.$store.state.ws.onclose = this.websocketclose;
+				this.$store.state.socketLocal = new WebSocket("ws://localhost:9090/socket/local/" + localStorage.getItem("token"));
+				this.$store.state.socketLocal.onmessage = this.websocketonmessage;
+				this.$store.state.socketLocal.onopen = this.websocketonopen;
+				this.$store.state.socketLocal.onerror = this.websocketonerror;
+				this.$store.state.socketLocal.onclose = this.websocketclose;
 			} catch (e) {
 				console.log(e)
 			}
@@ -90,13 +80,12 @@ export default {
 			this.initWebSocket();
 		},
 		websocketonmessage(e) {
-			let data = JSON.parse(e.data)
-			if(data.cmd == 'to_login'){
-				location.href = '/login.html'
+			let msg = JSON.stringify(e.data);
+			console.log(e.data)
+			if(msg.type == 'memberList'){
+				this.allList.memberList = msg.data
 			}
-			if(data.cmd == 'message'){
-				this.$store.state.subscribe[data.subscribeId] = data
-			}
+			console.log(e)
 		},
 		websocketclose(e) {
 			console.log("断开连接", e);
@@ -104,6 +93,12 @@ export default {
 	},
 	created() {
 		this.initWebSocket();
-		this.list = this.allList.groupList
+		this.list = this.allList.memberList;
+		request({
+			url: "/token",
+			method: "POST"
+		}).then((response) => {
+			localStorage.setItem("checkToken", response.data)
+		});
 	}
 }

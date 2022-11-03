@@ -92,13 +92,13 @@ export default {
 		},
 	},
 	created() {
-		this.initWebSocket();
-		this.list = this.allList.memberList;
 		request({
 			url: "/token",
 			method: "POST"
 		}).then((response) => {
 			localStorage.setItem("checkToken", response.data)
 		});
+		this.initWebSocket();
+		this.list = this.allList.memberList;
 	}
 }

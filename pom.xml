@@ -21,6 +21,12 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+
         <!-- https://mvnrepository.com/artifact/dnsjava/dnsjava -->
         <dependency>
             <groupId>dnsjava</groupId>

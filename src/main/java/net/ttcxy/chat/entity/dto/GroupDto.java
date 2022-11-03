@@ -1,11 +1,14 @@
 package net.ttcxy.chat.entity.dto;
 
-public class GroupDto {
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+public class GroupDto {
 
     private Long groupId;
 
     private Long createMemberUrl;
-
 
 }

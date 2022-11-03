@@ -11,8 +11,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.ttcxy.chat.entity.dto.GroupDto;
 import net.ttcxy.chat.entity.model.CtsGroup;
+import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.entity.model.QCtsGroup;
 import net.ttcxy.chat.entity.model.QCtsMemberGroup;
+import net.ttcxy.chat.entity.model.QCtsRelationGroup;
 
 @Component
 public class GroupDsl {
@@ -44,6 +46,13 @@ public class GroupDsl {
                 .set(qGroup.createMemberId, group.getCreateMemberId())
                 .set(qGroup.createTime, group.getCreateTime())
                 .execute();
+    }
+
+    public long saveRelation(CtsRelationGroup relationGroup) {
+        return query
+        .insert(QCtsRelationGroup.ctsRelationGroup)
+        .set(QCtsRelationGroup.ctsRelationGroup, relationGroup)
+        .execute();
     }
     
 

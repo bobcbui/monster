@@ -50,7 +50,8 @@ public class JwtFilter implements Filter {
             }
         }
 
-        CtsMember member = (CtsMember)request.getSession().getAttribute("member");
+        String token = request.getHeader("token");
+        CtsMember member = ApplicationData.tokenMemberMap.get(token);
 
         if(member == null){
             response.setStatus(401);

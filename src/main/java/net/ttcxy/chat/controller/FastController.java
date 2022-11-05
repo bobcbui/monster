@@ -49,7 +49,6 @@ public class FastController {
         CtsMember member = memberRepository.findByUsername(username);
 
         if(BCrypt.checkpw(password, member.getPassword())){
-            request.getSession().setAttribute("member", member);
             String token = UUID.randomUUID().toString();
             ApplicationData.tokenMemberMap.put(token, member);
             return token;
@@ -109,6 +108,6 @@ public class FastController {
     }
 
     public CtsMember getMember(){
-        return (CtsMember)request.getSession().getAttribute("member");
+        return ApplicationData.tokenMemberMap.get(request.getHeader("token"));
     }
 }

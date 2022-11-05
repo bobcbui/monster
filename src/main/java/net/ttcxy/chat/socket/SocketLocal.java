@@ -16,7 +16,7 @@ import net.ttcxy.chat.entity.model.CtsMember;
 /**
  * 本地用户接收消息使用
  */
-@ServerEndpoint(value = "/socket/local/{token}")
+@ServerEndpoint(value = "/local/{token}")
 @Component
 public class SocketLocal {
 

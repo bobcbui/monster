@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 /**
  * 发送消息使用
  */
-@ServerEndpoint(value = "/socket/message/{id}")
+@ServerEndpoint(value = "/message/{id}")
 @Component
 public class SocketMessage {
 

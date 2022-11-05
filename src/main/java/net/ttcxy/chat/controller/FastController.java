@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,21 +19,25 @@ import com.alibaba.fastjson.JSONObject;
 
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
-import net.ttcxy.chat.dsl.GroupDsl;
-import net.ttcxy.chat.dsl.MemberDsl;
 import net.ttcxy.chat.entity.model.CtsGroup;
 import net.ttcxy.chat.entity.model.CtsMember;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
+import net.ttcxy.chat.repository.GroupRepository;
+import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.repository.RelationGroupRepository;
 
 @RestController
 @RequestMapping
 public class FastController {
 
     @Autowired
-    GroupDsl groupDsl;
+    GroupRepository groupRepository;
 
     @Autowired
-    MemberDsl memberDsl;
+    MemberRepository memberRepository;
+
+    @Autowired
+    RelationGroupRepository relationGroupRepository;
 
     @Autowired
     HttpServletRequest request;
@@ -43,7 +46,7 @@ public class FastController {
     public String authorize(@RequestBody JSONObject loginParam) {
         String username = loginParam.getString("username");
         String password = loginParam.getString("password");
-        CtsMember member = memberDsl.findByUsername(username);
+        CtsMember member = memberRepository.findByUsername(username);
 
         if(BCrypt.checkpw(password, member.getPassword())){
             request.getSession().setAttribute("member", member);
@@ -55,7 +58,7 @@ public class FastController {
     }
 
     @PostMapping("register")
-    public long register(@RequestBody JSONObject loginParam){
+    public CtsMember register(@RequestBody JSONObject loginParam){
         String username = loginParam.getString("username");
         String password = loginParam.getString("password");
         password = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -63,7 +66,7 @@ public class FastController {
         member.setUsername(username);
         member.setCreateTime(new Date());
         member.setPassword(password);
-        return memberDsl.save(member);
+        return memberRepository.save(member);
     }
 
     @PostMapping("token")
@@ -94,13 +97,13 @@ public class FastController {
         group.setCreateMemberId(member.getId());
         group.setNickname(nickname);
         group.setCreateTime(new Date());
-        groupDsl.save(group);
+        groupRepository.save(group);
 
         CtsRelationGroup relationGroup = new CtsRelationGroup();
-        relationGroup.setMemberUrl("http://localhost:9090/"+member.getUsername());
-        relationGroup.setBeGroupUrl("http://localhost:9090/group/"+group.getId());
+        relationGroup.setMemberUrl("ws://localhost:9090/"+member.getUsername());
+        relationGroup.setBeGroupUrl("ws://localhost:9090/group/"+group.getId());
         relationGroup.setPass(true);
-        groupDsl.saveRelation(relationGroup);
+        relationGroupRepository.save(relationGroup);
 
         return group;
     }

@@ -20,7 +20,7 @@ export default {
         },
         initMessageWebSocket(){
             try {
-				this.$store.state.socketMessage = new WebSocket("ws://localhost:9090/socket/message/" + localStorage.getItem("checkToken"));
+				this.$store.state.socketMessage = new WebSocket("ws://localhost:9090/message/" + localStorage.getItem("checkToken"));
 				this.$store.state.socketMessage.onmessage = this.websocketonmessage;
 				this.$store.state.socketMessage.onopen = this.websocketonopen;
 				this.$store.state.socketMessage.onerror = this.websocketonerror;

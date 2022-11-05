@@ -64,7 +64,7 @@ export default {
 		},
 		initWebSocket() {
 			try {
-				this.$store.state.socketLocal = new WebSocket("ws://localhost:9090/socket/local/" + localStorage.getItem("token"));
+				this.$store.state.socketLocal = new WebSocket("ws://localhost:9090/local/" + localStorage.getItem("token"));
 				this.$store.state.socketLocal.onmessage = this.websocketonmessage;
 				this.$store.state.socketLocal.onopen = this.websocketonopen;
 				this.$store.state.socketLocal.onerror = this.websocketonerror;

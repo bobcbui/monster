@@ -14,7 +14,8 @@ let template = // html
 <br>
 <input v-model='groupUrl'>
 <br>
-<button @click='join()'>创建</button>
+<button @click='searchGroup()'>搜索</button>
+<button @click='joinGroup()'>搜索</button>
 
 </div>
 
@@ -24,7 +25,7 @@ export default {
     template: template,
     data: function(){
         return {
-
+            ws:null
         }
     },
     methods: {
@@ -37,14 +38,29 @@ export default {
                 alert(JSON.stringify(response.data))
             });
         },
-        join(){
-            request({
-                url: "/group/join",
-                method: "POST",
-                data:{groupUrl:this.groupUrl}
-            }).then((response) => {
-                alert(JSON.stringify(response.data))
-            });
+        searchGroup(){
+            
+            this.ws =  new WebSocket(this.groupUrl+"?=token="+localStorage.getItem("checkToken"))
+            
+            this.ws.onmessage = function(e){
+                console.log(e.data)
+                //this.ws.send(JSON.stringify({"cmd":"join","text":"申请加入"}))
+            };
+
+            this.ws.onopen = function(e){
+                
+            };
+
+            this.ws.onerror = function(){
+                
+            };
+
+            this.ws.onclose = function(){
+                
+            };
+        },
+        joinGroup(){
+            this.ws.send(JSON.stringify({"cmd":"join","text":"申请加入"}))
         }
     }
 }

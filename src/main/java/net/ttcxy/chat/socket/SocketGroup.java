@@ -1,5 +1,7 @@
 package net.ttcxy.chat.socket;
 
+import java.util.Optional;
+
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -8,21 +10,33 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSONObject;
+
+import net.ttcxy.chat.entity.model.CtsGroup;
+import net.ttcxy.chat.repository.GroupRepository;
 
 /**
  * 建立群聊通道
  */
-@ServerEndpoint(value = "/socket/group/{id}")
+@ServerEndpoint(value = "/group/{id}")
 @Component
 public class SocketGroup {
 
+    private static GroupRepository groupRepository;
+
+    @Autowired
+    public void setGroupRepository(GroupRepository groupRepository){
+        SocketGroup.groupRepository = groupRepository;
+    }
+
     @OnOpen
     public void onOpen(Session session,@PathParam("id")String groupId) {
-        String url = session.getPathParameters().get("url");
-        String token = session.getPathParameters().get("token");
-        //TODO 1、URL + TOKEN 验证TOKEN
-        //TODO 2、判断用户是否存在，不存在存储用户信息
+        session.getPathParameters().put("groupId", groupId);
+        Optional<CtsGroup> group = groupRepository.findById(Long.parseLong(groupId));
+        session.getAsyncRemote().sendText(JSONObject.toJSONString(group.orElse(null)));
     }
 
     @OnClose

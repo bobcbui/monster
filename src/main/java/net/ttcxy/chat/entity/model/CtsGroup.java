@@ -19,9 +19,11 @@ public class CtsGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private String nickname;
 
-    private Long createMemberId;
+    private String createMemberName;
 
     private Date createTime;
 

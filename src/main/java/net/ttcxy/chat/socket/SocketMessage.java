@@ -1,27 +1,86 @@
 package net.ttcxy.chat.socket;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
-import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
+import net.ttcxy.chat.entity.model.CtsRelationGroup;
+import net.ttcxy.chat.repository.GroupRepository;
+import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.repository.RelationGroupRepository;
+import net.ttcxy.chat.repository.RelationMemberRepository;
 
 /**
  * 发送消息使用
  */
-@ServerEndpoint(value = "/message/{id}")
+@ServerEndpoint(value = "/{username}")
 @Component
 public class SocketMessage {
 
+    
+    private static RelationGroupRepository relationGroupRepository;
+
+    private static GroupRepository groupRepository;
+
+    private static RelationMemberRepository relationMemberRepository;
+
+    private static MemberRepository memberRepository;
+
+
+    @Autowired
+    public void setRelationGroupRepository(RelationGroupRepository relationGroupRepository){
+        this.relationGroupRepository = relationGroupRepository;
+    }
+
+    @Autowired
+    public void setGroupRepository(GroupRepository groupRepository){
+        this.groupRepository = groupRepository;
+    }
+
+    @Autowired
+    public void setRelationMemberRepository(RelationMemberRepository relationMemberRepository){
+        this.relationMemberRepository = relationMemberRepository;
+    }
+
+    @Autowired
+    public void setMemberRepository(MemberRepository memberRepository){
+        this.memberRepository = memberRepository;
+    }
+
     @OnOpen
-    public void onOpen(Session session, @PathParam("id") String memberId) {
-        session.getPathParameters().put("memberId", memberId);
+    public void onOpen(Session session) throws IOException {
+        Map<String, List<String>> requestParameterMap = session.getRequestParameterMap();
+        for (Map.Entry<String, List<String>> me : requestParameterMap.entrySet()) {
+            session.getPathParameters().put(me.getKey(), me.getValue().get(0));
+        }
+        String ws = session.getPathParameters().get("ws");
+        String checkUrl =  session.getPathParameters().get("checkUrl");
+
+        String body = HttpUtil.get(checkUrl);
+        JSONObject obj = JSON.parseObject(body);
+        String username = obj.getString("username");
+
+        session.getPathParameters().put("username", username);
+
+        if(StrUtil.isEmpty(username)){
+            session.getAsyncRemote().sendText("{text:'用户不存在'}");
+            session.close();
+        }
     }
 
     @OnClose
@@ -31,14 +90,17 @@ public class SocketMessage {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        String url = session.getPathParameters().get("url");
-        String token = session.getPathParameters().get("token");
-        String memberId = session.getPathParameters().get("memberId");
+        
         JSONObject obj = JSONObject.parseObject(message);
         
         // 加入
         if("join".equals(obj.getString("type"))){
-
+            CtsRelationGroup relationGroup = new CtsRelationGroup();
+            relationGroup.setGroupName(session.getPathParameters().get("groupName"));
+            relationGroup.setMemberWs(session.getPathParameters().get("memberWs"));
+            relationGroup.setPass(true);
+            relationGroup.setUsername(session.getPathParameters().get("username"));
+            relationGroupRepository.save(relationGroup);
         }
         
         // 添加为好友

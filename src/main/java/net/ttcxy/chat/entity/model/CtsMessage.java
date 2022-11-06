@@ -19,9 +19,9 @@ public class CtsMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long receiveGroupId;
-    
-    private Long memberId;
+    private String ws;
+
+    private String type;
 
     private String text;
 

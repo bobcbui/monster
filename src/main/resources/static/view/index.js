@@ -98,6 +98,15 @@ export default {
 		}).then((response) => {
 			localStorage.setItem("checkToken", response.data)
 		});
+
+		request({
+			url: "/member",
+			method: "GET"
+		}).then((response) => {
+			this.$store.state.member = response.data
+		});
+
+		
 		this.initWebSocket();
 		this.list = this.allList.memberList;
 	}

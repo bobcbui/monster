@@ -1,6 +1,7 @@
 package net.ttcxy.chat.controller;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,15 +43,20 @@ public class FastController {
     @Autowired
     HttpServletRequest request;
 
-    @PostMapping("/authenticate")
+    @GetMapping("member")
+    public CtsMember member(){
+        return getMember();
+    }
+
+    @PostMapping("authenticate")
     public String authorize(@RequestBody JSONObject loginParam) {
         String username = loginParam.getString("username");
         String password = loginParam.getString("password");
-        CtsMember member = memberRepository.findByUsername(username);
+        Optional<CtsMember> memberOpt = memberRepository.findById(username);
 
-        if(BCrypt.checkpw(password, member.getPassword())){
+        if(BCrypt.checkpw(password, memberOpt.orElseThrow().getPassword())){
             String token = UUID.randomUUID().toString();
-            ApplicationData.tokenMemberMap.put(token, member);
+            ApplicationData.tokenMemberMap.put(token, memberOpt.orElseThrow());
             return token;
         }
         throw new ApiException("密码或用户名不正确！");
@@ -90,17 +96,19 @@ public class FastController {
 
     @PostMapping("group/create")
     public CtsGroup createGroup(@RequestBody JSONObject object){
-        String nickname = object.getString("nickname");
+        String name = object.getString("name");
         CtsMember member = getMember();
         CtsGroup group = new CtsGroup();
-        group.setCreateMemberId(member.getId());
-        group.setNickname(nickname);
+        group.setName(name);
+        group.setCreateMemberName(member.getUsername());
+        group.setNickname(name);
         group.setCreateTime(new Date());
         groupRepository.save(group);
 
         CtsRelationGroup relationGroup = new CtsRelationGroup();
-        relationGroup.setMemberUrl("ws://localhost:9090/"+member.getUsername());
-        relationGroup.setBeGroupUrl("ws://localhost:9090/group/"+group.getId());
+        relationGroup.setMemberWs("ws://localhost:9090/"+member.getUsername());
+        relationGroup.setGroupName(name);
+        relationGroup.setUsername(member.getUsername());
         relationGroup.setPass(true);
         relationGroupRepository.save(relationGroup);
 

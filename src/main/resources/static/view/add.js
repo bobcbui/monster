@@ -1,22 +1,18 @@
 let template = // html
 `
 <div style='padding:10px'>
-    
-创建群
-<br>
-群名：<input v-model='groupName'>
-<br>
+创建群.群名：
+<input v-model='groupName'>&nbsp;
 <button @click='create()'>创建</button>
-<br>
-加入群
-<br>
-群路径：
-<br>
-<input v-model='groupUrl'>
-<br>
-<button @click='searchGroup()'>搜索</button>
-<button @click='joinGroup()'>搜索</button>
-
+<hr>
+增加群.账户：
+<input v-model='groupWs'>&nbsp;
+<button @click='joinGroup()'>加入</button>
+<hr>
+加好友.路径：
+<input v-model='memberWs'>&nbsp;
+<button @click='joinMember()'>增加</button>
+<hr>
 </div>
 
 `
@@ -38,29 +34,35 @@ export default {
                 alert(JSON.stringify(response.data))
             });
         },
-        searchGroup(){
-            
-            this.ws =  new WebSocket(this.groupUrl+"?=token="+localStorage.getItem("checkToken"))
-            
+        joinMember(){
+            let _this = this;
+            let checkUrl = window.location.origin + "/username/"+this.$store.state.member.username+"/token/"+localStorage.getItem("checkToken")
+            this.ws =  new WebSocket(this.memberWs+"?checkUrl="+checkUrl+"&ws="+this.$store.state.member.memberWs)
             this.ws.onmessage = function(e){
                 console.log(e.data)
-                //this.ws.send(JSON.stringify({"cmd":"join","text":"申请加入"}))
             };
-
             this.ws.onopen = function(e){
-                
+                _this.ws.send(JSON.stringify({type:"join",text:"申请加入"}))
             };
-
             this.ws.onerror = function(){
-                
             };
-
             this.ws.onclose = function(){
-                
             };
         },
         joinGroup(){
-            this.ws.send(JSON.stringify({"cmd":"join","text":"申请加入"}))
+            let _this = this;
+            let checkUrl = window.location.origin + "/username/"+this.$store.state.member.username+"/token/"+localStorage.getItem("checkToken")
+            this.ws =  new WebSocket(this.groupWs+"?checkUrl="+checkUrl+"&ws="+this.$store.state.member.memberWs)
+            this.ws.onmessage = function(e){
+                console.log(e.data)
+            };
+            this.ws.onopen = function(e){
+                _this.ws.send(JSON.stringify({type:"join",text:"申请加入"}))
+            };
+            this.ws.onerror = function(){
+            };
+            this.ws.onclose = function(){
+            };
         }
     }
 }

@@ -13,11 +13,10 @@ import javax.websocket.server.ServerEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSONObject;
-
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.entity.model.CtsMember;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
+import net.ttcxy.chat.entity.model.CtsRelationMember;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
@@ -62,12 +61,19 @@ public class SocketLocal {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) {
+
         CtsMember member = ApplicationData.tokenMemberMap.get(token);
 
-        List<CtsRelationGroup> relationGroupList =  relationGroupRepository.findByMemberId(member.getId());
-        List<CtsRelationGroup> relationGroupList =  relationMemberRepository.findByMemberId(member.getId());
+        List<CtsRelationGroup> relationGroupList =  relationGroupRepository.findByUsername(member.getUsername());
+        List<CtsRelationMember> relationMemberList =  relationMemberRepository.findByUsername(member.getUsername());
 
+        relationGroupList.forEach(relGroup -> {
 
+        });
+        
+        relationMemberList.forEach(relMember -> {
+            
+        });
 
         // message list
         session.getAsyncRemote().sendText("[]");
@@ -75,6 +81,7 @@ public class SocketLocal {
         session.getAsyncRemote().sendText("[]");
         // member list
         session.getAsyncRemote().sendText("[]");
+        
     }
 
     @OnClose

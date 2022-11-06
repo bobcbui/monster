@@ -17,9 +17,12 @@ public class CtsRelationGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String memberUrl;
+    private String groupName;
 
-    private String beGroupUrl;
+    // 用户名
+    private String username;
+
+    private String memberWs;
 
     private Boolean pass;
 

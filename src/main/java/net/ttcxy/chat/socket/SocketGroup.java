@@ -2,14 +2,12 @@ package net.ttcxy.chat.socket;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
-import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +19,9 @@ import com.alibaba.fastjson.JSONObject;
 import net.ttcxy.chat.entity.model.CtsGroup;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.UserRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
 import net.ttcxy.chat.repository.RelationUserRepository;
+import net.ttcxy.chat.repository.UserRepository;
 
 /**
  * 建立群聊通道
@@ -68,7 +66,7 @@ public class SocketGroup {
             session.getPathParameters().put(me.getKey(), me.getValue().get(0));
         }
         String groupName = session.getPathParameters().get("groupName");
-        CtsGroup group = groupRepository.findByName(groupName);
+        CtsGroup group = groupRepository.findByGroupName(groupName);
         session.getAsyncRemote().sendText(JSONObject.toJSONString(group));
     }
 

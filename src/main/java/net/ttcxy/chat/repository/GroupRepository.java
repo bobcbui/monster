@@ -9,6 +9,6 @@ import net.ttcxy.chat.entity.model.CtsGroup;
 @Repository
 public interface GroupRepository extends CrudRepository<CtsGroup,Long>  {
 
-    CtsGroup findByName(String groupName);
+    CtsGroup findByGroupName(String groupName);
     
 }

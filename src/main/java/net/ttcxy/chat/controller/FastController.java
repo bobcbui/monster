@@ -21,10 +21,10 @@ import com.alibaba.fastjson.JSONObject;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
 import net.ttcxy.chat.entity.model.CtsGroup;
-import net.ttcxy.chat.entity.model.CtsMember;
+import net.ttcxy.chat.entity.model.CtsUser;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.repository.UserRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
 
 @RestController
@@ -35,7 +35,7 @@ public class FastController {
     GroupRepository groupRepository;
 
     @Autowired
-    MemberRepository memberRepository;
+    UserRepository userRepository;
 
     @Autowired
     RelationGroupRepository relationGroupRepository;
@@ -43,42 +43,42 @@ public class FastController {
     @Autowired
     HttpServletRequest request;
 
-    @GetMapping("member")
-    public CtsMember member(){
-        return getMember();
+    @GetMapping("user")
+    public CtsUser user(){
+        return getUser();
     }
 
     @PostMapping("authenticate")
     public String authorize(@RequestBody JSONObject loginParam) {
         String username = loginParam.getString("username");
         String password = loginParam.getString("password");
-        Optional<CtsMember> memberOpt = memberRepository.findById(username);
+        Optional<CtsUser> userOpt = userRepository.findById(username);
 
-        if(BCrypt.checkpw(password, memberOpt.orElseThrow().getPassword())){
+        if(BCrypt.checkpw(password, userOpt.orElseThrow().getPassword())){
             String token = UUID.randomUUID().toString();
-            ApplicationData.tokenMemberMap.put(token, memberOpt.orElseThrow());
+            ApplicationData.tokenUserMap.put(token, userOpt.orElseThrow());
             return token;
         }
         throw new ApiException("密码或用户名不正确！");
     }
 
     @PostMapping("register")
-    public CtsMember register(@RequestBody JSONObject loginParam){
+    public CtsUser register(@RequestBody JSONObject loginParam){
         String username = loginParam.getString("username");
         String password = loginParam.getString("password");
         password = BCrypt.hashpw(password, BCrypt.gensalt());
-        CtsMember member = new CtsMember();
-        member.setUsername(username);
-        member.setCreateTime(new Date());
-        member.setPassword(password);
-        return memberRepository.save(member);
+        CtsUser user = new CtsUser();
+        user.setUsername(username);
+        user.setCreateTime(new Date());
+        user.setPassword(password);
+        return userRepository.save(user);
     }
 
     @PostMapping("token")
     public ResponseEntity<String> createToken(){
         String token = UUID.randomUUID().toString();
-        if(getMember() != null){
-            ApplicationData.tokenSocketMap.put(token, getMember());
+        if(getUser() != null){
+            ApplicationData.tokenSocketMap.put(token, getUser());
             return ResponseEntity.ok(token);
         }
         return ResponseEntity.status(401).build();
@@ -87,9 +87,9 @@ public class FastController {
 
     @GetMapping("username/{username}/token/{token}")
     public ResponseEntity<?> checkToken(@PathVariable("username")String username, @PathVariable("token")String token){
-        CtsMember ctsMember = ApplicationData.tokenSocketMap.get(token);
-        if(ctsMember != null && ctsMember.getUsername().equals(username)){
-            return ResponseEntity.ok(ctsMember);
+        CtsUser user = ApplicationData.tokenSocketMap.get(token);
+        if(user != null && user.getUsername().equals(username)){
+            return ResponseEntity.ok(user);
         }
         return ResponseEntity.notFound().build();
     }
@@ -97,25 +97,24 @@ public class FastController {
     @PostMapping("group/create")
     public CtsGroup createGroup(@RequestBody JSONObject object){
         String name = object.getString("name");
-        CtsMember member = getMember();
+        CtsUser user = getUser();
         CtsGroup group = new CtsGroup();
-        group.setName(name);
-        group.setCreateMemberName(member.getUsername());
+        group.setGroupName(name);
+        group.setCreateUsername(user.getUsername());
         group.setNickname(name);
         group.setCreateTime(new Date());
         groupRepository.save(group);
 
         CtsRelationGroup relationGroup = new CtsRelationGroup();
-        relationGroup.setMemberWs("ws://localhost:9090/"+member.getUsername());
+        relationGroup.setWs("ws://localhost:9090/"+user.getUsername());
         relationGroup.setGroupName(name);
-        relationGroup.setUsername(member.getUsername());
         relationGroup.setPass(true);
         relationGroupRepository.save(relationGroup);
 
         return group;
     }
 
-    public CtsMember getMember(){
-        return ApplicationData.tokenMemberMap.get(request.getHeader("token"));
+    public CtsUser getUser(){
+        return ApplicationData.tokenUserMap.get(request.getHeader("token"));
     }
 }

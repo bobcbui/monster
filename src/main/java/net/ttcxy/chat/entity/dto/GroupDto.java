@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 public class GroupDto {
 
-    private Long groupId;
+    private String groupName;
 
-    private Long createMemberUrl;
+    private String createUsername;
 
 }

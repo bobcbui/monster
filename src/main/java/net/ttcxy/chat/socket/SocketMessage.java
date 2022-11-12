@@ -21,9 +21,9 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.repository.UserRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
-import net.ttcxy.chat.repository.RelationMemberRepository;
+import net.ttcxy.chat.repository.RelationUserRepository;
 
 /**
  * 发送消息使用
@@ -37,9 +37,9 @@ public class SocketMessage {
 
     private static GroupRepository groupRepository;
 
-    private static RelationMemberRepository relationMemberRepository;
+    private static RelationUserRepository relationUserRepository;
 
-    private static MemberRepository memberRepository;
+    private static UserRepository userRepository;
 
 
     @Autowired
@@ -53,13 +53,13 @@ public class SocketMessage {
     }
 
     @Autowired
-    public void setRelationMemberRepository(RelationMemberRepository relationMemberRepository){
-        this.relationMemberRepository = relationMemberRepository;
+    public void setRelationUserRepository(RelationUserRepository relationUserRepository){
+        this.relationUserRepository = relationUserRepository;
     }
 
     @Autowired
-    public void setMemberRepository(MemberRepository memberRepository){
-        this.memberRepository = memberRepository;
+    public void setUserRepository(UserRepository userRepository){
+        this.userRepository = userRepository;
     }
 
     @OnOpen
@@ -97,9 +97,8 @@ public class SocketMessage {
         if("join".equals(obj.getString("type"))){
             CtsRelationGroup relationGroup = new CtsRelationGroup();
             relationGroup.setGroupName(session.getPathParameters().get("groupName"));
-            relationGroup.setMemberWs(session.getPathParameters().get("memberWs"));
+            relationGroup.setWs(session.getPathParameters().get("ws"));
             relationGroup.setPass(true);
-            relationGroup.setUsername(session.getPathParameters().get("username"));
             relationGroupRepository.save(relationGroup);
         }
         

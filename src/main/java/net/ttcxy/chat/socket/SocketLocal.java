@@ -14,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import net.ttcxy.chat.code.ApplicationData;
-import net.ttcxy.chat.entity.model.CtsMember;
+import net.ttcxy.chat.entity.model.CtsUser;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
-import net.ttcxy.chat.entity.model.CtsRelationMember;
+import net.ttcxy.chat.entity.model.CtsRelationUser;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.repository.UserRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
-import net.ttcxy.chat.repository.RelationMemberRepository;
+import net.ttcxy.chat.repository.RelationUserRepository;
 
 /**
  * 本地用户接收消息使用
@@ -33,9 +33,9 @@ public class SocketLocal {
 
     private static GroupRepository groupRepository;
 
-    private static RelationMemberRepository relationMemberRepository;
+    private static RelationUserRepository relationUserRepository;
 
-    private static MemberRepository memberRepository;
+    private static UserRepository userRepository;
 
 
     @Autowired
@@ -49,29 +49,29 @@ public class SocketLocal {
     }
 
     @Autowired
-    public void setRelationMemberRepository(RelationMemberRepository relationMemberRepository){
-        this.relationMemberRepository = relationMemberRepository;
+    public void setRelationUserRepository(RelationUserRepository relationUserRepository){
+        this.relationUserRepository = relationUserRepository;
     }
 
     @Autowired
-    public void setMemberRepository(MemberRepository memberRepository){
-        this.memberRepository = memberRepository;
+    public void setUserRepository(UserRepository userRepository){
+        this.userRepository = userRepository;
     }
 
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) {
 
-        CtsMember member = ApplicationData.tokenMemberMap.get(token);
+        CtsUser user = ApplicationData.tokenUserMap.get(token);
 
-        List<CtsRelationGroup> relationGroupList =  relationGroupRepository.findByUsername(member.getUsername());
-        List<CtsRelationMember> relationMemberList =  relationMemberRepository.findByUsername(member.getUsername());
+        List<CtsRelationGroup> relationGroupList =  relationGroupRepository.findByGroupName(user.getUsername());
+        List<CtsRelationUser> relationUserList =  relationUserRepository.findByUsername(user.getUsername());
 
         relationGroupList.forEach(relGroup -> {
 
         });
         
-        relationMemberList.forEach(relMember -> {
+        relationUserList.forEach(relUser -> {
             
         });
 
@@ -79,7 +79,7 @@ public class SocketLocal {
         session.getAsyncRemote().sendText("[]");
         // group list
         session.getAsyncRemote().sendText("[]");
-        // member list
+        // user list
         session.getAsyncRemote().sendText("[]");
         
     }

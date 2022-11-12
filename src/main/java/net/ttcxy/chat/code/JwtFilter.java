@@ -14,14 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.util.AntPathMatcher;
 
-import net.ttcxy.chat.entity.model.CtsMember;
+import net.ttcxy.chat.entity.model.CtsUser;
 
 @WebFilter(urlPatterns = "/*", filterName = "allFilter")
 public class JwtFilter implements Filter {
 
     private final static AntPathMatcher matcher = new AntPathMatcher();  
-
-    
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -51,9 +49,9 @@ public class JwtFilter implements Filter {
         }
 
         String token = request.getHeader("token");
-        CtsMember member = ApplicationData.tokenMemberMap.get(token);
+        CtsUser user = ApplicationData.tokenUserMap.get(token);
 
-        if(member == null){
+        if(user == null){
             response.setStatus(401);
             return;
         }

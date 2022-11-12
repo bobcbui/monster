@@ -10,8 +10,8 @@ let template = // html
 <button @click='joinGroup()'>加入</button>
 <hr>
 加好友.路径：
-<input v-model='memberWs'>&nbsp;
-<button @click='joinMember()'>增加</button>
+<input v-model='ws'>&nbsp;
+<button @click='joinUser()'>增加</button>
 <hr>
 </div>
 
@@ -34,10 +34,10 @@ export default {
                 alert(JSON.stringify(response.data))
             });
         },
-        joinMember(){
+        joinUser(){
             let _this = this;
-            let checkUrl = window.location.origin + "/username/"+this.$store.state.member.username+"/token/"+localStorage.getItem("checkToken")
-            this.ws =  new WebSocket(this.memberWs+"?checkUrl="+checkUrl+"&ws="+this.$store.state.member.memberWs)
+            let checkUrl = window.location.origin + "/username/"+this.$store.state.user.username+"/token/"+localStorage.getItem("checkToken")
+            this.ws =  new WebSocket(this.ws+"?checkUrl="+checkUrl+"&ws="+this.$store.state.user.ws)
             this.ws.onmessage = function(e){
                 console.log(e.data)
             };
@@ -51,8 +51,8 @@ export default {
         },
         joinGroup(){
             let _this = this;
-            let checkUrl = window.location.origin + "/username/"+this.$store.state.member.username+"/token/"+localStorage.getItem("checkToken")
-            this.ws =  new WebSocket(this.groupWs+"?checkUrl="+checkUrl+"&ws="+this.$store.state.member.memberWs)
+            let checkUrl = window.location.origin + "/username/"+this.$store.state.user.username+"/token/"+localStorage.getItem("checkToken")
+            this.ws =  new WebSocket(this.groupWs+"?checkUrl="+checkUrl+"&ws="+this.$store.state.user.ws)
             this.ws.onmessage = function(e){
                 console.log(e.data)
             };

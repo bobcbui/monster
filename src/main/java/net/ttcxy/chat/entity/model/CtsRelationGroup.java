@@ -19,10 +19,7 @@ public class CtsRelationGroup {
 
     private String groupName;
 
-    // 用户名
-    private String username;
-
-    private String memberWs;
+    private String ws;
 
     private Boolean pass;
 

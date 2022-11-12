@@ -42,7 +42,7 @@ export default {
 				],
 				groupList: [
 				],
-				memberList: [
+				userList: [
 				]
 			}
 		}
@@ -56,7 +56,7 @@ export default {
 				this.list = this.allList.messageList
 			}
 			if (tag == 'hy') {
-				this.list = this.allList.memberList
+				this.list = this.allList.userList
 			}
 			if (tag == 'qz') {
 				this.list = this.allList.groupList
@@ -82,8 +82,8 @@ export default {
 		websocketonmessage(e) {
 			let msg = JSON.stringify(e.data);
 			console.log(e.data)
-			if(msg.type == 'memberList'){
-				this.allList.memberList = msg.data
+			if(msg.type == 'userList'){
+				this.allList.userList = msg.data
 			}
 			console.log(e)
 		},
@@ -100,14 +100,14 @@ export default {
 		});
 
 		request({
-			url: "/member",
+			url: "/user",
 			method: "GET"
 		}).then((response) => {
-			this.$store.state.member = response.data
+			this.$store.state.user = response.data
 		});
 
 		
 		this.initWebSocket();
-		this.list = this.allList.memberList;
+		this.list = this.allList.userList;
 	}
 }

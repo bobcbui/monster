@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class CtsRelationMember {
+public class CtsRelationUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class CtsRelationMember {
 
     private String username;
 
-    private String beMemberWs;
+    private String ws;
 
     private boolean pass;
 

@@ -11,8 +11,8 @@ import net.ttcxy.chat.entity.model.CtsRelationGroup;
 @Repository
 public interface RelationGroupRepository extends CrudRepository<CtsRelationGroup,Long>  {
 
-    List<CtsRelationGroup> findByUsername(String memberWs);
+    List<CtsRelationGroup> findByGroupName(String groupName);
 
-    CtsRelationGroup findByMemberWs(String ws);
+    CtsRelationGroup findByWs(String ws);
     
 }

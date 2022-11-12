@@ -37,7 +37,7 @@ export default {
         joinUser(){
             let _this = this;
             let checkUrl = window.location.origin + "/username/"+this.$store.state.user.username+"/token/"+localStorage.getItem("checkToken")
-            this.ws =  new WebSocket(this.ws+"?checkUrl="+checkUrl+"&ws="+this.$store.state.user.ws)
+            this.ws =  new WebSocket(this.ws+"?checkUrl="+checkUrl+"&userWs="+this.$store.state.user.userWs)
             this.ws.onmessage = function(e){
                 console.log(e.data)
             };

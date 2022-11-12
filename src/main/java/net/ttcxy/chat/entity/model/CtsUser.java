@@ -21,4 +21,8 @@ public class CtsUser implements Serializable{
 
     private Date createTime;
 
+    public String getWs(){
+        return "ws://localhost:9090/"+this.username;
+    }
+
 }

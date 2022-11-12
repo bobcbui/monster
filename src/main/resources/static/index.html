@@ -116,6 +116,7 @@
 	import view_index from './view/index.js'
 	import view_non from './view/non.js'
 	import view_message from './view/message.js'
+	import view_group_message from './view/group_message.js'
 	import axios from "./lib/axios.min.js"
 
 
@@ -134,6 +135,9 @@
 				},
 				{
 					path: "/add", name: "add", component: view_add
+				},
+				{
+					path: "/group-message/:groupName", name: "group_message", component: view_group_message
 				}
 			]
 		},
@@ -151,7 +155,7 @@
 			indexItem: "main",
 			socketLocal: null,
 			socketMessage:null,
-			socketGroupList:[],
+			socketGroupMap:{},
 			subscribe:{
 
 			}

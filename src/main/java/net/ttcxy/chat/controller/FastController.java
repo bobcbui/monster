@@ -96,18 +96,18 @@ public class FastController {
 
     @PostMapping("group/create")
     public CtsGroup createGroup(@RequestBody JSONObject object){
-        String name = object.getString("name");
+        String groupName = object.getString("groupName");
         CtsUser user = getUser();
         CtsGroup group = new CtsGroup();
-        group.setGroupName(name);
+        group.setGroupName(groupName);
         group.setCreateUsername(user.getUsername());
-        group.setNickname(name);
+        group.setNickname(groupName);
         group.setCreateTime(new Date());
         groupRepository.save(group);
 
         CtsRelationGroup relationGroup = new CtsRelationGroup();
         relationGroup.setWs("ws://localhost:9090/"+user.getUsername());
-        relationGroup.setGroupName(name);
+        relationGroup.setGroupName(groupName);
         relationGroup.setPass(true);
         relationGroupRepository.save(relationGroup);
 

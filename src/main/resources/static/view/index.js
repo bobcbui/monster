@@ -11,8 +11,11 @@ let template = // html
 		</div>
 		<div style="height:calc(100% - 70px); background-color:rgba(255, 190, 117, 0.3)">
 			<ul>
-				<li v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({name:'message',query: {type:item.type,receiveId:item.receiveId}})">
-					💬{{item.username}}
+				<li v-if='type == "xx"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;">
+					💬{{item.messageName}}
+				</li>
+				<li v-if='type == "qz"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/group-message/'+item.groupName})">
+					💬{{item.groupName}}
 				</li>
 			</ul>
 		</div>
@@ -35,15 +38,18 @@ export default {
 	template: template,
 	data: function () {
 		return {
-			type: "message",
+			type: "xx",
 			list: [],
-			allList: {
-				messageList: [
-				],
-				groupList: [
-				],
-				userList: [
-				]
+			all: {
+				message: {
+					
+				},
+				group: {
+					
+				},
+				user: {
+
+				}
 			}
 		}
 	},
@@ -52,14 +58,15 @@ export default {
 	},
 	methods: {
 		selectTag(tag) {
+			this.type = tag
 			if (tag == 'xx') {
-				this.list = this.allList.messageList
+				this.list = this.all.message
 			}
 			if (tag == 'hy') {
-				this.list = this.allList.userList
+				this.list = this.all.user
 			}
 			if (tag == 'qz') {
-				this.list = this.allList.groupList
+				this.list = this.all.group
 			}
 		},
 		initWebSocket() {
@@ -80,10 +87,35 @@ export default {
 			this.initWebSocket();
 		},
 		websocketonmessage(e) {
-			let msg = JSON.stringify(e.data);
-			console.log(e.data)
-			if(msg.type == 'userList'){
-				this.allList.userList = msg.data
+			let _this = this;
+			let msg = JSON.parse(e.data);
+			if(msg.type == 'groupList'){
+				for(let index in msg.data){
+					console.log(msg.data[index])
+					this.all.group[msg.data[index]["groupName"]] = msg.data[index]
+				}
+				for(let index in this.all.group){
+					let group = this.all.group[index]
+					this.$store.state.socketGroupMap[group.groupName] = new WebSocket("ws://localhost:9090/group/" + group.groupName);
+					this.$store.state.socketGroupMap[group.groupName].onmessage = function(e){
+						let d = JSON.parse(e.data)
+						console.log(_this.all.message)
+						if(_this.all.message[d.messageName] == undefined){
+							_this.all.message[d.messageName] = {}
+						}
+						_this.all.message[d.messageName].push(d)
+					}
+					this.$store.state.socketGroupMap[group.groupName].onopen = function(){
+						
+					}
+					this.$store.state.socketGroupMap[group.groupName].onerror = function(e){
+						
+					}
+					this.$store.state.socketGroupMap[group.groupName].onclose = function(){
+						
+					}
+					console.log(this.$store.state.socketGroupMap)
+				}
 			}
 			console.log(e)
 		},
@@ -108,6 +140,6 @@ export default {
 
 		
 		this.initWebSocket();
-		this.list = this.allList.userList;
+		this.list = this.all.user;
 	}
 }

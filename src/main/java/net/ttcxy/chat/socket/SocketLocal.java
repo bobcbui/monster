@@ -1,6 +1,10 @@
 package net.ttcxy.chat.socket;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -13,8 +17,11 @@ import javax.websocket.server.ServerEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSONObject;
+
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.entity.model.CtsUser;
+import net.ttcxy.chat.entity.model.CtsGroup;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.entity.model.CtsRelationUser;
 import net.ttcxy.chat.repository.GroupRepository;
@@ -64,23 +71,20 @@ public class SocketLocal {
 
         CtsUser user = ApplicationData.tokenUserMap.get(token);
 
-        List<CtsRelationGroup> relationGroupList =  relationGroupRepository.findByGroupName(user.getUsername());
+        List<CtsRelationGroup> relationGroupList =  relationGroupRepository.findByWs(user.getWs());
         List<CtsRelationUser> relationUserList =  relationUserRepository.findByUsername(user.getUsername());
 
-        relationGroupList.forEach(relGroup -> {
+        List<CtsGroup> groupList = new ArrayList<>();
+        for (CtsRelationGroup relationGroup : relationGroupList) {
+            String groupName = relationGroup.getGroupName();
+            groupList.add(groupRepository.findByGroupName(groupName));
+        }
+        Map<String,Object> map = new HashMap<>(); 
+        map.put("type", "groupList");
+        map.put("data", groupList);
+        session.getAsyncRemote().sendText(JSONObject.toJSONString(map));
 
-        });
-        
-        relationUserList.forEach(relUser -> {
-            
-        });
-
-        // message list
-        session.getAsyncRemote().sendText("[]");
-        // group list
-        session.getAsyncRemote().sendText("[]");
-        // user list
-        session.getAsyncRemote().sendText("[]");
+        System.out.println("skdjfksdf");
         
     }
 

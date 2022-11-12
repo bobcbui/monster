@@ -22,4 +22,8 @@ public class CtsGroup {
 
     private Date createTime;
 
+    public String getWs(){
+        return "ws://localhost:9090/group/"+groupName;
+    }
+
 }

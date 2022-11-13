@@ -85,10 +85,10 @@ public class FastController {
         
     }
 
-    @GetMapping("username/{username}/token/{token}")
-    public ResponseEntity<?> checkToken(@PathVariable("username")String username, @PathVariable("token")String token){
+    @GetMapping("check/{token}")
+    public ResponseEntity<?> checkToken(@PathVariable("token")String token){
         CtsUser user = ApplicationData.tokenSocketMap.get(token);
-        if(user != null && user.getUsername().equals(username)){
+        if(user != null){
             return ResponseEntity.ok(user);
         }
         return ResponseEntity.notFound().build();

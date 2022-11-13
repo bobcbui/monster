@@ -97,7 +97,6 @@ public class SocketLocal {
                 List<CtsRelationUser> relationUserList =  relationUserRepository.findByUsername(user.getUsername());
                 session.getBasicRemote().sendText(new ResultMap("userList",relationUserList).toJSON());
             break;
-
         }
 
 

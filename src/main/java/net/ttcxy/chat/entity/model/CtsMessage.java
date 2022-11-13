@@ -25,6 +25,8 @@ public class CtsMessage {
 
     private String text;
 
+    private String nickname;
+
     private Date createTime;
 
 }

@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
+import net.ttcxy.chat.entity.model.CtsRelationUser;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.UserRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
@@ -68,7 +69,6 @@ public class SocketMessage {
         for (Map.Entry<String, List<String>> me : requestParameterMap.entrySet()) {
             session.getPathParameters().put(me.getKey(), me.getValue().get(0));
         }
-        String ws = session.getPathParameters().get("ws");
         String checkUrl =  session.getPathParameters().get("checkUrl");
 
         String body = HttpUtil.get(checkUrl);
@@ -95,11 +95,12 @@ public class SocketMessage {
         
         // 加入
         if("join".equals(obj.getString("type"))){
-            CtsRelationGroup relationGroup = new CtsRelationGroup();
-            relationGroup.setGroupName(session.getPathParameters().get("groupName"));
-            relationGroup.setWs(session.getPathParameters().get("ws"));
-            relationGroup.setPass(true);
-            relationGroupRepository.save(relationGroup);
+            CtsRelationUser relationUser = new CtsRelationUser();
+            relationUser.setNickname(session.getPathParameters().get("username"));
+            relationUser.setUsername(session.getPathParameters().get("username"));
+            relationUser.setWs(session.getPathParameters().get("ws"));
+            relationUser.setPass(true);
+            relationUserRepository.save(relationUser);
         }
         
         // 添加为好友

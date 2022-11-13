@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.hutool.http.HttpUtil;
+import net.ttcxy.chat.entity.ResultMap;
 import net.ttcxy.chat.entity.model.CtsGroup;
 import net.ttcxy.chat.entity.model.CtsMessage;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
@@ -91,11 +92,10 @@ public class SocketGroup {
         }
         list.add(session);
 
-        JSONObject message = new JSONObject();
-        message.put("type", "message");
-        message.put("messageName", "java学习交流群");
+        
 
-        session.getBasicRemote().sendText(message.toJSONString());
+        String body = HttpUtil.get(session.getPathParameters().get("checkUrl"));
+        session.getUserProperties().put("userData", JSONObject.parseObject(body));
     }
 
     @OnClose
@@ -125,21 +125,24 @@ public class SocketGroup {
             // 发送消息给所有在线的用户
             if("message".equals(type)){
                 List<Session> list = groupSession.get(groupName);
-                for (Session list2 : list) {
-                    try {
-                        list2.getAsyncRemote().sendText(obj.toJSONString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        // TODO: handle exception
-                    }
-                    
-                }
+                
                 CtsMessage message2 = new CtsMessage();
                 message2.setCreateTime(new Date());
                 message2.setText(obj.getString("text"));
                 message2.setType("message");
+                JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
                 message2.setWs(ws);
-                messageRepository.save(null);
+                message2.setNickname(userData.getString("username"));
+
+                for (Session list2 : list) {
+                    try {
+                        list2.getAsyncRemote().sendText(JSON.toJSONString(message2));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    
+                }
+                messageRepository.save(message2);
             }
         } catch (Exception e) {
             // TODO: handle exception

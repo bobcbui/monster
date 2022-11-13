@@ -11,11 +11,14 @@ let template = // html
 		</div>
 		<div style="height:calc(100% - 70px); background-color:rgba(255, 190, 117, 0.3)">
 			<ul>
-				<li v-if='type == "xx"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;">
-					💬{{item.messageName}}
+				<li v-if='type == "xx"' v-for="(item,index) in $store.state.messageMap" style="border-bottom: 1px solid #a7a7a7;">
+					💬{{item.group.groupName}}:<span v-if='item.message.length > 0'>{{item.message[0].text}}</span>
 				</li>
-				<li v-if='type == "qz"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/group-message/'+item.groupName})">
+				<li v-if='type == "qz"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/group-message', query:{url: item.ws}})">
 					💬{{item.groupName}}
+				</li>
+				<li v-if='type == "hy"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/message', query:{url: item.ws}})">
+					💬{{item.nickname}}
 				</li>
 			</ul>
 		</div>
@@ -25,9 +28,6 @@ let template = // html
 	</aside>
 		
 	<main id="main" v-bind:class="[$store.state.indexItem == 'main' ? 'z-index-top' : '']">
-		<div style="height:40px;background-color:azure;line-height:40px;padding:0 10px;border-bottom: 1px solid #a7a7a7;">
-			<router-link to="/">返回</router-link>
-		</div>
 		<router-view></router-view>
 	</main>
 </section>
@@ -98,29 +98,35 @@ export default {
 			let msg = JSON.parse(e.data);
 			if(msg.type == 'groupList'){
 				for(let index in msg.data){
-					console.log(msg.data[index])
 					this.all.group[msg.data[index]["groupName"]] = msg.data[index]
 				}
 				for(let index in this.all.group){
 					let group = this.all.group[index]
-					this.$store.state.socketGroupMap[group.groupName] = new WebSocket("ws://localhost:9090/group/" + group.groupName);
-					this.$store.state.socketGroupMap[group.groupName].onmessage = function(e){
+					this.$store.state.socketGroupMap[group.ws] = new WebSocket(group.ws+"?checkUrl="+localStorage.getItem('checkUrl'));
+					this.$store.state.socketGroupMap[group.ws].onmessage = function(e){
+						if(_this.$store.state.messageMap[group.ws] == undefined){
+							_this.$store.state.messageMap[group.ws] = {group:group,message:[]}
+						}
+						
+						let msg = JSON.parse(e.data)
+						if(msg.type == 'message'){
+							_this.$store.state.messageMap[group.ws].message.push(msg);
+						}
+					}
+					this.$store.state.socketGroupMap[group.ws].onopen = function(){
 						
 					}
-					this.$store.state.socketGroupMap[group.groupName].onopen = function(){
+					this.$store.state.socketGroupMap[group.ws].onerror = function(e){
 						
 					}
-					this.$store.state.socketGroupMap[group.groupName].onerror = function(e){
-						
-					}
-					this.$store.state.socketGroupMap[group.groupName].onclose = function(){
+					this.$store.state.socketGroupMap[group.ws].onclose = function(){
 						
 					}
 					console.log(this.$store.state.socketGroupMap)
 				}
 			}
 			if(msg.type == 'userList'){
-
+				this.all.user = msg.data
 			}
 			if(msg.type == 'message'){
 				
@@ -140,7 +146,7 @@ export default {
 			url: "/token",
 			method: "POST"
 		}).then((response) => {
-			localStorage.setItem("checkToken", response.data)
+			localStorage.setItem("checkUrl","http://localhost:9090/check/"+response.data)
 		});
 
 		request({

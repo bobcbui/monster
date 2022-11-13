@@ -1,7 +1,7 @@
 let template = // html
 	`
 <div>
-home
+{{this.$store.state.user}}
 </div>
 `
 export default {

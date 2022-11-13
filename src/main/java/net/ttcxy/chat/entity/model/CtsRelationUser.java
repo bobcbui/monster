@@ -19,6 +19,8 @@ public class CtsRelationUser {
 
     private String username;
 
+    private String nickname;
+
     private String ws;
 
     private boolean pass;

@@ -81,6 +81,13 @@ export default {
 			}
 		},
 		websocketonopen() {
+			this.$store.state.socketLocal.send(JSON.stringify({
+				type:"groupList"
+			}))
+	
+			this.$store.state.socketLocal.send(JSON.stringify({
+				type:"userList"
+			}))
 
 		},
 		websocketonerror() {
@@ -98,12 +105,7 @@ export default {
 					let group = this.all.group[index]
 					this.$store.state.socketGroupMap[group.groupName] = new WebSocket("ws://localhost:9090/group/" + group.groupName);
 					this.$store.state.socketGroupMap[group.groupName].onmessage = function(e){
-						let d = JSON.parse(e.data)
-						console.log(_this.all.message)
-						if(_this.all.message[d.messageName] == undefined){
-							_this.all.message[d.messageName] = {}
-						}
-						_this.all.message[d.messageName].push(d)
+						
 					}
 					this.$store.state.socketGroupMap[group.groupName].onopen = function(){
 						
@@ -117,6 +119,13 @@ export default {
 					console.log(this.$store.state.socketGroupMap)
 				}
 			}
+			if(msg.type == 'userList'){
+
+			}
+			if(msg.type == 'message'){
+				
+			}
+
 			console.log(e)
 		},
 		websocketclose(e) {
@@ -124,6 +133,9 @@ export default {
 		},
 	},
 	created() {
+		
+		this.initWebSocket();
+
 		request({
 			url: "/token",
 			method: "POST"
@@ -139,7 +151,7 @@ export default {
 		});
 
 		
-		this.initWebSocket();
-		this.list = this.all.user;
+
+		
 	}
 }

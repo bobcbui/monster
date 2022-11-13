@@ -44,22 +44,22 @@ public class SocketMessage {
 
     @Autowired
     public void setRelationGroupRepository(RelationGroupRepository relationGroupRepository){
-        this.relationGroupRepository = relationGroupRepository;
+        SocketMessage.relationGroupRepository = relationGroupRepository;
     }
 
     @Autowired
     public void setGroupRepository(GroupRepository groupRepository){
-        this.groupRepository = groupRepository;
+        SocketMessage.groupRepository = groupRepository;
     }
 
     @Autowired
     public void setRelationUserRepository(RelationUserRepository relationUserRepository){
-        this.relationUserRepository = relationUserRepository;
+        SocketMessage.relationUserRepository = relationUserRepository;
     }
 
     @Autowired
     public void setUserRepository(UserRepository userRepository){
-        this.userRepository = userRepository;
+        SocketMessage.userRepository = userRepository;
     }
 
     @OnOpen

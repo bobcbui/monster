@@ -51,27 +51,27 @@ public class SocketGroup {
 
     @Autowired
     public void setRelationGroupRepository(MessageRepository messageRepository){
-        this.messageRepository = messageRepository;
+        SocketGroup.messageRepository = messageRepository;
     }
 
     @Autowired
     public void setRelationGroupRepository(RelationGroupRepository relationGroupRepository){
-        this.relationGroupRepository = relationGroupRepository;
+        SocketGroup.relationGroupRepository = relationGroupRepository;
     }
 
     @Autowired
     public void setGroupRepository(GroupRepository groupRepository){
-        this.groupRepository = groupRepository;
+        SocketGroup.groupRepository = groupRepository;
     }
 
     @Autowired
     public void setRelationUserRepository(RelationUserRepository relationUserRepository){
-        this.relationUserRepository = relationUserRepository;
+        SocketGroup.relationUserRepository = relationUserRepository;
     }
 
     @Autowired
     public void setUserRepository(UserRepository userRepository){
-        this.userRepository = userRepository;
+        SocketGroup.userRepository = userRepository;
     }
 
     @OnOpen
@@ -87,6 +87,7 @@ public class SocketGroup {
         List<Session> list = groupSession.get(groupName);
         if(list == null){
             list = new ArrayList<>();
+            groupSession.put(groupName, list);
         }
         list.add(session);
 
@@ -104,34 +105,44 @@ public class SocketGroup {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        JSONObject obj = JSON.parseObject(message);
-        String type = obj.getString("type");
-        System.out.println(message);
-        String groupName = session.getPathParameters().get("groupName");
-        String ws = session.getPathParameters().get("ws");
+        try {
+            JSONObject obj = JSON.parseObject(message);
+            String type = obj.getString("type");
+            System.out.println(message);
+            String groupName = session.getPathParameters().get("groupName");
+            String ws = session.getPathParameters().get("ws");
 
-        if("join".equals(type)){
-            CtsRelationGroup relationGroup = new CtsRelationGroup();
-            relationGroup.setWs(session.getPathParameters().get("ws"));
-            relationGroup.setGroupName(groupName);
-            relationGroup.setPass(true);
-            relationGroupRepository.save(relationGroup);
-            session.getAsyncRemote().sendText("{'message':'加入成功'}");
-        }
-
-
-        // 发送消息给所有在线的用户
-        if("message".equals(type)){
-            List<Session> list = groupSession.get(groupName);
-            for (Session list2 : list) {
-                list2.getAsyncRemote().sendText(obj.toJSONString());
+            if("join".equals(type)){
+                CtsRelationGroup relationGroup = new CtsRelationGroup();
+                relationGroup.setWs(session.getPathParameters().get("ws"));
+                relationGroup.setGroupName(groupName);
+                relationGroup.setPass(true);
+                relationGroupRepository.save(relationGroup);
+                session.getAsyncRemote().sendText("{'message':'加入成功'}");
             }
-            CtsMessage message2 = new CtsMessage();
-            message2.setCreateTime(new Date());
-            message2.setText(obj.getString("text"));
-            message2.setType("message");
-            message2.setWs(ws);
-            messageRepository.save(null);
+
+
+            // 发送消息给所有在线的用户
+            if("message".equals(type)){
+                List<Session> list = groupSession.get(groupName);
+                for (Session list2 : list) {
+                    try {
+                        list2.getAsyncRemote().sendText(obj.toJSONString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        // TODO: handle exception
+                    }
+                    
+                }
+                CtsMessage message2 = new CtsMessage();
+                message2.setCreateTime(new Date());
+                message2.setText(obj.getString("text"));
+                message2.setType("message");
+                message2.setWs(ws);
+                messageRepository.save(null);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
         }
     }
 

@@ -1,9 +1,7 @@
 package net.ttcxy.chat.socket;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.websocket.OnClose;
@@ -20,14 +18,15 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSONObject;
 
 import net.ttcxy.chat.code.ApplicationData;
-import net.ttcxy.chat.entity.model.CtsUser;
+import net.ttcxy.chat.entity.ResultMap;
 import net.ttcxy.chat.entity.model.CtsGroup;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.entity.model.CtsRelationUser;
+import net.ttcxy.chat.entity.model.CtsUser;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.UserRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
 import net.ttcxy.chat.repository.RelationUserRepository;
+import net.ttcxy.chat.repository.UserRepository;
 
 /**
  * 本地用户接收消息使用
@@ -47,44 +46,32 @@ public class SocketLocal {
 
     @Autowired
     public void setRelationGroupRepository(RelationGroupRepository relationGroupRepository){
-        this.relationGroupRepository = relationGroupRepository;
+        SocketLocal.relationGroupRepository = relationGroupRepository;
     }
 
     @Autowired
     public void setGroupRepository(GroupRepository groupRepository){
-        this.groupRepository = groupRepository;
+        SocketLocal.groupRepository = groupRepository;
     }
 
     @Autowired
     public void setRelationUserRepository(RelationUserRepository relationUserRepository){
-        this.relationUserRepository = relationUserRepository;
+        SocketLocal.relationUserRepository = relationUserRepository;
     }
 
     @Autowired
     public void setUserRepository(UserRepository userRepository){
-        this.userRepository = userRepository;
+        SocketLocal.userRepository = userRepository;
     }
 
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("token") String token) {
-
+    public void onOpen(Session session, @PathParam("token") String token) throws IOException {
         CtsUser user = ApplicationData.tokenUserMap.get(token);
-
-        List<CtsRelationGroup> relationGroupList =  relationGroupRepository.findByWs(user.getWs());
-        List<CtsRelationUser> relationUserList =  relationUserRepository.findByUsername(user.getUsername());
-
-        List<CtsGroup> groupList = new ArrayList<>();
-        for (CtsRelationGroup relationGroup : relationGroupList) {
-            String groupName = relationGroup.getGroupName();
-            groupList.add(groupRepository.findByGroupName(groupName));
+        if(user == null){
+            session.close();
+            return;
         }
-        Map<String,Object> map = new HashMap<>(); 
-        map.put("type", "groupList");
-        map.put("data", groupList);
-        session.getAsyncRemote().sendText(JSONObject.toJSONString(map));
-
-        System.out.println("skdjfksdf");
         
     }
 
@@ -94,7 +81,31 @@ public class SocketLocal {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, Session session) throws IOException {
+        String token = session.getPathParameters().get("token");
+        CtsUser user = ApplicationData.tokenUserMap.get(token);
+
+        JSONObject parseObject = JSONObject.parseObject(message);
+        String type = parseObject.getString("type");
+        switch(type){
+            case "groupList":
+                List<CtsRelationGroup> relationGroupList =  relationGroupRepository.findByWs(user.getWs());
+                List<CtsGroup> groupList = relationGroupList.stream().map(CtsRelationGroup::getGroup).collect(Collectors.toList());
+                session.getBasicRemote().sendText(new ResultMap("groupList",groupList).toJSON());
+            break;
+            case "userList":
+                List<CtsRelationUser> relationUserList =  relationUserRepository.findByUsername(user.getUsername());
+                session.getBasicRemote().sendText(new ResultMap("userList",relationUserList).toJSON());
+            break;
+
+        }
+
+
+
+        
+
+
+
     }
 
     @OnError

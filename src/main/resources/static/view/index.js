@@ -14,10 +14,10 @@ let template = // html
 				<li v-if='type == "xx"' v-for="(item,index) in $store.state.messageMap" style="border-bottom: 1px solid #a7a7a7;">
 					💬{{item.group.groupName}}:<span v-if='item.message.length > 0'>{{item.message[0].text}}</span>
 				</li>
-				<li v-if='type == "qz"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/group-message', query:{url: item.ws}})">
+				<li v-if='type == "qz"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/message-group', query:{url: item.ws}})">
 					💬{{item.groupName}}
 				</li>
-				<li v-if='type == "hy"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/message', query:{url: item.ws}})">
+				<li v-if='type == "hy"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/message-user', query:{url: item.ws}})">
 					💬{{item.nickname}}
 				</li>
 			</ul>

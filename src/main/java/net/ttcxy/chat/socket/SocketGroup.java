@@ -125,12 +125,13 @@ public class SocketGroup {
             // 发送消息给所有在线的用户
             if("message".equals(type)){
                 List<Session> list = groupSession.get(groupName);
+                JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
                 
                 CtsMessage message2 = new CtsMessage();
                 message2.setCreateTime(new Date());
                 message2.setText(obj.getString("text"));
                 message2.setType("message");
-                JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
+                message2.setName(groupName);
                 message2.setWs(ws);
                 message2.setNickname(userData.getString("username"));
 

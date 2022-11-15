@@ -1,7 +1,10 @@
 package net.ttcxy.chat.socket;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.websocket.OnClose;
@@ -64,15 +67,25 @@ public class SocketLocal {
         SocketLocal.userRepository = userRepository;
     }
 
+    public static Map<String,List<Session>> localSession = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
         CtsUser user = ApplicationData.tokenUserMap.get(token);
+        
         if(user == null){
             session.close();
             return;
         }
-        
+
+        List<Session> list = localSession.get(user.getUsername());
+
+        if(list == null){
+            list = new ArrayList<>();
+            localSession.put(user.getUsername(), list);
+        }
+
+        list.add(session);
     }
 
     @OnClose

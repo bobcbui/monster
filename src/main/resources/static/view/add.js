@@ -36,12 +36,12 @@ export default {
         },
         joinUser(){
             let _this = this;
-            this.ws =  new WebSocket(this.ws+"?checkUrl="+localStorage.getItem("checkUrl")+"&ws="+this.$store.state.user.ws)
+            this.ws =  new WebSocket(this.ws+"?checkUrl="+localStorage.getItem("checkUrl"))
             this.ws.onmessage = function(e){
                 console.log(e.data)
             };
             this.ws.onopen = function(e){
-                _this.ws.send(JSON.stringify({type:"join",text:"申请加入"}))
+                _this.ws.send(JSON.stringify({type:"add"}))
             };
             this.ws.onerror = function(){
             };

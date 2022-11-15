@@ -107,41 +107,48 @@ public class SocketMessage {
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-        String username = session.getPathParameters().get("username");
-        String ws = session.getPathParameters().get("ws");
-        JSONObject obj = JSONObject.parseObject(message);
-        
-        // 添加为好友
-        if("add".equals(obj.getString("type"))){
-            CtsRelationUser relationUser = new CtsRelationUser();
-            relationUser.setNickname(username);
-            relationUser.setUsername(username);
-            relationUser.setWs(ws);
-            relationUser.setPass(true);
-            relationUserRepository.save(relationUser);
-        }
-
-        // 消息
-        if("message".equals(obj.getString("type"))){
+        try {
+            String username = session.getPathParameters().get("username");
             JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
-
-            CtsMessage message2 = new CtsMessage();
-            message2.setCreateTime(new Date());
-            message2.setText(obj.getString("text"));
-            message2.setType("message");
-            message2.setName(username);
-            message2.setWs(ws);
-            message2.setNickname(userData.getString("username"));
-            messageRepository.save(message2);
+            JSONObject obj = JSONObject.parseObject(message);
             
-            List<Session> localSession = SocketLocal.localSession.get(username);
-            if(localSession != null){
-                for (Session session2 : localSession) {
-                    session2.getBasicRemote().sendText(JSON.toJSONString(message2));
+            // 添加为好友
+            if("add".equals(obj.getString("type"))){
+                CtsRelationUser relationUser = new CtsRelationUser();
+                relationUser.setNickname(username);
+                relationUser.setBeUsername(username);;
+                relationUser.setWs(userData.getString("ws"));
+                relationUser.setPass(true);
+                relationUserRepository.save(relationUser);
+            }
+
+            // 消息
+            if("message".equals(obj.getString("type"))){
+                CtsMessage message2 = new CtsMessage();
+                message2.setCreateTime(new Date());
+                message2.setText(obj.getString("text"));
+                message2.setType("message");
+                message2.setName(username);
+                message2.setWs(userData.getString("ws"));
+                message2.setNickname(userData.getString("username"));
+                messageRepository.save(message2);
+                
+                List<Session> localSession = SocketLocal.localSession.get(username);
+                if(localSession != null){
+                    for (Session session2 : localSession) {
+                        try {
+                            session2.getBasicRemote().sendText(JSON.toJSONString(message2));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
-            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO: handle exception
         }
+        
 
     }
 

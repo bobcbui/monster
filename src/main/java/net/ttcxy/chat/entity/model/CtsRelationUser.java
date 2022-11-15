@@ -17,7 +17,8 @@ public class CtsRelationUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    // 谁的好友
+    private String beUsername;
 
     private String nickname;
 

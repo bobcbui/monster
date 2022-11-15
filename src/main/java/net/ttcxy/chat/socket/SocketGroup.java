@@ -106,15 +106,16 @@ public class SocketGroup {
     @OnMessage
     public void onMessage(String message, Session session) {
         try {
+            JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
+
             JSONObject obj = JSON.parseObject(message);
             String type = obj.getString("type");
             System.out.println(message);
             String groupName = session.getPathParameters().get("groupName");
-            String ws = session.getPathParameters().get("ws");
 
             if("join".equals(type)){
                 CtsRelationGroup relationGroup = new CtsRelationGroup();
-                relationGroup.setWs(session.getPathParameters().get("ws"));
+                relationGroup.setWs(userData.getString("ws"));
                 relationGroup.setGroupName(groupName);
                 relationGroup.setPass(true);
                 relationGroupRepository.save(relationGroup);
@@ -125,14 +126,13 @@ public class SocketGroup {
             // 发送消息给所有在线的用户
             if("message".equals(type)){
                 List<Session> list = groupSession.get(groupName);
-                JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
                 
                 CtsMessage message2 = new CtsMessage();
                 message2.setCreateTime(new Date());
                 message2.setText(obj.getString("text"));
                 message2.setType("message");
                 message2.setName(groupName);
-                message2.setWs(ws);
+                message2.setWs(userData.getString("ws"));
                 message2.setNickname(userData.getString("username"));
 
                 for (Session list2 : list) {

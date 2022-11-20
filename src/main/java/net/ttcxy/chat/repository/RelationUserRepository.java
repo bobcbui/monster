@@ -11,7 +11,7 @@ import net.ttcxy.chat.entity.model.CtsRelationUser;
 @Repository
 public interface RelationUserRepository extends CrudRepository<CtsRelationUser,Long>  {
 
-    List<CtsRelationUser> findByBeUsername(String beUsername);
+    List<CtsRelationUser> findByUsername(String beUsername);
 
     List<CtsRelationUser> findByWs(String ws);
     

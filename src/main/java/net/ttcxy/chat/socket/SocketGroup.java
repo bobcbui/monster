@@ -21,7 +21,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.hutool.http.HttpUtil;
-import net.ttcxy.chat.entity.ResultMap;
 import net.ttcxy.chat.entity.model.CtsGroup;
 import net.ttcxy.chat.entity.model.CtsMessage;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
@@ -92,15 +91,16 @@ public class SocketGroup {
         }
         list.add(session);
 
-        
-
         String body = HttpUtil.get(session.getPathParameters().get("checkUrl"));
         session.getUserProperties().put("userData", JSONObject.parseObject(body));
     }
 
     @OnClose
-    public void onClose() {
-
+    public void onClose(Session session) {
+        String groupName = session.getPathParameters().get("groupName");
+        if(groupSession.get(groupName) == null){
+            groupSession.get(groupName).remove(session);
+        }
     }
 
     @OnMessage
@@ -124,14 +124,14 @@ public class SocketGroup {
 
 
             // 发送消息给所有在线的用户
-            if("message".equals(type)){
+            if("message-group".equals(type)){
                 List<Session> list = groupSession.get(groupName);
                 
                 CtsMessage message2 = new CtsMessage();
+                message2.setName(groupName);
                 message2.setCreateTime(new Date());
                 message2.setText(obj.getString("text"));
-                message2.setType("message");
-                message2.setName(groupName);
+                message2.setType("message-group");
                 message2.setWs(userData.getString("ws"));
                 message2.setNickname(userData.getString("username"));
 
@@ -146,7 +146,7 @@ public class SocketGroup {
                 messageRepository.save(message2);
             }
         } catch (Exception e) {
-            // TODO: handle exception
+           e.printStackTrace();
         }
     }
 

@@ -18,8 +18,9 @@ public class CtsRelationUser {
     private Long id;
 
     // 谁的好友
-    private String beUsername;
+    private String username;
 
+    // 好友昵称
     private String nickname;
 
     private String ws;

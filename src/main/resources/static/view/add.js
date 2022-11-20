@@ -36,16 +36,22 @@ export default {
         },
         joinUser(){
             let _this = this;
-            this.ws =  new WebSocket(this.ws+"?checkUrl="+localStorage.getItem("checkUrl"))
-            this.ws.onmessage = function(e){
+            let webSocket =  new WebSocket(_this.ws+"?checkUrl="+localStorage.getItem("checkUrl"))
+            webSocket.onmessage = function(e){
+                let data = JSON.parse(e.data)
+                _this.$store.state.socketLocal.send(JSON.stringify({
+                    type:"add",
+                    ws:_this.ws,
+                    username:data.data
+                }))
                 console.log(e.data)
             };
-            this.ws.onopen = function(e){
-                _this.ws.send(JSON.stringify({type:"add"}))
+            webSocket.onopen = function(e){
+                webSocket.send(JSON.stringify({type:"add"}))
             };
-            this.ws.onerror = function(){
+            webSocket.onerror = function(){
             };
-            this.ws.onclose = function(){
+            webSocket.onclose = function(){
             };
         },
         joinGroup(){

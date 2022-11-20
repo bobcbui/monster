@@ -102,12 +102,17 @@
 				display: none;
 			}
 		}
-		.nav-head{
-			height:40px;
-			background-color:azure;line-height:40px;padding:0 10px;border-bottom: 1px solid #a7a7a7;
+
+		.nav-head {
+			height: 40px;
+			background-color: azure;
+			line-height: 40px;
+			padding: 0 10px;
+			border-bottom: 1px solid #a7a7a7;
 		}
 	</style>
 </head>
+
 <body>
 	<div id="app" v-cloak>
 		<router-view></router-view>
@@ -156,9 +161,9 @@
 		state: {
 			indexItem: "main",
 			socketLocal: null,
-			socketMessage:null,
-			socketGroupMap:{},
-			messageMap:{}
+			socketMessage: null,
+			socketGroupMap: {},
+			messageMap: {}
 		}
 	})
 

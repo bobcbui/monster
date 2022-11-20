@@ -12,12 +12,16 @@ let template = // html
 		<div style="height:calc(100% - 70px); background-color:rgba(255, 190, 117, 0.3)">
 			<ul>
 				<li v-if='type == "xx"' v-for="(item,index) in $store.state.messageMap" style="border-bottom: 1px solid #a7a7a7;">
-					💬{{item.group.groupName}}:<span v-if='item.message.length > 0'>{{item.message[0].text}}</span>
+					💬{{item.name}}<span v-if='item.message.length > 0'>:{{item.message[0].text}}</span>
 				</li>
-				<li v-if='type == "qz"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/message-group', query:{url: item.ws}})">
+			</ul>
+			<ul v-if='type == "qz"' v-for="item in list">
+				<li v-if='type == "qz"'  style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/message-group', query:{url: item.ws}})">
 					💬{{item.groupName}}
 				</li>
-				<li v-if='type == "hy"' v-for="item in list" style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/message-user', query:{url: item.ws}})">
+			</ul>
+			<ul v-if='type == "hy"' v-for="item in list">
+				<li v-if='type == "hy"'  style="border-bottom: 1px solid #a7a7a7;" @click="$router.push({path:'/message-user', query:{url: item.ws}})">
 					💬{{item.nickname}}
 				</li>
 			</ul>
@@ -42,10 +46,10 @@ export default {
 			list: [],
 			all: {
 				message: {
-					
+
 				},
 				group: {
-					
+
 				},
 				user: {
 
@@ -57,6 +61,14 @@ export default {
 		this.$store.state.socketLocal.close() //离开路由之后断开websocket连接
 	},
 	methods: {
+		openMessage(item){
+			if(item.type == 'message-group'){
+				this.$router.push({path:'/message-group', query:{url: item.ws}})
+			}
+			if(item.type == 'message-user'){
+				this.$router.push({path:'/message-user', query:{url: item.ws}})
+			}
+		},
 		selectTag(tag) {
 			this.type = tag
 			if (tag == 'xx') {
@@ -82,11 +94,11 @@ export default {
 		},
 		websocketonopen() {
 			this.$store.state.socketLocal.send(JSON.stringify({
-				type:"groupList"
+				type: "groupList"
 			}))
-	
+
 			this.$store.state.socketLocal.send(JSON.stringify({
-				type:"userList"
+				type: "userList"
 			}))
 
 		},
@@ -96,40 +108,46 @@ export default {
 		websocketonmessage(e) {
 			let _this = this;
 			let msg = JSON.parse(e.data);
-			if(msg.type == 'groupList'){
-				for(let index in msg.data){
+			if (msg.type == 'groupList') {
+				for (let index in msg.data) {
 					this.all.group[msg.data[index]["groupName"]] = msg.data[index]
 				}
-				for(let index in this.all.group){
+				for (let index in this.all.group) {
 					let group = this.all.group[index]
 					this.$store.state.socketGroupMap[group.ws] = new WebSocket(group.ws+"?checkUrl="+localStorage.getItem('checkUrl'));
 					this.$store.state.socketGroupMap[group.ws].onmessage = function(e){
-						if(_this.$store.state.messageMap[group.ws] == undefined){
-							_this.$store.state.messageMap[group.ws] = {group:group,message:[]}
-						}
-						
 						let msg = JSON.parse(e.data)
+						if(_this.$store.state.messageMap[group.ws] == undefined){
+							_this.$store.state.messageMap[group.ws] = {name:msg.groupName,type:"message-group",ws:msg.ws,message:[]}
+						}
 						if(msg.type == 'message'){
 							_this.$store.state.messageMap[group.ws].message.push(msg);
 						}
 					}
-					this.$store.state.socketGroupMap[group.ws].onopen = function(){
-						
+					this.$store.state.socketGroupMap[group.ws].onopen = function () {
+						if (_this.$store.state.messageMap[group.ws] == undefined) {
+							_this.$store.state.messageMap[group.ws] = { name: group.groupName, type: "message-group", ws: group.ws, message: [] }
+						}
 					}
-					this.$store.state.socketGroupMap[group.ws].onerror = function(e){
-						
+					this.$store.state.socketGroupMap[group.ws].onerror = function (e) {
+
 					}
-					this.$store.state.socketGroupMap[group.ws].onclose = function(){
-						
+					this.$store.state.socketGroupMap[group.ws].onclose = function () {
+
 					}
 					console.log(this.$store.state.socketGroupMap)
 				}
 			}
-			if(msg.type == 'userList'){
+			if (msg.type == 'userList') {
 				this.all.user = msg.data
 			}
 			if(msg.type == 'message'){
-				
+				if(msg.type == 'message'){
+					if(_this.$store.state.messageMap[msg.ws] == undefined){
+						_this.$store.state.messageMap[msg.ws] = {name:msg.name,type:"message-user",ws:msg.ws , message:[]}
+					}
+					_this.$store.state.messageMap[msg.ws].message.push(msg);
+				}
 			}
 
 			console.log(e)
@@ -139,14 +157,14 @@ export default {
 		},
 	},
 	created() {
-		
+
 		this.initWebSocket();
 
 		request({
 			url: "/token",
 			method: "POST"
 		}).then((response) => {
-			localStorage.setItem("checkUrl","http://localhost:9090/check/"+response.data)
+			localStorage.setItem("checkUrl", "http://localhost:9090/check/" + response.data)
 		});
 
 		request({
@@ -156,8 +174,5 @@ export default {
 			this.$store.state.user = response.data
 		});
 
-		
-
-		
 	}
 }

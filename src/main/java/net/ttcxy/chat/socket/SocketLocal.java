@@ -84,13 +84,16 @@ public class SocketLocal {
             list = new ArrayList<>();
             localSession.put(user.getUsername(), list);
         }
-
+        
         list.add(session);
+        session.getUserProperties().put("userData", user);
     }
 
     @OnClose
-    public void onClose() {
-
+    public void onClose(Session session) {
+        CtsUser user = (CtsUser)session.getUserProperties().get("userData");
+        List<Session> localSession = SocketLocal.localSession.get(user.getUsername());
+        localSession.remove(session);
     }
 
     @OnMessage
@@ -109,6 +112,14 @@ public class SocketLocal {
             case "userList":
                 List<CtsRelationUser> relationUserList =  relationUserRepository.findByUsername(user.getUsername());
                 session.getBasicRemote().sendText(new ResultMap("userList",relationUserList).toJSON());
+            break;
+            case "add":
+                CtsRelationUser relationUser = new CtsRelationUser();
+                relationUser.setNickname(parseObject.getString("username"));
+                relationUser.setWs(parseObject.getString("ws"));
+                relationUser.setPass(true);
+                relationUser.setUsername(user.getUsername());
+                relationUserRepository.save(relationUser);
             break;
         }
 

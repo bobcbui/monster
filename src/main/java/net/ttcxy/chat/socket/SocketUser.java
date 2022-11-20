@@ -19,26 +19,25 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import net.ttcxy.chat.entity.ResultMap;
 import net.ttcxy.chat.entity.model.CtsMessage;
-import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.entity.model.CtsRelationUser;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MessageRepository;
-import net.ttcxy.chat.repository.UserRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
 import net.ttcxy.chat.repository.RelationUserRepository;
+import net.ttcxy.chat.repository.UserRepository;
 
 /**
  * 发送消息使用
  */
 @ServerEndpoint(value = "/{username}")
 @Component
-public class SocketMessage {
+public class SocketUser {
 
-    
+    private static Map<String,List<Session>> userSession = new HashMap<>();
+
     private static RelationGroupRepository relationGroupRepository;
 
     private static GroupRepository groupRepository;
@@ -50,29 +49,29 @@ public class SocketMessage {
 
     @Autowired
     public void setRelationGroupRepository(RelationGroupRepository relationGroupRepository){
-        SocketMessage.relationGroupRepository = relationGroupRepository;
+        SocketUser.relationGroupRepository = relationGroupRepository;
     }
 
     @Autowired
     public void setGroupRepository(GroupRepository groupRepository){
-        SocketMessage.groupRepository = groupRepository;
+        SocketUser.groupRepository = groupRepository;
     }
 
     @Autowired
     public void setRelationUserRepository(RelationUserRepository relationUserRepository){
-        SocketMessage.relationUserRepository = relationUserRepository;
+        SocketUser.relationUserRepository = relationUserRepository;
     }
 
     @Autowired
     public void setUserRepository(UserRepository userRepository){
-        SocketMessage.userRepository = userRepository;
+        SocketUser.userRepository = userRepository;
     }
 
     private static MessageRepository messageRepository;
 
     @Autowired
     public void setRelationGroupRepository(MessageRepository messageRepository){
-        SocketMessage.messageRepository = messageRepository;
+        SocketUser.messageRepository = messageRepository;
     }
 
     @OnOpen
@@ -84,26 +83,17 @@ public class SocketMessage {
         String checkUrl =  session.getPathParameters().get("checkUrl");
 
         String body = HttpUtil.get(checkUrl);
-        JSONObject obj = JSON.parseObject(body);
-        String username = obj.getString("username");
-        String ws = obj.getString("ws");
 
-        session.getPathParameters().put("username", username);
-        session.getPathParameters().put("ws", ws);
+        JSONObject parseObject = JSONObject.parseObject(body);
 
-        if(StrUtil.isEmpty(username)){
-            session.getAsyncRemote().sendText("{text:'用户不存在'}");
-            session.close();
-        }
-        session.getUserProperties().put("userData", JSONObject.parseObject(body));
+        session.getUserProperties().put("userData", parseObject);
+
     }
 
     @OnClose
-    public void onClose() {
-
+    public void onClose(Session session) {
+        
     }
-
-    private static Map<String,List<Session>> userSession = new HashMap<>();
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {

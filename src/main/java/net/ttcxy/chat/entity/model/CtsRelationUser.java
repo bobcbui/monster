@@ -19,6 +19,7 @@ public class CtsRelationUser {
 
     private String username;
 
+    // 好友昵称
     private String nickname;
 
     private String ws;

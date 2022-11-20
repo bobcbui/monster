@@ -19,7 +19,6 @@ public class CtsMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // username or groupName
     private String name;
 
     // 发送人
@@ -28,6 +27,7 @@ public class CtsMessage {
     // 发送人昵称
     private String nickname;
 
+    // message-geroup message-user
     private String type;
 
     private String text;

@@ -8,7 +8,7 @@
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.41/vue.global.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue-router/4.1.5/vue-router.global.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vuex/4.1.0/vuex.global.js"></script>
-	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.1.3/axios.min.js"></script>
 	<style>
 		body {
 			margin: 0
@@ -36,11 +36,11 @@
 	<div id="app">
 		<div style="margin: auto;width:200px">
 			<p>密码：</p>
-			<input type="text" style="width: 100px;"  v-model="loginForm.username" placeholder="用户名">
+			<input type="text" style="width: 100px;" v-model="loginForm.username" placeholder="用户名">
 			<p>用户名：</p>
-			<input type="password" style="width: 100px;"  v-model="loginForm.password" placeholder="密码" />
+			<input type="password" style="width: 100px;" v-model="loginForm.password" placeholder="密码" />
 			<br><br>
-			<button style="width: 100px;"  @click="login()">登录</button>
+			<button style="width: 100px;" @click="login()">登录</button>
 			<br>
 			<a href="/register.html">注册</a>
 		</div>

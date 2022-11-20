@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 
+import net.ttcxy.chat.ChatApplication;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
 import net.ttcxy.chat.entity.model.CtsGroup;
@@ -106,7 +107,7 @@ public class FastController {
         groupRepository.save(group);
 
         CtsRelationGroup relationGroup = new CtsRelationGroup();
-        relationGroup.setWs("ws://localhost:9090/"+user.getUsername());
+        relationGroup.setWs(ChatApplication.host + "/"+user.getUsername());
         relationGroup.setGroupName(groupName);
         relationGroup.setPass(true);
         relationGroupRepository.save(relationGroup);

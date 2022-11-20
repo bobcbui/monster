@@ -23,10 +23,12 @@ import com.alibaba.fastjson.JSONObject;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.entity.ResultMap;
 import net.ttcxy.chat.entity.model.CtsGroup;
+import net.ttcxy.chat.entity.model.CtsMessage;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
 import net.ttcxy.chat.entity.model.CtsRelationUser;
 import net.ttcxy.chat.entity.model.CtsUser;
 import net.ttcxy.chat.repository.GroupRepository;
+import net.ttcxy.chat.repository.MessageRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
 import net.ttcxy.chat.repository.RelationUserRepository;
 import net.ttcxy.chat.repository.UserRepository;
@@ -45,6 +47,13 @@ public class SocketLocal {
     private static RelationUserRepository relationUserRepository;
 
     private static UserRepository userRepository;
+
+    private static MessageRepository messageRepository;
+
+    @Autowired
+    public void setRelationGroupRepository(MessageRepository messageRepository){
+        SocketLocal.messageRepository = messageRepository;
+    }
 
 
     @Autowired
@@ -112,6 +121,15 @@ public class SocketLocal {
             case "userList":
                 List<CtsRelationUser> relationUserList =  relationUserRepository.findByUsername(user.getUsername());
                 session.getBasicRemote().sendText(new ResultMap("userList",relationUserList).toJSON());
+            break;
+            case "messageList":
+                List<String> strings = relationUserRepository.findByUsername(user.getUsername()).stream().map(CtsRelationUser::getNickname).collect(Collectors.toList());
+                List<CtsMessage> messages = new ArrayList<CtsMessage>();
+                for (String nickname : strings) {
+                    List<CtsMessage> msgs = messageRepository.findByNameAndWs(nickname, user.getWs());
+                    messages.addAll(msgs);
+                }
+                session.getBasicRemote().sendText(new ResultMap("messageList",messages).toJSON());
             break;
             case "add":
                 CtsRelationUser relationUser = new CtsRelationUser();

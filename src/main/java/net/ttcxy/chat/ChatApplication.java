@@ -1,5 +1,6 @@
 package net.ttcxy.chat;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
@@ -17,6 +18,13 @@ public class ChatApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ChatApplication.class, args);
+    }
+
+    public static String host;
+
+    @Value("${host}")
+    public void setHost(String host){
+        ChatApplication.host = host;
     }
 
 }

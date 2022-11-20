@@ -26,3 +26,4 @@ spring:
     locale: zh_CN
   mvc:
     throwExceptionIfNoHandlerFound: true
+host: ws://localhost:9090

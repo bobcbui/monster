@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.hutool.http.HttpUtil;
+import net.ttcxy.chat.entity.ResultMap;
 import net.ttcxy.chat.entity.model.CtsGroup;
 import net.ttcxy.chat.entity.model.CtsMessage;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
@@ -118,7 +119,13 @@ public class SocketGroup {
                 relationGroup.setGroupName(groupName);
                 relationGroup.setPass(true);
                 relationGroupRepository.save(relationGroup);
-                session.getAsyncRemote().sendText("{'message':'加入成功'}");
+                
+                session.getAsyncRemote().sendText(new ResultMap("join", "加入成功").toJSON());
+            }
+
+            if("messageList".equals(type)){
+                List<CtsMessage> messageList = messageRepository.findByNameAndTypeOrderByCreateTime(groupName, "message-group");
+                session.getAsyncRemote().sendText(new ResultMap("messageList", messageList).toJSON());
             }
 
 
@@ -139,10 +146,7 @@ public class SocketGroup {
                 for (Session list2 : list) {
                     try {
                         list2.getAsyncRemote().sendText(JSON.toJSONString(message2));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    
+                    } catch (Exception e) {}
                 }
                 messageRepository.save(message2);
             }

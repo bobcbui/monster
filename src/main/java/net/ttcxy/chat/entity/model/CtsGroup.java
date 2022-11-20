@@ -9,6 +9,7 @@ import javax.persistence.Id;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.ttcxy.chat.ChatApplication;
 
 @Getter
 @Setter
@@ -26,7 +27,7 @@ public class CtsGroup implements Serializable {
     private Date createTime;
 
     public String getWs(){
-        return "ws://localhost:9090/group/"+groupName;
+        return ChatApplication.host+"/group/"+groupName;
     }
 
 }

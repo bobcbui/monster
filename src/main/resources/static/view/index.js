@@ -3,11 +3,11 @@ let template = // html
 <section>
 	<aside id="aside" v-bind:class="[$store.state.indexItem == 'aside' ? 'z-index-top':'']">
 		<div style="height:40px;background-color:azure;line-height:40px;padding:0 10px;border-bottom: 1px solid #a7a7a7;">
-			<a style="padding-right:10px" @click='selectTag("xx")'>消息</a>
-			<a style="padding-right:10px" @click='selectTag("hy")'>好友</a>
-			<a style="padding-right:10px" @click='selectTag("qz")'>群组</a>
-			<router-link style="padding-right:10px" to="/add">添加</router-link>
-			<router-link  style="float:right" to="/home">我的</router-link>
+			<a class='padding-right-10' @click='selectTag("xx")'>消息</a>
+			<a class='padding-right-10' @click='selectTag("hy")'>好友</a>
+			<a class='padding-right-10' @click='selectTag("qz")'>群组</a>
+			<router-link class='padding-right-10' to="/add">添加</router-link>
+			<router-link class='float-right' to="/home">我的</router-link>
 		</div>
 		<div style="height:calc(100% - 70px); background-color:rgba(255, 190, 117, 0.3)">
 			<ul>
@@ -83,7 +83,7 @@ export default {
 		},
 		initWebSocket() {
 			try {
-				this.$store.state.socketLocal = new WebSocket("ws://localhost:9090/local/" + localStorage.getItem("token"));
+				this.$store.state.socketLocal = new WebSocket("ws://"+window.location.host+"/local/" + localStorage.getItem("token"));
 				this.$store.state.socketLocal.onmessage = this.websocketonmessage;
 				this.$store.state.socketLocal.onopen = this.websocketonopen;
 				this.$store.state.socketLocal.onerror = this.websocketonerror;
@@ -101,6 +101,10 @@ export default {
 				type: "userList"
 			}))
 
+			this.$store.state.socketLocal.send(JSON.stringify({
+				type: "messageList"
+			}))
+			
 		},
 		websocketonerror() {
 			this.initWebSocket();
@@ -123,11 +127,17 @@ export default {
 						if(msg.type == 'message'){
 							_this.$store.state.messageMap[group.ws].message.push(msg);
 						}
+						if (msg.type == 'messageList') {
+							_this.$store.state.messageMap[group.ws].message.push(...msg.data);
+						}
 					}
 					this.$store.state.socketGroupMap[group.ws].onopen = function () {
 						if (_this.$store.state.messageMap[group.ws] == undefined) {
 							_this.$store.state.messageMap[group.ws] = { name: group.groupName, type: "message-group", ws: group.ws, message: [] }
 						}
+						_this.$store.state.socketGroupMap[group.ws].send(JSON.stringify({
+							type: "messageList"
+						}))
 					}
 					this.$store.state.socketGroupMap[group.ws].onerror = function (e) {
 
@@ -141,15 +151,12 @@ export default {
 			if (msg.type == 'userList') {
 				this.all.user = msg.data
 			}
-			if(msg.type == 'message'){
-				if(msg.type == 'message'){
-					if(_this.$store.state.messageMap[msg.ws] == undefined){
-						_this.$store.state.messageMap[msg.ws] = {name:msg.name,type:"message-user",ws:msg.ws , message:[]}
-					}
-					_this.$store.state.messageMap[msg.ws].message.push(msg);
+			if (msg.type == 'message') {
+				if (_this.$store.state.messageMap[msg.ws] == undefined) {
+					_this.$store.state.messageMap[msg.ws] = { name: msg.name, type: "message-user", ws: msg.ws, message: [] }
 				}
+				_this.$store.state.messageMap[msg.ws].message.push(msg);
 			}
-
 			console.log(e)
 		},
 		websocketclose(e) {
@@ -164,7 +171,7 @@ export default {
 			url: "/token",
 			method: "POST"
 		}).then((response) => {
-			localStorage.setItem("checkUrl", "http://localhost:9090/check/" + response.data)
+			localStorage.setItem("checkUrl", "http://"+window.location.host+"/check/" + response.data)
 		});
 
 		request({

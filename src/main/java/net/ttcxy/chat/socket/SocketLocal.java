@@ -2,6 +2,7 @@ package net.ttcxy.chat.socket;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,14 +140,17 @@ public class SocketLocal {
                 relationUser.setUsername(user.getUsername());
                 relationUserRepository.save(relationUser);
             break;
+            case "message-user":
+                CtsMessage message2 = new CtsMessage();
+                message2.setName(user.getUsername());
+                message2.setNickname(parseObject.getString("nickname"));
+                message2.setText(parseObject.getString("text"));
+                message2.setCreateTime(new Date());
+                message2.setType(parseObject.getString("type"));
+                message2.setWs(parseObject.getString("ws"));
+                messageRepository.save(message2);
+            break;
         }
-
-
-
-        
-
-
-
     }
 
     @OnError

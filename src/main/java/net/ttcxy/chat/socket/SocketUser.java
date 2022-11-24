@@ -111,23 +111,27 @@ public class SocketUser {
             relationUserRepository.save(relationUser);
         }
 
-        // 消息
-        if("message".equals(obj.getString("type"))){
-            JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
-
-            CtsMessage message2 = new CtsMessage();
-            message2.setCreateTime(new Date());
-            message2.setText(obj.getString("text"));
-            message2.setType("message");
-            message2.setName(username);
-            message2.setWs(ws);
-            message2.setNickname(userData.getString("username"));
-            messageRepository.save(message2);
-            
-            List<Session> localSession = SocketLocal.localSession.get(username);
-            if(localSession != null){
-                for (Session session2 : localSession) {
-                    session2.getBasicRemote().sendText(JSON.toJSONString(message2));
+            // 消息
+            if("message-user".equals(obj.getString("type"))){
+                CtsMessage message2 = new CtsMessage();
+                message2.setName(username);
+                message2.setCreateTime(new Date());
+                message2.setText(obj.getString("text"));
+                message2.setType("message-user");
+                message2.setWs(userData.getString("ws"));
+                message2.setNickname(userData.getString("username"));
+                messageRepository.save(message2);
+                
+                List<Session> localSession = SocketLocal.localSession.get(username);
+                session.getBasicRemote().sendText(JSON.toJSONString(message2));
+                if(localSession != null){
+                    for (Session session2 : localSession) {
+                        try {
+                            session2.getBasicRemote().sendText(JSON.toJSONString(message2));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
             

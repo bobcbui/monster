@@ -157,7 +157,6 @@ export default {
 				}
 				_this.$store.state.messageMap[msg.ws].message.push(msg);
 			}
-			console.log(e)
 		},
 		websocketclose(e) {
 			console.log("断开连接", e);

@@ -154,6 +154,16 @@ export default {
 				}
 				_this.$store.state.messageMap[msg.ws].message.push(msg);
 			}
+			if (msg.type == 'messageList') {
+				let ml = msg.data;
+				for(let i in ml){
+					let m = ml[i]
+					if (_this.$store.state.messageMap[m.ws] == undefined) {
+						_this.$store.state.messageMap[m.ws] = { name: m.name, type: "message-user", ws: m.ws, message: [] }
+					}
+					_this.$store.state.messageMap[m.ws].message.push(m);
+				}
+			}
 		},
 		websocketclose(e) {
 			console.log("断开连接", e);

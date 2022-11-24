@@ -125,7 +125,9 @@ public class SocketUser {
                 messageRepository.save(message2);
                 
                 List<Session> localSession = SocketLocal.localSession.get(username);
-                session.getBasicRemote().sendText(JSON.toJSONString(message2));
+                if(!message2.getWs().equals(userData.getString("ws"))){
+                    session.getBasicRemote().sendText(JSON.toJSONString(message2));
+                }
                 if(localSession != null){
                     for (Session session2 : localSession) {
                         try {

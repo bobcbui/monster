@@ -8,19 +8,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.hutool.core.util.StrUtil;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.entity.ResultMap;
 import net.ttcxy.chat.entity.model.CtsGroup;
@@ -133,6 +134,9 @@ public class SocketLocal {
                 session.getBasicRemote().sendText(new ResultMap("messageList",messages).toJSON());
             break;
             case "add":
+                if(StrUtil.equals(parseObject.getString("ws"), user.getWs())){
+                    return;
+                }
                 CtsRelationUser relationUser = new CtsRelationUser();
                 relationUser.setNickname(parseObject.getString("username"));
                 relationUser.setWs(parseObject.getString("ws"));

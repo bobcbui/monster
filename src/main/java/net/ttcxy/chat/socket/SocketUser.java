@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +23,7 @@ import cn.hutool.http.HttpUtil;
 import net.ttcxy.chat.entity.ResultMap;
 import net.ttcxy.chat.entity.model.CtsMessage;
 import net.ttcxy.chat.entity.model.CtsRelationUser;
+import net.ttcxy.chat.entity.model.CtsUser;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MessageRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
@@ -86,8 +87,12 @@ public class SocketUser {
 
         JSONObject parseObject = JSONObject.parseObject(body);
 
-        session.getUserProperties().put("userData", parseObject);
+        String username = session.getPathParameters().get("username");
 
+        CtsUser user = userRepository.findById(username).orElseThrow();
+
+        session.getUserProperties().put("sendUserData", parseObject);
+        session.getUserProperties().put("socketUser", user);
     }
 
     @OnClose
@@ -99,7 +104,9 @@ public class SocketUser {
     public void onMessage(String message, Session session) throws IOException {
         try {
             String username = session.getPathParameters().get("username");
-            JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
+            JSONObject userData = (JSONObject)session.getUserProperties().get("sendUserData");
+            CtsUser user = (CtsUser)session.getUserProperties().get("socketUser");
+            
             JSONObject obj = JSONObject.parseObject(message);
             
             // 添加为好友
@@ -125,7 +132,7 @@ public class SocketUser {
                 messageRepository.save(message2);
                 
                 List<Session> localSession = SocketLocal.localSession.get(username);
-                if(!message2.getWs().equals(userData.getString("ws"))){
+                if(!user.getWs().equals(userData.getString("ws"))){
                     session.getBasicRemote().sendText(JSON.toJSONString(message2));
                 }
                 if(localSession != null){

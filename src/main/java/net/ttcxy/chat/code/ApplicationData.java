@@ -6,7 +6,7 @@ import java.util.Map;
 
 import net.ttcxy.chat.entity.model.CtsUser;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 public class ApplicationData {
 

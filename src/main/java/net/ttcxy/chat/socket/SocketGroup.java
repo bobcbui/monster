@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -86,7 +86,7 @@ public class SocketGroup {
         session.getBasicRemote().sendText(JSONObject.toJSONString(group));
 
         List<Session> list = groupSession.get(groupName);
-        if(list == null){
+        if(list == null) {
             list = new ArrayList<>();
             groupSession.put(groupName, list);
         }
@@ -107,31 +107,37 @@ public class SocketGroup {
     @OnMessage
     public void onMessage(String message, Session session) {
         try {
+<<<<<<< HEAD
+=======
+            JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
+>>>>>>> d03f5d9 (asdfasdf)
             JSONObject obj = JSON.parseObject(message);
             String type = obj.getString("type");
-            System.out.println(message);
             String groupName = session.getPathParameters().get("groupName");
+<<<<<<< HEAD
             String ws = session.getPathParameters().get("ws");
 
+=======
+                                    
+>>>>>>> d03f5d9 (asdfasdf)
             if("join".equals(type)){
                 CtsRelationGroup relationGroup = new CtsRelationGroup();
                 relationGroup.setWs(session.getPathParameters().get("ws"));
                 relationGroup.setGroupName(groupName);
                 relationGroup.setPass(true);
                 relationGroupRepository.save(relationGroup);
-                
                 session.getAsyncRemote().sendText(new ResultMap("join", "加入成功").toJSON());
             }
-
+             
             if("messageList".equals(type)){
                 List<CtsMessage> messageList = messageRepository.findByNameAndTypeOrderByCreateTime(groupName, "message-group");
                 session.getAsyncRemote().sendText(new ResultMap("messageList", messageList).toJSON());
             }
-
-
+             
             // 发送消息给所有在线的用户
             if("message-group".equals(type)){
                 List<Session> list = groupSession.get(groupName);
+<<<<<<< HEAD
                 JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
                 
                 CtsMessage message2 = new CtsMessage();
@@ -141,8 +147,17 @@ public class SocketGroup {
                 message2.setType("message");
                 message2.setName(groupName);
                 message2.setWs(ws);
+=======
+                                                                 
+                CtsMessage message2 = new CtsMessage(); 
+                message2.setName(groupName);            
+                message2.setCreateTime(new Date());      
+                message2.setText(obj.getString("text")); 
+                message2.setType("message-group");  
+                message2.setWs(userData.getString("ws")); 
+>>>>>>> d03f5d9 (asdfasdf)
                 message2.setNickname(userData.getString("username"));
-
+                                            
                 for (Session list2 : list) {
                     try {
                         list2.getAsyncRemote().sendText(JSON.toJSONString(message2));

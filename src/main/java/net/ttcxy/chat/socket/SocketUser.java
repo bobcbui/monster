@@ -128,7 +128,7 @@ public class SocketUser {
             if("add".equals(obj.getString("type"))){
                 CtsRelationUser relationUser = new CtsRelationUser();
                 relationUser.setNickname(userData.getString("username"));
-                relationUser.setUsername(username);;
+                relationUser.setUsername(userData.getString("username"));;
                 relationUser.setWs(userData.getString("ws"));
                 relationUser.setPass(true);
                 relationUserRepository.save(relationUser);
@@ -139,7 +139,7 @@ public class SocketUser {
             // 消息
             if("message-user".equals(obj.getString("type"))){
                 CtsMessage message2 = new CtsMessage();
-                message2.setName(username);
+                message2.setName(user.getUsername());
                 message2.setCreateTime(new Date());
                 message2.setText(obj.getString("text"));
                 message2.setType("message-user");

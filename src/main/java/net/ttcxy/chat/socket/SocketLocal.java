@@ -125,10 +125,10 @@ public class SocketLocal {
                 session.getBasicRemote().sendText(new ResultMap("userList",relationUserList).toJSON());
             break;
             case "messageList":
-                List<String> strings = relationUserRepository.findByUsername(user.getUsername()).stream().map(CtsRelationUser::getNickname).collect(Collectors.toList());
+                List<String> wsStrings = relationUserRepository.findByUsername(user.getUsername()).stream().map(CtsRelationUser::getWs).collect(Collectors.toList());
                 List<CtsMessage> messages = new ArrayList<CtsMessage>();
-                for (String nickname : strings) {
-                    List<CtsMessage> msgs = messageRepository.findByNameAndWs(nickname, user.getWs());
+                for (String ws : wsStrings) {
+                    List<CtsMessage> msgs = messageRepository.findByNameAndWs(user.getUsername(), ws);
                     messages.addAll(msgs);
                 }
                 session.getBasicRemote().sendText(new ResultMap("messageList",messages).toJSON());
@@ -146,7 +146,7 @@ public class SocketLocal {
             break;
             case "message-user":
                 CtsMessage message2 = new CtsMessage();
-                message2.setName(user.getUsername());
+                message2.setName(parseObject.getString("nickname"));
                 message2.setNickname(parseObject.getString("nickname"));
                 message2.setText(parseObject.getString("text"));
                 message2.setCreateTime(new Date());

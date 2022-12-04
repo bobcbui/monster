@@ -58,8 +58,9 @@ export default {
                 if (this.$store.state.messageMap[this.$route.query.url] == undefined) {
                     this.$store.state.messageMap[this.$route.query.url] = { name: msg.name, type: "message-user", ws: this.$route.query.url, message: [] }
                 }
-                this.$store.state.socketLocal.send(JSON.stringify(msg))
                 this.$store.state.messageMap[this.$route.query.url].message.push(msg);
+                msg.ws = this.$route.query.url
+                this.$store.state.socketLocal.send(JSON.stringify(msg))
             }
             console.log(e.data)
         },

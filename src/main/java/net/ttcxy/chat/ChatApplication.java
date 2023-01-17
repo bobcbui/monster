@@ -11,20 +11,19 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @ServletComponentScan
 public class ChatApplication {
 
+    public static String host;
+
     @Bean
 	public ServerEndpointExporter serverEndpointExporter() {
 		return new ServerEndpointExporter();
 	}
 
-    public static void main(String[] args) {
-        SpringApplication.run(ChatApplication.class, args);
-    }
-
-    public static String host;
-
     @Value("${host}")
     public void setHost(String host){
         ChatApplication.host = host;
+    }
+    public static void main(String[] args) {
+        SpringApplication.run(ChatApplication.class, args);
     }
 
 }

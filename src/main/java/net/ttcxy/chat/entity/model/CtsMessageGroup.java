@@ -7,34 +7,25 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"userId", "beUserId"}))
-public class CtsRelationUser implements Serializable {
+public class CtsMessageGroup implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-<<<<<<< HEAD
-    private String username;
+    private String sendUserId;
 
-    // 好友昵称
-    private String nickname;
-=======
-    private String userId;
->>>>>>> 98976ec (test)
+    private String acceptGroupId;
 
-    private String beUserId;
+    private String text;
 
-    private boolean pass;
-    
     private Date createTime;
 
 }

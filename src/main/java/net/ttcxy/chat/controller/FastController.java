@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 
 import jakarta.servlet.http.HttpServletRequest;
-import net.ttcxy.chat.ChatApplication;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
 import net.ttcxy.chat.entity.model.CtsGroup;
-import net.ttcxy.chat.entity.model.CtsUser;
 import net.ttcxy.chat.entity.model.CtsRelationGroup;
+import net.ttcxy.chat.entity.model.CtsUser;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.UserRepository;
 import net.ttcxy.chat.repository.RelationGroupRepository;
+import net.ttcxy.chat.repository.UserRepository;
 
 @RestController
 @RequestMapping
@@ -97,19 +95,21 @@ public class FastController {
 
     @PostMapping("group/create")
     public CtsGroup createGroup(@RequestBody JSONObject object){
+        
         String groupName = object.getString("groupName");
         CtsUser user = getUser();
+
         CtsGroup group = new CtsGroup();
-        group.setGroupName(groupName);
-        group.setCreateUsername(user.getUsername());
+        group.setNickname(groupName);
+        group.setCreateUserId(user.getId());
         group.setNickname(groupName);
         group.setCreateTime(new Date());
         groupRepository.save(group);
 
         CtsRelationGroup relationGroup = new CtsRelationGroup();
-        relationGroup.setWs(ChatApplication.host + "/"+user.getUsername());
-        relationGroup.setGroupName(groupName);
-        relationGroup.setPass(true);
+        relationGroup.setGroupId(group.getId());
+        relationGroup.setUserId(user.getId());
+        relationGroup.setCreateTime(new Date());
         relationGroupRepository.save(relationGroup);
 
         return group;

@@ -1,5 +1,6 @@
 package net.ttcxy.chat.entity.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import jakarta.persistence.Entity;
@@ -13,23 +14,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class CtsMessage {
+public class CtsMessageUser implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // groupName username
-    private String name;
+    private String sendUserId;
 
-    // 发送人
-    private String ws;
-    
-    // 发送人昵称
-    private String nickname;
-
-    // message-geroup message-user
-    private String type;
+    private String acceptUserId;
 
     private String text;
 

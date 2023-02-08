@@ -5,10 +5,8 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-
 import lombok.Getter;
 import lombok.Setter;
-import net.ttcxy.chat.ChatApplication;
 
 @Getter
 @Setter
@@ -16,14 +14,14 @@ import net.ttcxy.chat.ChatApplication;
 public class CtsUser implements Serializable{
 
     @Id
+    private String id;
+
     private String username;
+
+    private String nickname;
 
     private String password;
 
     private Date createTime;
-
-    public String getWs(){
-        return ChatApplication.host +"/"+this.username;
-    }
 
 }

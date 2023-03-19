@@ -1,14 +1,12 @@
 package net.ttcxy.chat.controller;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +17,12 @@ import com.alibaba.fastjson.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
-import net.ttcxy.chat.entity.model.CtsGroup;
-import net.ttcxy.chat.entity.model.CtsRelationGroup;
-import net.ttcxy.chat.entity.model.CtsUser;
+import net.ttcxy.chat.entity.CtsGroup;
+import net.ttcxy.chat.entity.CtsGroupRelation;
+import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.RelationGroupRepository;
-import net.ttcxy.chat.repository.UserRepository;
+import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.repository.GroupRelationRepository;
 
 @RestController
 @RequestMapping
@@ -34,88 +32,98 @@ public class FastController {
     GroupRepository groupRepository;
 
     @Autowired
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
     @Autowired
-    RelationGroupRepository relationGroupRepository;
+    GroupRelationRepository relationGroupRepository;
 
     @Autowired
     HttpServletRequest request;
 
     @GetMapping("user")
-    public CtsUser user(){
-        return getUser();
+    public CtsMember user(){
+        return getMember();
     }
 
+    /**
+     * 用户注册
+     * @param login
+     * @return
+     */
     @PostMapping("authenticate")
-    public String authorize(@RequestBody JSONObject loginParam) {
-        String username = loginParam.getString("username");
-        String password = loginParam.getString("password");
-        Optional<CtsUser> userOpt = userRepository.findById(username);
+    public String authorize(@RequestBody JSONObject login) {
+        String username = login.getString("username");
+        String password = login.getString("password");
+        CtsMember member = memberRepository.findByName(username);
 
-        if(BCrypt.checkpw(password, userOpt.orElseThrow().getPassword())){
+        if(BCrypt.checkpw(password, member.getPassword())){
             String token = UUID.randomUUID().toString();
-            ApplicationData.tokenUserMap.put(token, userOpt.orElseThrow());
+            ApplicationData.tokenMemberMap.put(token, member);
             return token;
         }
         throw new ApiException("密码或用户名不正确！");
     }
 
+    /**
+     * 用户登录
+     * @param register
+     * @return
+     */
     @PostMapping("register")
-    public CtsUser register(@RequestBody JSONObject loginParam){
-        String username = loginParam.getString("username");
-        String password = loginParam.getString("password");
+    public CtsMember register(@RequestBody JSONObject register){
+        String username = register.getString("username");
+        String password = register.getString("password");
         password = BCrypt.hashpw(password, BCrypt.gensalt());
-        CtsUser user = new CtsUser();
-        user.setUsername(username);
-        user.setCreateTime(new Date());
-        user.setPassword(password);
-        return userRepository.save(user);
+        CtsMember member = new CtsMember();
+        member.setName(username);
+        member.setCreateTime(new Date());
+        member.setPassword(password);
+        return memberRepository.save(member);
     }
 
-    @PostMapping("token")
+    /**
+     * OneToken 用于添加好友，添加群时给其他服务器验证Token是否有效的一个一次性Token
+     * @return
+     */
+    @PostMapping("one-token")
     public ResponseEntity<String> createToken(){
         String token = UUID.randomUUID().toString();
-        if(getUser() != null){
-            ApplicationData.tokenSocketMap.put(token, getUser());
+        if(getMember() != null){
+            ApplicationData.tokenSocketMap.put(token, getMember());
             return ResponseEntity.ok(token);
         }
         return ResponseEntity.status(401).build();
         
     }
 
-    @GetMapping("check/{token}")
-    public ResponseEntity<?> checkToken(@PathVariable("token")String token){
-        CtsUser user = ApplicationData.tokenSocketMap.get(token);
-        if(user != null){
-            return ResponseEntity.ok(user);
-        }
-        return ResponseEntity.notFound().build();
-    }
-
+    /**
+     * 创建一个组
+     * @param object
+     * @return
+     */
     @PostMapping("group/create")
     public CtsGroup createGroup(@RequestBody JSONObject object){
         
         String groupName = object.getString("groupName");
-        CtsUser user = getUser();
+        CtsMember member = getMember();
 
         CtsGroup group = new CtsGroup();
         group.setNickname(groupName);
-        group.setCreateUserId(user.getId());
+        group.setCreateMemberId(member.getId());
         group.setNickname(groupName);
         group.setCreateTime(new Date());
         groupRepository.save(group);
 
-        CtsRelationGroup relationGroup = new CtsRelationGroup();
+        CtsGroupRelation relationGroup = new CtsGroupRelation();
         relationGroup.setGroupId(group.getId());
-        relationGroup.setUserId(user.getId());
+        relationGroup.setMemberId(member.getId());
         relationGroup.setCreateTime(new Date());
         relationGroupRepository.save(relationGroup);
 
         return group;
     }
 
-    public CtsUser getUser(){
-        return ApplicationData.tokenUserMap.get(request.getHeader("token"));
+    public CtsMember getMember(){
+        return ApplicationData.tokenMemberMap.get(request.getHeader("token"));
     }
 }

@@ -11,10 +11,9 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import net.ttcxy.chat.entity.CtsMember;
 
 import org.springframework.util.AntPathMatcher;
-
-import net.ttcxy.chat.entity.model.CtsUser;
 
 @WebFilter(urlPatterns = "/*", filterName = "allFilter")
 public class JwtFilter implements Filter {
@@ -49,7 +48,7 @@ public class JwtFilter implements Filter {
         }
 
         String token = request.getHeader("token");
-        CtsUser user = ApplicationData.tokenUserMap.get(token);
+        CtsMember user = ApplicationData.tokenMemberMap.get(token);
 
         if(user == null){
             response.setStatus(401);

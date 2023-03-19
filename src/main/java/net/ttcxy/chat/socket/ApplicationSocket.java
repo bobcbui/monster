@@ -19,12 +19,12 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import net.ttcxy.chat.code.ApplicationData;
-import net.ttcxy.chat.entity.model.CtsUser;
+import net.ttcxy.chat.entity.CtsMember;
+import net.ttcxy.chat.repository.GroupRelationRepository;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.MessageRepository;
-import net.ttcxy.chat.repository.RelationGroupRepository;
-import net.ttcxy.chat.repository.RelationUserRepository;
-import net.ttcxy.chat.repository.UserRepository;
+import net.ttcxy.chat.repository.MemberMessageRepository;
+import net.ttcxy.chat.repository.MemberRelationRepository;
+import net.ttcxy.chat.repository.MemberRepository;
 
 /**
  * 本地用户接收消息使用
@@ -33,25 +33,25 @@ import net.ttcxy.chat.repository.UserRepository;
 @Component
 public class ApplicationSocket {
 
-    private static RelationGroupRepository relationGroupRepository;
+    private static GroupRelationRepository groupRelationRepository;
 
     private static GroupRepository groupRepository;
 
-    private static RelationUserRepository relationUserRepository;
+    private static MemberRelationRepository memberRelationRepository;
 
-    private static UserRepository userRepository;
+    private static MemberRepository memberRepository;
 
-    private static MessageRepository messageRepository;
+    private static MemberMessageRepository memberMessageRepository;
 
     @Autowired
-    public void setRelationGroupRepository(MessageRepository messageRepository){
-        ApplicationSocket.messageRepository = messageRepository;
+    public void setRelationGroupRepository(MemberMessageRepository messageRepository){
+        ApplicationSocket.memberMessageRepository = messageRepository;
     }
 
 
     @Autowired
-    public void setRelationGroupRepository(RelationGroupRepository relationGroupRepository){
-        ApplicationSocket.relationGroupRepository = relationGroupRepository;
+    public void setGroupRelationRepository(GroupRelationRepository relationGroupRepository){
+        ApplicationSocket.groupRelationRepository = relationGroupRepository;
     }
 
     @Autowired
@@ -60,48 +60,55 @@ public class ApplicationSocket {
     }
 
     @Autowired
-    public void setRelationUserRepository(RelationUserRepository relationUserRepository){
-        ApplicationSocket.relationUserRepository = relationUserRepository;
+    public void setMemberRelationRepository(MemberRelationRepository relationUserRepository){
+        ApplicationSocket.memberRelationRepository = relationUserRepository;
     }
 
     @Autowired
-    public void setUserRepository(UserRepository userRepository){
-        ApplicationSocket.userRepository = userRepository;
+    public void setMemberRepository(MemberRepository userRepository){
+        ApplicationSocket.memberRepository = userRepository;
     }
 
     public static Map<String,List<Session>> localSession = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
-        CtsUser user = ApplicationData.tokenUserMap.get(token);
+        System.out.println(groupRelationRepository);
+        System.out.println(groupRepository);
+        System.out.println(memberRelationRepository);
+        System.out.println(memberRepository);
+        System.out.println(memberMessageRepository);
+
+
+        CtsMember member = ApplicationData.tokenMemberMap.get(token);
         
-        if(user == null){
+        if(member == null){
             session.close();
             return;
         }
 
-        List<Session> list = localSession.get(user.getUsername());
+        List<Session> list = localSession.get(member.getName());
 
         if(list == null){
             list = new ArrayList<>();
-            localSession.put(user.getUsername(), list);
+            localSession.put(member.getName(), list);
         }
         
         list.add(session);
-        session.getUserProperties().put("userData", user);
+        session.getUserProperties().put("memberData", member);
     }
 
     @OnClose
     public void onClose(Session session) {
-        CtsUser user = (CtsUser)session.getUserProperties().get("userData");
-        List<Session> localSession = ApplicationSocket.localSession.get(user.getUsername());
+        CtsMember member = (CtsMember)session.getUserProperties().get("memberData");
+        List<Session> localSession = ApplicationSocket.localSession.get(member.getName());
         localSession.remove(session);
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         String token = session.getPathParameters().get("token");
-        CtsUser user = ApplicationData.tokenUserMap.get(token);
+        CtsMember member = ApplicationData.tokenMemberMap.get(token);
 
         JSONObject parseObject = JSONObject.parseObject(message);
         String type = parseObject.getString("type");

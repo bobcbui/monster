@@ -71,6 +71,7 @@ public class MemberSocket {
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
+        System.out.println(userSession);
         System.out.println(groupRelationRepository);
         System.out.println(groupRepository);
         System.out.println(memberRelationRepository);
@@ -102,12 +103,6 @@ public class MemberSocket {
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-        try {
-            String username = session.getPathParameters().get("username");
-            JSONObject userData = (JSONObject)session.getUserProperties().get("sendMemberData");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
 
     }
 

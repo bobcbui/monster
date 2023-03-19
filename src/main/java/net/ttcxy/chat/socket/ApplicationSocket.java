@@ -9,8 +9,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSONObject;
-
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -105,16 +103,11 @@ public class ApplicationSocket {
             List<Session> localSession = ApplicationSocket.localSession.get(member.getName());
             localSession.remove(session);
         }
-        
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-        String token = session.getPathParameters().get("token");
-        CtsMember member = ApplicationData.tokenMemberMap.get(token);
-
-        JSONObject parseObject = JSONObject.parseObject(message);
-        String type = parseObject.getString("type");
+       
         
     }
 

@@ -9,7 +9,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.hutool.http.HttpUtil;
@@ -20,11 +19,11 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import net.ttcxy.chat.entity.CtsGroup;
-import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.MemberRepository;
-import net.ttcxy.chat.repository.MemberMessageRepository;
 import net.ttcxy.chat.repository.GroupRelationRepository;
+import net.ttcxy.chat.repository.GroupRepository;
+import net.ttcxy.chat.repository.MemberMessageRepository;
 import net.ttcxy.chat.repository.MemberRelationRepository;
+import net.ttcxy.chat.repository.MemberRepository;
 
 /**
  * 建立群聊通道
@@ -107,16 +106,7 @@ public class GroupSocket {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        try {
-            JSONObject userData = (JSONObject)session.getUserProperties().get("userData");
-            JSONObject obj = JSON.parseObject(message);
-            String type = obj.getString("type");
-            String groupName = session.getPathParameters().get("groupName");
-            String ws = session.getPathParameters().get("ws");
-
-        } catch (Exception e) {
-           e.printStackTrace();
-        }
+        
     }
 
     @OnError

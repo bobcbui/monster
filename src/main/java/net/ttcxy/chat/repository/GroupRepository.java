@@ -3,7 +3,7 @@ package net.ttcxy.chat.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import net.ttcxy.chat.entity.model.CtsGroup;
+import net.ttcxy.chat.entity.CtsGroup;
 
 public interface GroupRepository extends CrudRepository<CtsGroup,Long>  {
 

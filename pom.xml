@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.2</version>
+        <version>3.0.4</version>
         <relativePath/>
     </parent>
     <groupId>net.ttcxy</groupId>
@@ -51,14 +51,13 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-core -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-core</artifactId>
-            <version>5.8.9</version>
+            <version>5.8.15</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-http -->
@@ -92,7 +91,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
 
@@ -111,7 +109,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.1.214</version>
         </dependency>
 
         <dependency>
@@ -127,7 +124,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.0.4</version>
                 <configuration>
                     <excludes>
                         <exclude>

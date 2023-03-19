@@ -7,6 +7,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.hutool.core.util.IdUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.api.ApiException;
@@ -41,8 +43,12 @@ public class FastController {
     HttpServletRequest request;
 
     @GetMapping("user")
-    public CtsMember user(){
-        return getMember();
+    public ResponseEntity<CtsMember> user(){
+        CtsMember member = getMember();
+        if(member == null){
+            return ResponseEntity.status(401).body(member);
+        }
+        return ResponseEntity.status(200).build();
     }
 
     /**
@@ -64,6 +70,15 @@ public class FastController {
         throw new ApiException("密码或用户名不正确！");
     }
 
+    @PostMapping("check-token/{token}")
+    public ResponseEntity<String> checkToken(@PathVariable("token")String token){
+        CtsMember member = ApplicationData.tokenMemberMap.get(token);
+        if(member == null){
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.status(200).build();
+    }
+
     /**
      * 用户登录
      * @param register
@@ -75,6 +90,7 @@ public class FastController {
         String password = register.getString("password");
         password = BCrypt.hashpw(password, BCrypt.gensalt());
         CtsMember member = new CtsMember();
+        member.setId(IdUtil.objectId());
         member.setName(username);
         member.setCreateTime(new Date());
         member.setPassword(password);

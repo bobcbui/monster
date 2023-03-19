@@ -83,7 +83,7 @@ public class GroupSocket {
             session.getPathParameters().put(me.getKey(), me.getValue().get(0));
         }
         String groupName = session.getPathParameters().get("groupName");
-        CtsGroup group = groupRepository.findByGroupName(groupName);
+        CtsGroup group = groupRepository.findByName(groupName);
         session.getBasicRemote().sendText(JSONObject.toJSONString(group));
 
         List<Session> list = groupSession.get(groupName);

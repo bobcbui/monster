@@ -134,6 +134,8 @@
 	import view_non from './view/non.js'
 	import view_message_user from './view/message_user.js'
 	import view_message_group from './view/message_group.js'
+	import view_login from './view/login.js'
+	import view_register from './view/register.js'
 	import axios from "./lib/axios.min.js"
 
 	const routes = [
@@ -141,19 +143,26 @@
 			path: '/', component: view_index,
 			children: [
 				{
-					path: "/", name: "non", component: view_non
+					path: "/", name: "home", component: view_home, children:[
+						{
+							path: "/message-user", name: "message-user", component: view_message_user
+						},
+						{
+							path: "/home", name: "home", component: view_home
+						},
+						{
+							path: "/add", name: "add", component: view_add
+						},
+						{
+							path: "/message-group", name: "message-group", component: view_message_group
+						},
+					]
 				},
 				{
-					path: "/message-user", name: "message-user", component: view_message_user
+					path: "/login", name: "login", component: view_login
 				},
 				{
-					path: "/home", name: "home", component: view_home
-				},
-				{
-					path: "/add", name: "add", component: view_add
-				},
-				{
-					path: "/message-group", name: "message-group", component: view_message_group
+					path: "/register", name: "register", component: view_register
 				}
 			]
 		},

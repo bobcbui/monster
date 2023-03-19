@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 群消息
+ * 群
  */
 @Getter
 @Setter

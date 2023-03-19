@@ -20,7 +20,7 @@ var service = axios.create();
         },
         error => {
             if (error.response.status === 401) {
-                location.href = '/login.html'
+                location.href = '/#/login'
                 return Promise.reject(error);
             }
             if (error.response.status === 500) {

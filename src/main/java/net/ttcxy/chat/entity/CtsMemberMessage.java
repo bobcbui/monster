@@ -11,14 +11,16 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 别人发送给用户的消息
+ */
 @Getter
 @Setter
 @Entity
 public class CtsMemberMessage implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     /**
      * 发送消息的用户ID

@@ -7,9 +7,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import net.ttcxy.chat.entity.CtsMemberRelation;
 
-public interface MemberRelationRepository extends CrudRepository<CtsMemberRelation,Long>  {
+public interface MemberRelationRepository extends CrudRepository<CtsMemberRelation,String>  {
 
-    List<CtsMemberRelation> findByUsername(String username);
+    List<CtsMemberRelation> findByMemberId(String memberId);
 
     List<CtsMemberRelation> findByWs(String ws);
     

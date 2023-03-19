@@ -8,6 +8,9 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 注册用户
+ */
 @Getter
 @Setter
 @Entity

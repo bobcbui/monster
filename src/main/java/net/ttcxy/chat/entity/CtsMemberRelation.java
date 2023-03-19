@@ -10,14 +10,17 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 用户关注的好友
+ */
 @Getter
 @Setter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"userId", "beUserId"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"memberId", "ws"}))
 public class CtsMemberRelation implements Serializable {
 
     @Id
-    private Long id;
+    private String id;
 
     /**
      * 发起关注的成员Id
@@ -25,14 +28,14 @@ public class CtsMemberRelation implements Serializable {
     private String memberId;
 
     /**
-     * 对被关注者的别名
-     */
-    private String anotherName;
-
-    /**
      * 被关注者的WS
      */
     private String ws;
+
+    /**
+     * 对被关注者的别名
+     */
+    private String anotherName;
 
     /**
      * 关系状态，0：被成员关注者，1：互相关注，2：拒绝接收消息

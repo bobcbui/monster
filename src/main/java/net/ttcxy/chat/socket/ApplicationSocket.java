@@ -101,8 +101,11 @@ public class ApplicationSocket {
     @OnClose
     public void onClose(Session session) {
         CtsMember member = (CtsMember)session.getUserProperties().get("memberData");
-        List<Session> localSession = ApplicationSocket.localSession.get(member.getName());
-        localSession.remove(session);
+        if(member != null){
+            List<Session> localSession = ApplicationSocket.localSession.get(member.getName());
+            localSession.remove(session);
+        }
+        
     }
 
     @OnMessage

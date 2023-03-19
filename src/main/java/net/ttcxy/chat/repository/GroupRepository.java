@@ -5,8 +5,8 @@ import org.springframework.data.repository.CrudRepository;
 
 import net.ttcxy.chat.entity.CtsGroup;
 
-public interface GroupRepository extends CrudRepository<CtsGroup,Long>  {
+public interface GroupRepository extends CrudRepository<CtsGroup,String>  {
 
-    CtsGroup findByGroupName(String groupName);
+    CtsGroup findByName(String groupName);
     
 }

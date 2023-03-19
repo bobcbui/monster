@@ -12,7 +12,7 @@ let template = // html
 		<div style="height:calc(100% - 70px); background-color:rgba(255, 190, 117, 0.3)">
 			<ul>
 				<li v-if='type == "xx"' v-for="(item,index) in $store.state.messageMap" style="border-bottom: 1px solid #a7a7a7;">
-					💬{{item.name}}<span v-if='item.message.length > 0'>:{{item.message[0].text}}</span>
+					💬{{item.group.groupName}}:<span v-if='item.message.length > 0'>{{item.message[0].text}}</span>
 				</li>
 			</ul>
 			<ul v-if='type == "qz"' v-for="item in list">
@@ -120,10 +120,11 @@ export default {
 					let group = this.all.group[index]
 					this.$store.state.socketGroupMap[group.ws] = new WebSocket(group.ws+"?checkUrl="+localStorage.getItem('checkUrl'));
 					this.$store.state.socketGroupMap[group.ws].onmessage = function(e){
-						let msg = JSON.parse(e.data)
 						if(_this.$store.state.messageMap[group.ws] == undefined){
-							_this.$store.state.messageMap[group.ws] = {name:msg.groupName,type:"message-group",ws:msg.ws,message:[]}
+							_this.$store.state.messageMap[group.ws] = {group:group,message:[]}
 						}
+						
+						let msg = JSON.parse(e.data)
 						if(msg.type == 'message'){
 							_this.$store.state.messageMap[group.ws].message.push(msg);
 						}
@@ -151,11 +152,8 @@ export default {
 			if (msg.type == 'userList') {
 				this.all.user = msg.data
 			}
-			if (msg.type == 'message') {
-				if (_this.$store.state.messageMap[msg.ws] == undefined) {
-					_this.$store.state.messageMap[msg.ws] = { name: msg.name, type: "message-user", ws: msg.ws, message: [] }
-				}
-				_this.$store.state.messageMap[msg.ws].message.push(msg);
+			if(msg.type == 'message'){
+				
 			}
 		},
 		websocketclose(e) {

@@ -22,15 +22,13 @@ public class CtsRelationUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-<<<<<<< HEAD
     private String username;
 
     // 好友昵称
     private String nickname;
-=======
-    private String userId;
->>>>>>> 98976ec (test)
 
+    private String userId;
+    
     private String beUserId;
 
     private boolean pass;

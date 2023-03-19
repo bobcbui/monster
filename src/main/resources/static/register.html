@@ -65,7 +65,7 @@
 					url: '/register',
 					data: this.loginForm,
 				}).then(response => {
-					alert(response.data)
+					alert(JSON.stringify(data))
 				}).catch(function (error) {
 					console.log(error);
 				});

@@ -63,8 +63,8 @@ public class ApplicationSocket {
     }
 
     @Autowired
-    public void setMemberRepository(MemberRepository userRepository){
-        ApplicationSocket.memberRepository = userRepository;
+    public void setMemberRepository(MemberRepository memberRepository){
+        ApplicationSocket.memberRepository = memberRepository;
     }
 
     public static Map<String,List<Session>> localSession = new HashMap<>();
@@ -76,7 +76,6 @@ public class ApplicationSocket {
         System.out.println(memberRelationRepository);
         System.out.println(memberRepository);
         System.out.println(memberMessageRepository);
-
 
         CtsMember member = ApplicationData.tokenMemberMap.get(token);
         
@@ -107,7 +106,6 @@ public class ApplicationSocket {
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-       
         
     }
 

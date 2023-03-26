@@ -31,7 +31,7 @@ import net.ttcxy.chat.repository.MemberRelationRepository;
 @Component
 public class MemberSocket {
 
-    private static Map<String,List<Session>> userSession = new HashMap<>();
+    private static Map<String,List<Session>> memberSession = new HashMap<>();
 
     private static GroupRelationRepository groupRelationRepository;
 
@@ -53,8 +53,8 @@ public class MemberSocket {
     }
 
     @Autowired
-    public void setMemberRelationRepository(MemberRelationRepository relationUserRepository){
-        MemberSocket.memberRelationRepository = relationUserRepository;
+    public void setMemberRelationRepository(MemberRelationRepository relationMemberRepository){
+        MemberSocket.memberRelationRepository = relationMemberRepository;
     }
 
     @Autowired
@@ -71,7 +71,7 @@ public class MemberSocket {
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
-        System.out.println(userSession);
+        System.out.println(memberSession);
         System.out.println(groupRelationRepository);
         System.out.println(groupRepository);
         System.out.println(memberRelationRepository);

@@ -7,7 +7,6 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +21,9 @@ import net.ttcxy.chat.code.api.ApiException;
 import net.ttcxy.chat.entity.CtsGroup;
 import net.ttcxy.chat.entity.CtsGroupRelation;
 import net.ttcxy.chat.entity.CtsMember;
+import net.ttcxy.chat.repository.GroupRelationRepository;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberRepository;
-import net.ttcxy.chat.repository.GroupRelationRepository;
 
 @RestController
 @RequestMapping
@@ -42,8 +41,8 @@ public class FastController {
     @Autowired
     HttpServletRequest request;
 
-    @GetMapping("user")
-    public ResponseEntity<CtsMember> user(){
+    @GetMapping("member")
+    public ResponseEntity<CtsMember> member(){
         CtsMember member = getMember();
         if(member == null){
             return ResponseEntity.status(401).body(member);
@@ -70,8 +69,9 @@ public class FastController {
         throw new ApiException("密码或用户名不正确！");
     }
 
-    @PostMapping("check-token/{token}")
-    public ResponseEntity<String> checkToken(@PathVariable("token")String token){
+    @GetMapping("authenticate/info")
+    public ResponseEntity<String> checkToken(HttpServletRequest request){
+        String token = request.getHeader("token");
         CtsMember member = ApplicationData.tokenMemberMap.get(token);
         if(member == null){
             return ResponseEntity.status(401).build();

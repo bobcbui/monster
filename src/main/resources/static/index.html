@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<title></title>
-	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.41/vue.global.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vue-router/4.1.5/vue-router.global.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/vuex/4.1.0/vuex.global.js"></script>
@@ -110,14 +110,17 @@
 			padding: 0 10px;
 			border-bottom: 1px solid #a7a7a7;
 		}
-		.padding-10{
-			padding:10px;
+
+		.padding-10 {
+			padding: 10px;
 		}
-		.float-right{
-			float:right;
+
+		.float-right {
+			float: right;
 		}
-		.padding-right-10{
-			padding-right:10px;
+
+		.padding-right-10 {
+			padding-right: 10px;
 		}
 	</style>
 </head>
@@ -128,12 +131,14 @@
 	</div>
 </body>
 <script type="module">
-	import view_home from './view/home.js'
 	import view_add from './view/add.js'
 	import view_index from './view/index.js'
 	import view_non from './view/non.js'
-	import view_message_user from './view/message_user.js'
-	import view_message_group from './view/message_group.js'
+	import view_message_list from './view/message_list.js'
+	import view_member_list from './view/member_list.js'
+	import view_member_message from './view/member_message.js'
+	import view_group_list from './view/group_list.js'
+	import view_group_message from './view/group_message.js'
 	import view_login from './view/login.js'
 	import view_register from './view/register.js'
 	import axios from "./lib/axios.min.js"
@@ -143,29 +148,32 @@
 			path: '/', component: view_index,
 			children: [
 				{
-					path: "/", name: "home", component: view_home, children:[
-						{
-							path: "/message-user", name: "message-user", component: view_message_user
-						},
-						{
-							path: "/home", name: "home", component: view_home
-						},
-						{
-							path: "/add", name: "add", component: view_add
-						},
-						{
-							path: "/message-group", name: "message-group", component: view_message_group
-						},
-					]
+					path: "/member-list", name: "member-list", component: view_member_list
 				},
 				{
-					path: "/login", name: "login", component: view_login
+					path: "/group-list", name: "group-list", component: view_group_list
 				},
 				{
-					path: "/register", name: "register", component: view_register
-				}
+					path: "/add", name: "add", component: view_add
+				},
+				{
+					path: "/message-list", name: "message-list", component: view_message_list
+				},
+				{
+					path: "/member-message", name: "member-message", component: view_member_message
+				},
+				{
+					path: "/group-message", name: "group-message", component: view_group_message
+				},
+
 			]
 		},
+		{
+			path: "/login", name: "login", component: view_login
+		},
+		{
+			path: "/register", name: "register", component: view_register
+		}
 	]
 
 	const router = VueRouter.createRouter({

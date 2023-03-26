@@ -31,7 +31,7 @@ export default {
                 data: this.loginForm,
             }).then(response => {
                 localStorage.setItem("token", response.data)
-                location.href = '/index.html'
+                location.href = '/'
             }).catch(function (error) {
                 console.log(error);
             });

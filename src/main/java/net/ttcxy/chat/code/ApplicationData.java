@@ -13,7 +13,7 @@ public class ApplicationData {
 
     public final static Map<String, CtsMember> tokenSocketMap = new HashMap<>();
 
-    public final static Map<Long, List<Session>> userIdSessionMap = new HashMap<>();
+    public final static Map<Long, List<Session>> memberIdSessionMap = new HashMap<>();
 
     public final static Map<Long, List<Session>> groupIdSessionMap = new HashMap<>();
 

@@ -48,9 +48,9 @@ public class JwtFilter implements Filter {
         }
 
         String token = request.getHeader("token");
-        CtsMember user = ApplicationData.tokenMemberMap.get(token);
+        CtsMember member = ApplicationData.tokenMemberMap.get(token);
 
-        if(user == null){
+        if(member == null){
             response.setStatus(401);
             return;
         }

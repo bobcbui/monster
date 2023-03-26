@@ -60,13 +60,13 @@ public class GroupSocket {
     }
 
     @Autowired
-    public void setMemberRelationRepository(MemberRelationRepository relationUserRepository){
-        GroupSocket.memberRelationRepository = relationUserRepository;
+    public void setMemberRelationRepository(MemberRelationRepository relationMemberRepository){
+        GroupSocket.memberRelationRepository = relationMemberRepository;
     }
 
     @Autowired
-    public void setMemberRepository(MemberRepository userRepository){
-        GroupSocket.memberRepository = userRepository;
+    public void setMemberRepository(MemberRepository memberRepository){
+        GroupSocket.memberRepository = memberRepository;
     }
 
     @OnOpen
@@ -93,7 +93,7 @@ public class GroupSocket {
         list.add(session);
 
         String body = HttpUtil.get(session.getPathParameters().get("checkUrl"));
-        session.getUserProperties().put("userData", JSONObject.parseObject(body));
+        session.getUserProperties().put("memberData", JSONObject.parseObject(body));
     }
 
     @OnClose

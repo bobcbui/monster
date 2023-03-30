@@ -17,7 +17,6 @@ import com.alibaba.fastjson.JSONObject;
 import cn.hutool.core.util.IdUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import net.ttcxy.chat.code.ApplicationData;
-import net.ttcxy.chat.code.api.ApiException;
 import net.ttcxy.chat.entity.CtsGroup;
 import net.ttcxy.chat.entity.CtsGroupRelation;
 import net.ttcxy.chat.entity.CtsMember;
@@ -66,7 +65,7 @@ public class FastController {
             ApplicationData.tokenMemberMap.put(token, member);
             return token;
         }
-        throw new ApiException("密码或用户名不正确！");
+        throw new RuntimeException("密码或用户名不正确！");
     }
 
     @GetMapping("authenticate/info")

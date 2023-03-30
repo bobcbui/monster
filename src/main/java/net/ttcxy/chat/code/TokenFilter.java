@@ -16,7 +16,7 @@ import net.ttcxy.chat.entity.CtsMember;
 import org.springframework.util.AntPathMatcher;
 
 @WebFilter(urlPatterns = "/*", filterName = "allFilter")
-public class JwtFilter implements Filter {
+public class TokenFilter implements Filter {
 
     private final static AntPathMatcher matcher = new AntPathMatcher();  
 
@@ -50,6 +50,7 @@ public class JwtFilter implements Filter {
         String token = request.getHeader("token");
         CtsMember member = ApplicationData.tokenMemberMap.get(token);
 
+        // 未登录
         if(member == null){
             response.setStatus(401);
             return;

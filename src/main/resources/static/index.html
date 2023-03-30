@@ -25,154 +25,47 @@
 			box-sizing: border-box;
 		}
 
-		main {
-			position: absolute;
-			bottom: 0;
-			right: 0;
-			z-index: 1;
-			height: 100%;
-			width: calc(100% - 300px) !important;
-			border: 1px solid #24649f;
-			background-color: aliceblue;
-			overflow-y: auto;
-		}
-
-		section {
-			height: 100%;
-			position: relative;
-		}
-
-		aside {
-			z-index: 2;
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			width: 300px;
-			border: 1px solid #24649f;
-			height: 100%;
-			border-right: 0;
-		}
-
 		ul {
 			padding: 0;
-			margin: 0;
 		}
 
 		li {
 			list-style-type: none;
-			padding-left: 10px;
-			line-height: 42px;
-			white-space: nowrap;
 		}
 
 		li:hover {
 			background: #efecec;
 		}
-
-		a:link {
-			color: rgb(0, 81, 202);
-			text-decoration: none;
-		}
-
-		/* 未访问的链接 */
-		a:visited {
-			color: rgb(0, 81, 202);
-			text-decoration: line-through;
-		}
-
-		/* 已访问的链接 */
-
-		@media(max-width:768px) {
-			aside {
-				width: 100%;
-				background: #f4f4f5;
-				border-right: 1px solid #24649f;
-
-			}
-
-			main {
-				width: 100% !important;
-			}
-
-			.z-index-top {
-				z-index: 3;
-			}
-
-			[v-cloak] {
-				display: none;
-			}
-		}
-
-		.nav-head {
-			height: 40px;
-			background-color: azure;
-			line-height: 40px;
-			padding: 0 10px;
-			border-bottom: 1px solid #a7a7a7;
-		}
-
-		.padding-10 {
-			padding: 10px;
-		}
-
-		.float-right {
-			float: right;
-		}
-
-		.padding-right-10 {
-			padding-right: 10px;
-		}
 	</style>
 </head>
 
 <body>
-	<div id="app" v-cloak>
+	<div id="app" v-cloak style="max-width: 500px;border:1px solid black;margin:auto;">
 		<router-view></router-view>
 	</div>
 </body>
 <script type="module">
-	import view_add from './view/add.js'
-	import view_index from './view/index.js'
-	import view_non from './view/non.js'
-	import view_message_list from './view/message_list.js'
-	import view_member_list from './view/member_list.js'
-	import view_member_message from './view/member_message.js'
-	import view_group_list from './view/group_list.js'
-	import view_group_message from './view/group_message.js'
-	import view_login from './view/login.js'
-	import view_register from './view/register.js'
-	import axios from "./lib/axios.min.js"
 
 	const routes = [
 		{
-			path: '/', component: view_index,
+			path: '/', redirect:'/message', component:() => import('./view/index.js'),
 			children: [
 				{
-					path: "/member-list", name: "member-list", component: view_member_list
+					path: "/message", name: "message",  component:() => import('./view/message.js')
 				},
 				{
-					path: "/group-list", name: "group-list", component: view_group_list
+					path: "/group", name: "group",  component:() => import('./view/group.js')
 				},
 				{
-					path: "/add", name: "add", component: view_add
-				},
-				{
-					path: "/message-list", name: "message-list", component: view_message_list
-				},
-				{
-					path: "/member-message", name: "member-message", component: view_member_message
-				},
-				{
-					path: "/group-message", name: "group-message", component: view_group_message
-				},
-
+					path: "/member", name: "member",  component:() => import('./view/member.js')
+				}
 			]
 		},
 		{
-			path: "/login", name: "login", component: view_login
+			path: "/login", name: "login", component: () => import('./view/login.js')
 		},
 		{
-			path: "/register", name: "register", component: view_register
+			path: "/register", name: "register", component: () => import('./view/register.js')
 		}
 	]
 
@@ -185,24 +78,21 @@
 
 	let store = Vuex.createStore({
 		state: {
-			indexItem: "main",
 			socketLocal: null,
 			socketMessage: null,
 			socketGroupMap: {},
 			messageMap: {}
+		},
+		mutations:{
+			load(){
+
+			}
 		}
 	})
 
 	router.afterEach((to) => {
 		try {
-			if (document.body.clientWidth <= 768) {
-				if (to.path === "/") {
-					store.state.indexItem = "aside"
-				} else {
-					store.state.indexItem = "main"
-				}
-			}
-			console.log(store.state)
+			console.log("afterEach =====================")
 		} catch (e) {
 			console.log(e)
 		}

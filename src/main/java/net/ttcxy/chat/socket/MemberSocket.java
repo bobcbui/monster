@@ -27,7 +27,7 @@ import net.ttcxy.chat.repository.MemberRelationRepository;
 /**
  * 发送消息使用
  */
-@ServerEndpoint(value = "/{username}")
+@ServerEndpoint(value = "/member/{username}")
 @Component
 public class MemberSocket {
 

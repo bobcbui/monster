@@ -1,12 +1,6 @@
 let template = // html
 `
-<div>
-	<ul>
-		<li v-for="(item,index) in groupList">
-			{{item.groupName}}：{{item.nickname}}：<a>进入</a>
-		</li>
-	</ul>
-</div>
+group
 `
 
 import request from '../lib/request.js'

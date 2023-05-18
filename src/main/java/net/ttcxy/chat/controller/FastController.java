@@ -70,13 +70,13 @@ public class FastController {
     }
 
     @GetMapping("authenticate/info")
-    public ResponseEntity<String> checkToken(HttpServletRequest request){
+    public ResponseEntity<CtsMember> checkToken(HttpServletRequest request){
         String token = request.getHeader("token");
         CtsMember member = ApplicationData.tokenMemberMap.get(token);
         if(member == null){
             return ResponseEntity.status(401).build();
         }
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.ok(member);
     }
 
     /**

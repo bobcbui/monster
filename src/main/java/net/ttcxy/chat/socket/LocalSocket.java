@@ -14,7 +14,6 @@ import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.entity.CtsMember;
@@ -27,9 +26,9 @@ import net.ttcxy.chat.repository.MemberRepository;
 /**
  * 本地用户接收消息使用
  */
-@ServerEndpoint(value = "/local/{token}")
+@ServerEndpoint(value = "/local")
 @Component
-public class ApplicationSocket {
+public class LocalSocket {
 
     private static GroupRelationRepository groupRelationRepository;
 
@@ -43,39 +42,36 @@ public class ApplicationSocket {
 
     @Autowired
     public void setRelationGroupRepository(MemberMessageRepository messageRepository){
-        ApplicationSocket.memberMessageRepository = messageRepository;
+        LocalSocket.memberMessageRepository = messageRepository;
     }
 
 
     @Autowired
     public void setGroupRelationRepository(GroupRelationRepository relationGroupRepository){
-        ApplicationSocket.groupRelationRepository = relationGroupRepository;
+        LocalSocket.groupRelationRepository = relationGroupRepository;
     }
 
     @Autowired
     public void setGroupRepository(GroupRepository groupRepository){
-        ApplicationSocket.groupRepository = groupRepository;
+        LocalSocket.groupRepository = groupRepository;
     }
 
     @Autowired
     public void setMemberRelationRepository(MemberRelationRepository relationUserRepository){
-        ApplicationSocket.memberRelationRepository = relationUserRepository;
+        LocalSocket.memberRelationRepository = relationUserRepository;
     }
 
     @Autowired
     public void setMemberRepository(MemberRepository memberRepository){
-        ApplicationSocket.memberRepository = memberRepository;
+        LocalSocket.memberRepository = memberRepository;
     }
 
     public static Map<String,List<Session>> localSession = new HashMap<>();
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("token") String token) throws IOException {
-        System.out.println(groupRelationRepository);
-        System.out.println(groupRepository);
-        System.out.println(memberRelationRepository);
-        System.out.println(memberRepository);
-        System.out.println(memberMessageRepository);
+    public void onOpen(Session session) throws IOException {
+
+        String token = session.getRequestParameterMap().get("token").get(0);
 
         CtsMember member = ApplicationData.tokenMemberMap.get(token);
         
@@ -93,13 +89,14 @@ public class ApplicationSocket {
         
         list.add(session);
         session.getUserProperties().put("memberData", member);
+        session.getAsyncRemote().sendText("连接成功");
     }
 
     @OnClose
     public void onClose(Session session) {
         CtsMember member = (CtsMember)session.getUserProperties().get("memberData");
         if(member != null){
-            List<Session> localSession = ApplicationSocket.localSession.get(member.getName());
+            List<Session> localSession = LocalSocket.localSession.get(member.getName());
             localSession.remove(session);
         }
     }

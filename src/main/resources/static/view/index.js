@@ -7,7 +7,9 @@ let template = // html
 	<router-link :to="{name:'me'}"> 我的 </router-link>
 	<hr>
 </div>
-<router-view></router-view>
+<div>
+	<router-view></router-view>
+</div>
 `
 
 import request from '../lib/request.js'
@@ -15,6 +17,7 @@ export default {
 	template: template,
 	data: function () {
 		return {
+			
 		}
 	},
 	destroyed() {

@@ -9,6 +9,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -89,7 +92,6 @@ public class LocalSocket {
         
         list.add(session);
         session.getUserProperties().put("memberData", member);
-        session.getAsyncRemote().sendText("连接成功");
     }
 
     @OnClose
@@ -103,11 +105,40 @@ public class LocalSocket {
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-        
+        JSONObject parse = JSONObject.parseObject(message);
+        String type = parse.getString("type");
+        switch(type){
+            case "login":
+                String token = parse.getString("token");
+                CtsMember member = ApplicationData.tokenMemberMap.get(token);
+                if(member == null){
+                    session.close();
+                }else{
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("type", "loginMessage");
+                    jsonObject.put("context", "OK");
+                    session.getAsyncRemote().sendText(jsonObject.toJSONString());
+                    List<Session> sessionList = getSessionList(member.getName());
+                    sessionList.add(session);
+                    session.getUserProperties().put("memberData", member);
+                }
+            break;
+        }
     }
 
     @OnError
     public void onError(Session session, Throwable error) {
 
+    }
+
+    private List<Session> getSessionList(String member){
+        // 获取用户的SessionList 
+        List<Session> list = localSession.get(member);
+
+        if(list == null){
+            list = new ArrayList<>();
+            localSession.put(member, list);
+        }
+        return list;
     }
 }

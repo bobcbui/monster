@@ -17,7 +17,6 @@ export default {
 	template: template,
 	data: function () {
 		return {
-			
 		}
 	},
 	destroyed() {
@@ -26,25 +25,9 @@ export default {
 	methods: {
 		createGroupWebSocket(url){
 			let socket = new WebSocket(url + "?checkUrl=" + localStorage.getItem("checkUrl"));
-			let that = this;
+			this.$store.state.socketGroup[url] = socket;
 			socket.onopen = function(e){
-				that.$store.state.socketGroup[url] = socket;
-			};
-			socket.onmessage = function(e){
 				
-			};
-			socket.onclose = function(e){
-				
-			};
-			socket.onerror = function(e){
-				
-			};
-		},
-		createMemberWebSocket(url){
-			let socket = new WebSocket(url + "?checkUrl=" + localStorage.getItem("checkUrl"));
-			let that = this;
-			socket.onopen = function(e){
-				that.$store.state.socketMember = socket;
 			};
 			socket.onmessage = function(e){
 				
@@ -58,19 +41,47 @@ export default {
 		},
 		createLoadWebSocket(url){
 			let socket = new WebSocket(url + "?token=" + localStorage.getItem("token"));
+			this.$store.state.socketLocal = socket;
 			let that = this;
+
 			socket.onopen = function(e){
-				that.$store.state.socketLocal = socket;
+				// 加载成功获取member 和 group 列表
+				socket.send(JSON.stringify({type: "memberList"}))
+				socket.send(JSON.stringify({type: "groupList"}))
 			};
 			socket.onmessage = function(e){
+				let data = JSON.parse(e.data);
+
+				if(data.type == "memberList"){
+					debugger
+					that.$store.state.memberList = JSON.parse(data.data)
+					console.log(data.data)
+				}
+
+				if(data.type == "memberMessage"){
+					//that.$store.state.memberMessage[data.ws].push(data)
+					console.log(data)
+				}
 				
+				if(data.type == "groupList"){
+					that.$store.state.groupList = data.data
+					console.log(data.data)
+				}
+
+				if(data.type == "groupMessage"){
+					that.$store.state.groupList = data
+					console.log(data.data)
+				}
 			};
 			socket.onclose = function(e){
-				
+				console.log("onclose")
+				console.log(e)
 			};
 			socket.onerror = function(e){
-				
+				console.log("onerror")
+				console.log(e)
 			};
+			
 		}
 	},
 	created() {
@@ -81,5 +92,7 @@ export default {
 			this.$store.state.member = response.data
 		});
 		this.createLoadWebSocket("ws://localhost:9090/local")
+	},
+	mounted() {
 	}
 }

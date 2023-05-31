@@ -8,6 +8,7 @@
 	<script src="/lib/vue.global.js"></script>
 	<script src="/lib/vue-router.global.js"></script>
 	<script src="/lib/vuex.global.js"></script>
+	<script src="/lib/common.js"></script>
 	<style>
 		body {
 			margin: 0;
@@ -84,6 +85,10 @@
 			socketLocal: null,
 			socketGroup: null,
 			socketMember: null,
+			groupList:[],
+			groupListMessage:{},
+			memberList:[],
+			memberListMessage:{}
 		}
 	})
 

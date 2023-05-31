@@ -20,14 +20,19 @@ public class CtsMemberMessage implements Serializable {
     private String id;
 
     /**
-     * 发送消息的用户ID
+     * 发送消息的用户 WS
      */
-    private String sendMemberId;
+    private String sendMemberWs;
 
     /**
-     * 接收消息的用户ID
+     * 接收消息的用户 Ws
      */
-    private String acceptMemberId;
+    private String acceptMemberWs;
+
+    /**
+     * 消息所属用户
+     */
+    private String memberId;
 
     /**
      * 消息内容HTML

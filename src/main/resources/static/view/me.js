@@ -1,7 +1,8 @@
 let template = // html
 `
 <div v-if="member!=null">
-用户名：{{member.name}}
+用户名：{{member.name}}<br>
+ws：{{member.ws}}<br>
 </div>
 `
 

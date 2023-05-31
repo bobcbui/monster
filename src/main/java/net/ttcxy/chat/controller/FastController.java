@@ -7,6 +7,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +59,7 @@ public class FastController {
     public String authorize(@RequestBody JSONObject login) {
         String username = login.getString("username");
         String password = login.getString("password");
-        CtsMember member = memberRepository.findByName(username);
+        CtsMember member = memberRepository.findByUsername(username);
 
         if(BCrypt.checkpw(password, member.getPassword())){
             String token = UUID.randomUUID().toString();
@@ -90,7 +91,7 @@ public class FastController {
         password = BCrypt.hashpw(password, BCrypt.gensalt());
         CtsMember member = new CtsMember();
         member.setId(IdUtil.objectId());
-        member.setName(username);
+        member.setUsername(username);
         member.setCreateTime(new Date());
         member.setPassword(password);
         return memberRepository.save(member);
@@ -100,7 +101,7 @@ public class FastController {
      * OneToken 用于添加好友，添加群时给其他服务器验证Token是否有效的一个一次性Token
      * @return
      */
-    @PostMapping("one-token")
+    @GetMapping("one-token")
     public ResponseEntity<String> createToken(){
         String token = UUID.randomUUID().toString();
         if(getMember() != null){
@@ -109,6 +110,14 @@ public class FastController {
         }
         return ResponseEntity.status(401).build();
         
+    }
+
+    // 验证 one-token
+    @GetMapping("/check/{token}")
+    public CtsMember checkOneToken(@PathVariable("token") String token){
+        CtsMember ctsMember = ApplicationData.tokenSocketMap.get(token);
+        ApplicationData.tokenSocketMap.remove(token);
+        return ctsMember;
     }
 
     /**

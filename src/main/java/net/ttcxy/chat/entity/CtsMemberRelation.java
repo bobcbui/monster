@@ -33,9 +33,19 @@ public class CtsMemberRelation implements Serializable {
     private String ws;
 
     /**
-     * 对被关注者的别名
+     * 用户名
      */
-    private String anotherName;
+    private String username;
+
+    /**
+     * 昵称
+     */
+    private String nickname;
+
+    /**
+     * 别名
+     */
+    private String alias;
 
     /**
      * 关系状态，0：被成员关注者，1：互相关注，2：拒绝接收消息

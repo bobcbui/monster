@@ -22,7 +22,7 @@ public class CtsMember implements Serializable{
     /**
      * 6~15位英文数字组合，不可变更
      */
-    private String name;
+    private String username;
 
     /**
      * 昵称
@@ -38,5 +38,9 @@ public class CtsMember implements Serializable{
      * 创建时间
      */
     private Date createTime;
+
+    public String getWs(){
+        return "ws://localhost:9090/member/"+username;
+    }
 
 }

@@ -8,8 +8,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -18,6 +21,7 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import net.ttcxy.chat.entity.CtsMember;
+import net.ttcxy.chat.entity.CtsMemberRelation;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberRepository;
 import net.ttcxy.chat.repository.MemberMessageRepository;
@@ -40,6 +44,7 @@ public class MemberSocket {
     private static MemberRelationRepository memberRelationRepository;
 
     private static MemberRepository memberRepository;
+
 
 
     @Autowired
@@ -85,15 +90,14 @@ public class MemberSocket {
         String checkUrl =  session.getPathParameters().get("checkUrl");
 
         String body = HttpUtil.get(checkUrl);
-
         JSONObject parseObject = JSONObject.parseObject(body);
 
         String username = session.getPathParameters().get("username");
 
-        CtsMember member = memberRepository.findById(username).orElseThrow();
+        CtsMember member = memberRepository.findByUsername(username);
 
-        session.getUserProperties().put("sendMemberData", parseObject);
-        session.getUserProperties().put("memberSocket", member);
+        session.getUserProperties().put("member", member );
+        session.getUserProperties().put("beMember",parseObject );
     }
 
     @OnClose
@@ -103,7 +107,32 @@ public class MemberSocket {
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
+        JSONObject jsonObject = JSON.parseObject(message);
+        String type = jsonObject.getString("type");
+        if(type.equals("joinMember")){
+            CtsMember member = (CtsMember)session.getUserProperties().get("member");
+            JSONObject beMember = (JSONObject)session.getUserProperties().get("beMember");
+            String username = beMember.getString("name");
+            String nickname = beMember.getString("nickname");
+            String ws = beMember.getString("ws");
 
+            CtsMemberRelation memberRelation = new CtsMemberRelation();
+            memberRelation.setId(IdUtil.objectId());
+            memberRelation.setWs(ws);
+            memberRelation.setNickname(nickname);
+            memberRelation.setUsername(username);
+            memberRelation.setCreateTime(DateUtil.date());
+            memberRelation.setState(0);
+            memberRelation.setMemberId(member.getId());
+            
+            memberRelationRepository.save(memberRelation);
+
+            Map<String,Object> map = new HashMap<>();
+            map.put("type","joinMember");
+            map.put("member",member);
+            session.getAsyncRemote().sendText(JSON.toJSONString(map));
+
+        }
     }
 
     @OnError

@@ -44,6 +44,16 @@ public class CtsGroupRelation implements Serializable {
     private String memberWs;
 
     /**
+     * 成员用户名
+     */
+    private String memberUsername;
+
+    /**
+     * 成员昵称
+     */
+    private String memberNickname;
+
+    /**
      * 创建时间
      */
     private Date createTime;

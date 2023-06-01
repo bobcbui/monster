@@ -109,17 +109,16 @@ public class MemberSocket {
     public void onMessage(String message, Session session) throws IOException {
         JSONObject jsonObject = JSON.parseObject(message);
         String type = jsonObject.getString("type");
+        CtsMember member = (CtsMember)session.getUserProperties().get("member");
         if(type.equals("joinMember")){
-            CtsMember member = (CtsMember)session.getUserProperties().get("member");
             JSONObject beMember = (JSONObject)session.getUserProperties().get("beMember");
-            String username = beMember.getString("name");
-            String nickname = beMember.getString("nickname");
+            String username = beMember.getString("username");
             String ws = beMember.getString("ws");
 
             CtsMemberRelation memberRelation = new CtsMemberRelation();
             memberRelation.setId(IdUtil.objectId());
             memberRelation.setWs(ws);
-            memberRelation.setNickname(nickname);
+            memberRelation.setNickname(username);
             memberRelation.setUsername(username);
             memberRelation.setCreateTime(DateUtil.date());
             memberRelation.setState(0);
@@ -128,10 +127,16 @@ public class MemberSocket {
             memberRelationRepository.save(memberRelation);
 
             Map<String,Object> map = new HashMap<>();
-            map.put("type","joinMember");
+            map.put("type",type);
             map.put("member",member);
             session.getAsyncRemote().sendText(JSON.toJSONString(map));
 
+        }
+        if(type.equals("searchMember")){
+            Map<String,Object> map = new HashMap<>();
+            map.put("type",type);
+            map.put("member",member);
+            session.getAsyncRemote().sendText(JSON.toJSONString(map));
         }
     }
 

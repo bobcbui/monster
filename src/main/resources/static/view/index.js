@@ -53,7 +53,6 @@ export default {
 				let data = JSON.parse(e.data);
 
 				if(data.type == "memberList"){
-					debugger
 					that.$store.state.memberList = JSON.parse(data.data)
 					console.log(data.data)
 				}
@@ -64,7 +63,7 @@ export default {
 				}
 				
 				if(data.type == "groupList"){
-					that.$store.state.groupList = data.data
+					that.$store.state.groupList = JSON.parse(data.data)
 					console.log(data.data)
 				}
 

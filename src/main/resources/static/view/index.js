@@ -1,13 +1,12 @@
 let template = // html
 `
-<div style='text-align: center;padding-top:8px'>
+<div style='text-align: center;padding-top:8px;border-bottom:1px solid black;padding-bottom:10px'>
 	<router-link :to="{name:'message'}"> 消息 </router-link>
 	<router-link :to="{name:'group'}"> 群组 </router-link>
 	<router-link :to="{name:'member'}"> 好友 </router-link>
 	<router-link :to="{name:'me'}"> 我的 </router-link>
-	<hr>
 </div>
-<div>
+<div style='height: calc(100% - 40px);'>
 	<router-view></router-view>
 </div>
 `
@@ -40,12 +39,12 @@ export default {
 			};
 		},
 		createLoadWebSocket(url){
-			let socket = new WebSocket(url + "?token=" + localStorage.getItem("token"));
-			this.$store.state.socketLocal = socket;
 			let that = this;
-
+			console.log(url + "?token=" + localStorage.getItem("token"))
+			let socket = new WebSocket(url + "?token=" + localStorage.getItem("token"));
 			socket.onopen = function(e){
 				// 加载成功获取member 和 group 列表
+				//that.$store.state.socketLocal = socket;
 				socket.send(JSON.stringify({type: "memberList"}))
 				socket.send(JSON.stringify({type: "groupList"}))
 			};
@@ -84,6 +83,9 @@ export default {
 		}
 	},
 	created() {
+		
+	},
+	mounted() {
 		request({
 			url: "/authenticate/info",
 			method: "GET"
@@ -91,7 +93,5 @@ export default {
 			this.$store.state.member = response.data
 		});
 		this.createLoadWebSocket("ws://localhost:9090/local")
-	},
-	mounted() {
 	}
 }

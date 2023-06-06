@@ -99,7 +99,7 @@ public class LocalSocket {
             list.add(session);
             session.getUserProperties().put("memberData", member);
             session.getAsyncRemote().sendText(resultMap("system", "连接成功"));
-            session.getAsyncRemote().sendText(resultMap("message", "连接成功"));
+            //session.getAsyncRemote().sendText(resultMap("message", "连接成功"));
         } catch (Exception e) {
             e.printStackTrace();
         }

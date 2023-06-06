@@ -12,7 +12,7 @@ let template = // html
 
 
 <ul style='margin:0px'>
-	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in memberList' :key='index'>{{item.username}}</li>
+	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in memberList' :key='index' @click='toMemberMessage(item)'>{{item.username}}</li>
 </ul>
 `
 import request from '../lib/request.js'
@@ -39,6 +39,9 @@ export default {
         }
     },
     methods: {
+        toMemberMessage(item){
+            this.$router.push({ path: '/member-message', query: { ws: item.ws }})
+        },
         searchMember(){
             request({
                 method: 'get',

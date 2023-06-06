@@ -35,7 +35,7 @@ import net.ttcxy.chat.repository.MemberRelationRepository;
 @Component
 public class MemberSocket {
 
-    private static Map<String,List<Session>> memberSession = new HashMap<>();
+    private static Map<String, List<Session>> memberSession = new HashMap<>();
 
     private static GroupRelationRepository groupRelationRepository;
 
@@ -45,32 +45,30 @@ public class MemberSocket {
 
     private static MemberRepository memberRepository;
 
-
-
     @Autowired
-    public void setGroupRelationRepository(GroupRelationRepository relationGroupRepository){
+    public void setGroupRelationRepository(GroupRelationRepository relationGroupRepository) {
         MemberSocket.groupRelationRepository = relationGroupRepository;
     }
 
     @Autowired
-    public void setGroupRepository(GroupRepository groupRepository){
+    public void setGroupRepository(GroupRepository groupRepository) {
         MemberSocket.groupRepository = groupRepository;
     }
 
     @Autowired
-    public void setMemberRelationRepository(MemberRelationRepository relationMemberRepository){
+    public void setMemberRelationRepository(MemberRelationRepository relationMemberRepository) {
         MemberSocket.memberRelationRepository = relationMemberRepository;
     }
 
     @Autowired
-    public void setMemberRepository(MemberRepository memberRepository){
+    public void setMemberRepository(MemberRepository memberRepository) {
         MemberSocket.memberRepository = memberRepository;
     }
 
     private static MemberMessageRepository messageRepository;
 
     @Autowired
-    public void setRelationGroupRepository(MemberMessageRepository messageRepository){
+    public void setRelationGroupRepository(MemberMessageRepository messageRepository) {
         MemberSocket.messageRepository = messageRepository;
     }
 
@@ -87,7 +85,7 @@ public class MemberSocket {
         for (Map.Entry<String, List<String>> me : requestParameterMap.entrySet()) {
             session.getPathParameters().put(me.getKey(), me.getValue().get(0));
         }
-        String checkUrl =  session.getPathParameters().get("checkUrl");
+        String checkUrl = session.getPathParameters().get("checkUrl");
 
         String body = HttpUtil.get(checkUrl);
         JSONObject parseObject = JSONObject.parseObject(body);
@@ -96,22 +94,22 @@ public class MemberSocket {
 
         CtsMember member = memberRepository.findByUsername(username);
 
-        session.getUserProperties().put("member", member );
-        session.getUserProperties().put("beMember",parseObject );
+        session.getUserProperties().put("member", member);
+        session.getUserProperties().put("beMember", parseObject);
     }
 
     @OnClose
     public void onClose(Session session) {
-        
+
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         JSONObject jsonObject = JSON.parseObject(message);
         String type = jsonObject.getString("type");
-        CtsMember member = (CtsMember)session.getUserProperties().get("member");
-        if(type.equals("joinMember")){
-            JSONObject beMember = (JSONObject)session.getUserProperties().get("beMember");
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        if (type.equals("joinMember")) {
+            JSONObject beMember = (JSONObject) session.getUserProperties().get("beMember");
             String username = beMember.getString("username");
             String ws = beMember.getString("ws");
 
@@ -123,20 +121,31 @@ public class MemberSocket {
             memberRelation.setCreateTime(DateUtil.date());
             memberRelation.setState(0);
             memberRelation.setMemberId(member.getId());
-            
+
             memberRelationRepository.save(memberRelation);
 
-            Map<String,Object> map = new HashMap<>();
-            map.put("type",type);
-            map.put("member",member);
+            Map<String, Object> map = new HashMap<>();
+            map.put("type", type);
+            map.put("member", member);
             session.getAsyncRemote().sendText(JSON.toJSONString(map));
 
         }
-        if(type.equals("searchMember")){
-            Map<String,Object> map = new HashMap<>();
-            map.put("type",type);
-            map.put("member",member);
+        if (type.equals("searchMember")) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("type", type);
+            map.put("member", member);
             session.getAsyncRemote().sendText(JSON.toJSONString(map));
+        }
+        if (type.equals("message")) {
+            Map<String, String> map = new HashMap<>();
+            map.put("type", type);
+            map.put("id", jsonObject.getString("id"));
+            map.put("data", "success");
+            session.getAsyncRemote().sendText(JSON.toJSONString(map));
+
+            for (Session list : LocalSocket.localSession.get(member.getUsername())) {
+                list.getAsyncRemote().sendText(message);
+            }
         }
     }
 

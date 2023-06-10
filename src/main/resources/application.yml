@@ -26,4 +26,8 @@ spring:
     locale: zh_CN
   mvc:
     throwExceptionIfNoHandlerFound: true
-host: ws://localhost:9090
+chat:
+  net-version: v1
+  domain: localhost:9090
+  member-prefix: member
+  group-prefix: group

@@ -16,35 +16,23 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"memberId", "ws"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"memberId", "account"}))
 public class CtsMemberRelation implements Serializable {
 
     @Id
     private String id;
 
-    /**
-     * 发起关注的成员Id
-     */
     private String memberId;
 
     /**
-     * 被关注者的WS
+     * 被关注者账户
      */
-    private String ws;
+    private String account;
 
-    /**
-     * 用户名
-     */
     private String username;
 
-    /**
-     * 昵称
-     */
     private String nickname;
 
-    /**
-     * 别名
-     */
     private String alias;
 
     /**
@@ -52,9 +40,6 @@ public class CtsMemberRelation implements Serializable {
      */
     private Integer state;
     
-    /**
-     * 关系创建时间
-     */
     private Date createTime;
 
 }

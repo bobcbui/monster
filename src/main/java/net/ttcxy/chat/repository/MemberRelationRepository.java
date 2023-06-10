@@ -11,6 +11,6 @@ public interface MemberRelationRepository extends CrudRepository<CtsMemberRelati
 
     List<CtsMemberRelation> findByMemberId(String memberId);
 
-    List<CtsMemberRelation> findByWs(String ws);
+    List<CtsMemberRelation> findByAccount(String account);
     
 }

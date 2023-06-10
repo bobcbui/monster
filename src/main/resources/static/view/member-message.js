@@ -1,7 +1,7 @@
 let template = // html
 `
 <div style='height: calc(100% - 30px);overflow-y: scroll;'>
-  <div v-for='(item,index) in messageList'>{{item.data}} <span v-if='!item.state' style='color:red'>.</span></div>
+  <div v-for='(item,index) in messageList'>{{item.data}} . {{item.to}}<span v-if='!item.state' style='color:red'>.</span></div>
 </div>
 <div style="height:30px">
     <input v-model="message" style="width:70%;height:30px"/><button @click="send" style="width:30%;height:30px">发送</button>
@@ -13,15 +13,16 @@ export default {
     data: function () {
         return {
            memberSocket:null,
-           socketState:false,
-           messageList:[]
+           socketState:false
         }
     },
     wathc:{
 
     },
     computed: {
-       
+       messageList(){
+        return this.$store.state.memberListMessage[this.$route.query.account];
+       }
     },
     methods: {
         createMemberSocket(){
@@ -30,7 +31,8 @@ export default {
                 method: 'get',
                 url: '/one-token',
             }).then(response => {
-                let socket = new WebSocket(_this.$route.query.ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
+                let ws = decodeAccount(this.$route.query.account);
+                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
                 socket.onopen = function(e){
                     _this.memberSocket = socket;
                     _this.socketState = true;
@@ -43,6 +45,14 @@ export default {
                             if(item.id == id){
                                 console.log(item)
                                 item.state = true;
+                                let message = { 
+                                    type: "saveMessage", 
+                                    data: item.data, 
+                                    orderId: item.orderId , 
+                                    account: _this.$route.query.account
+                                }
+                                _this.$store.state.socketLocal.send(JSON.stringify(message))
+                                return;
                             }
                         })
                     }
@@ -61,9 +71,16 @@ export default {
         },
         send(){
             var  long = new Date().getTime() + Math.random().toString(16).slice(2);
-            let message = { type: "message", data: this.message, id: long,state:false}
+            let message = { type: "message", data: this.message, orderId: long}
+            if(this.$store.state.memberListMessage[this.$route.query.account] == undefined){
+                this.$store.state.memberListMessage[this.$route.query.account] = []
+            }
             this.memberSocket.send(JSON.stringify(message))
-            this.messageList.push(message)
+            message.state = false
+            message.to = true
+            
+            
+            this.$store.state.memberListMessage[this.$route.query.account].push(message)
         }
     },
     created() {

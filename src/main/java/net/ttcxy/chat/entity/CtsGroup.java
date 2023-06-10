@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import net.ttcxy.chat.util.SpringUtil;
 
 /**
  * 群
@@ -43,5 +44,16 @@ public class CtsGroup implements Serializable {
      * 创建时间
      */
     private Date createTime;
+
+    /**
+     * 账户
+     */
+    public String getAccount(){
+        String prefix = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.group-prefix");
+        String domain = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.domain");
+        String netVersion = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.net-version");
+        // base64加密
+        return java.util.Base64.getEncoder().encodeToString((netVersion+"$"+domain+"$"+prefix+"/"+name).getBytes());
+    }
 
 }

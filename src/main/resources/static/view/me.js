@@ -1,8 +1,8 @@
 let template = // html
 `
 <div v-if="member!=null">
-用户名：{{member.name}}<br>
-ws：{{member.ws}}<br>
+名称：{{member.username}}<br>
+账号：{{member.account}}<br>
 </div>
 `
 

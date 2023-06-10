@@ -31,6 +31,7 @@ import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberMessageRepository;
 import net.ttcxy.chat.repository.MemberRelationRepository;
 import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.service.LocalSocketService;
 
 /**
  * 本地用户接收消息使用
@@ -74,6 +75,13 @@ public class LocalSocket {
         LocalSocket.memberRepository = memberRepository;
     }
 
+    private static LocalSocketService localSocketService;
+
+    @Autowired
+    public void setLocalSocketService(LocalSocketService localSocketService) {
+        LocalSocket.localSocketService = localSocketService;
+    }
+
     public static Map<String, List<Session>> localSession = new HashMap<>();
 
     @OnOpen
@@ -99,7 +107,6 @@ public class LocalSocket {
             list.add(session);
             session.getUserProperties().put("memberData", member);
             session.getAsyncRemote().sendText(resultMap("system", "连接成功"));
-            //session.getAsyncRemote().sendText(resultMap("message", "连接成功"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -116,7 +123,6 @@ public class LocalSocket {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // TODO: handle exception
         }
 
     }
@@ -124,68 +130,30 @@ public class LocalSocket {
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         try {
-            JSONObject parse = JSONObject.parseObject(message);
-            CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
-            String type = parse.getString("type");
-            Map<String, String> result = new HashMap<>();
-
+            JSONObject data = JSONObject.parseObject(message);
+            String type = data.getString("type");
             switch (type) {
                 case "groupList":
-                    // 获取群组列表
-                    List<CtsGroup> groupList = groupRepository.findByMemberId(member.getId());
-                    result.put("type", "groupList");
-                    result.put("data", JSON.toJSONString(groupList));
-                    session.getBasicRemote().sendText(JSON.toJSONString(result));
+                   localSocketService.groupListHandler(data, session);
                     break;
                 case "memberList":
-                    // 获取成员列表
-                    List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
-                    result.put("type", "memberList");
-                    result.put("data", JSON.toJSONString(memberList));
-                    session.getBasicRemote().sendText(JSON.toJSONString(result));
-
+                    localSocketService.memberListHandler(data, session);
                     break;
                 case "memberMessage":
-                    // 获取成员的聊天记录
-                    List<CtsMemberMessage> memberMessageList = memberMessageRepository
-                            .findMemberMessageByMemberId(member.getId());
+                    localSocketService.memberMessageHandler(data, session);
                     break;
                 case "saveMemberMessage":
-                    // 保存成员的聊天记录
-
+                    localSocketService.saveMemberHandler(data, session);
                     break;
                 case "addMember":
-                    JSONObject memberObject = parse.getJSONObject("data");
-                    CtsMemberRelation memberRelation = new CtsMemberRelation();
-                    memberRelation.setMemberId(member.getId());
-                    memberRelation.setId(IdUtil.objectId());
-                    memberRelation.setCreateTime(DateUtil.date());
-                    memberRelation.setUsername(memberObject.getString("username"));
-                    memberRelation.setNickname(memberObject.getString("username"));
-                    memberRelation.setWs(memberObject.getString("ws"));
-                    memberRelation.setState(0);
-                    memberRelationRepository.save(memberRelation);
+                    localSocketService.addMemberHandler(data, session);
                     break;
                 case "createGroup":
-                    JSONObject groupObject = parse.getJSONObject("data");
-                    CtsGroup group = new CtsGroup();
-                    group.setId(IdUtil.objectId());
-                    group.setCreateTime(DateUtil.date());
-                    group.setName(groupObject.getString("name"));
-                    group.setCreateMemberId(member.getId());
-                    groupRepository.save(group);
-                    CtsGroupRelation groupRelation = new CtsGroupRelation();
-                    groupRelation.setId(IdUtil.objectId());
-                    groupRelation.setGroupId(group.getId());
-                    groupRelation.setMemberId(member.getId());
-                    groupRelation.setCreateTime(DateUtil.date());
-                    groupRelation.setMemberRole("1");
-                    groupRelation.setMemberNickname(member.getUsername());
-                    groupRelation.setMemberUsername(member.getUsername());
-                    groupRelation.setMemberWs(member.getWs());
-                    groupRelationRepository.save(groupRelation);
+                    localSocketService.createGroupHandler(data, session);
                     break;
-
+                default:
+                    System.out.println("未知类型");
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();

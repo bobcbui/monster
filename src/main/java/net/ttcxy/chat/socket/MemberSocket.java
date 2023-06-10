@@ -24,6 +24,7 @@ import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.entity.CtsMemberRelation;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberRepository;
+import net.ttcxy.chat.service.MemberSocketService;
 import net.ttcxy.chat.repository.MemberMessageRepository;
 import net.ttcxy.chat.repository.GroupRelationRepository;
 import net.ttcxy.chat.repository.MemberRelationRepository;
@@ -43,7 +44,16 @@ public class MemberSocket {
 
     private static MemberRelationRepository memberRelationRepository;
 
+    private static MemberMessageRepository messageRepository;
+
     private static MemberRepository memberRepository;
+
+    private static MemberSocketService memberSocketService;
+
+    @Autowired
+    public void setMemberMessageService(MemberSocketService memberSocketService) {
+        MemberSocket.memberSocketService = memberSocketService;
+    }
 
     @Autowired
     public void setGroupRelationRepository(GroupRelationRepository relationGroupRepository) {
@@ -65,7 +75,6 @@ public class MemberSocket {
         MemberSocket.memberRepository = memberRepository;
     }
 
-    private static MemberMessageRepository messageRepository;
 
     @Autowired
     public void setRelationGroupRepository(MemberMessageRepository messageRepository) {
@@ -74,12 +83,6 @@ public class MemberSocket {
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
-        System.out.println(memberSession);
-        System.out.println(groupRelationRepository);
-        System.out.println(groupRepository);
-        System.out.println(memberRelationRepository);
-        System.out.println(memberRepository);
-        System.out.println(messageRepository);
 
         Map<String, List<String>> requestParameterMap = session.getRequestParameterMap();
         for (Map.Entry<String, List<String>> me : requestParameterMap.entrySet()) {
@@ -94,8 +97,8 @@ public class MemberSocket {
 
         CtsMember member = memberRepository.findByUsername(username);
 
-        session.getUserProperties().put("member", member);
-        session.getUserProperties().put("beMember", parseObject);
+        session.getUserProperties().put("acceptMember", member);
+        session.getUserProperties().put("sendMember", parseObject);
     }
 
     @OnClose
@@ -103,49 +106,24 @@ public class MemberSocket {
 
     }
 
+
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         JSONObject jsonObject = JSON.parseObject(message);
         String type = jsonObject.getString("type");
-        CtsMember member = (CtsMember) session.getUserProperties().get("member");
-        if (type.equals("joinMember")) {
-            JSONObject beMember = (JSONObject) session.getUserProperties().get("beMember");
-            String username = beMember.getString("username");
-            String ws = beMember.getString("ws");
-
-            CtsMemberRelation memberRelation = new CtsMemberRelation();
-            memberRelation.setId(IdUtil.objectId());
-            memberRelation.setWs(ws);
-            memberRelation.setNickname(username);
-            memberRelation.setUsername(username);
-            memberRelation.setCreateTime(DateUtil.date());
-            memberRelation.setState(0);
-            memberRelation.setMemberId(member.getId());
-
-            memberRelationRepository.save(memberRelation);
-
-            Map<String, Object> map = new HashMap<>();
-            map.put("type", type);
-            map.put("member", member);
-            session.getAsyncRemote().sendText(JSON.toJSONString(map));
-
-        }
-        if (type.equals("searchMember")) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("type", type);
-            map.put("member", member);
-            session.getAsyncRemote().sendText(JSON.toJSONString(map));
-        }
-        if (type.equals("message")) {
-            Map<String, String> map = new HashMap<>();
-            map.put("type", type);
-            map.put("id", jsonObject.getString("id"));
-            map.put("data", "success");
-            session.getAsyncRemote().sendText(JSON.toJSONString(map));
-
-            for (Session list : LocalSocket.localSession.get(member.getUsername())) {
-                list.getAsyncRemote().sendText(message);
-            }
+        switch(type){
+            case "joinMember":
+                memberSocketService.joinMemberHandler(jsonObject, session);
+                break;
+            case "searchMember":
+                memberSocketService.searchMemberHandler(jsonObject, session);
+                break;
+            case "message":
+                memberSocketService.messageHandler(jsonObject, session);
+                break;
+            default:
+                System.out.println("喀什酱豆腐空间打开");
+                break;
         }
     }
 

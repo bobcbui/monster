@@ -18,8 +18,6 @@ import com.alibaba.fastjson.JSONObject;
 import cn.hutool.core.util.IdUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import net.ttcxy.chat.code.ApplicationData;
-import net.ttcxy.chat.entity.CtsGroup;
-import net.ttcxy.chat.entity.CtsGroupRelation;
 import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.repository.GroupRelationRepository;
 import net.ttcxy.chat.repository.GroupRepository;
@@ -27,19 +25,19 @@ import net.ttcxy.chat.repository.MemberRepository;
 
 @RestController
 @RequestMapping
-public class FastController {
+public class MainController {
 
     @Autowired
-    GroupRepository groupRepository;
+    private GroupRepository groupRepository;
 
     @Autowired
-    MemberRepository memberRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
-    GroupRelationRepository relationGroupRepository;
+    private GroupRelationRepository relationGroupRepository;
 
     @Autowired
-    HttpServletRequest request;
+    private HttpServletRequest request;
 
     @GetMapping("member")
     public ResponseEntity<CtsMember> member(){
@@ -51,7 +49,7 @@ public class FastController {
     }
 
     /**
-     * 用户注册
+     * 用户登录
      * @param login
      * @return
      */
@@ -68,17 +66,7 @@ public class FastController {
         }
         throw new RuntimeException("密码或用户名不正确！");
     }
-
-    @GetMapping("authenticate/info")
-    public ResponseEntity<CtsMember> checkToken(HttpServletRequest request){
-        String token = request.getHeader("token");
-        CtsMember member = ApplicationData.tokenMemberMap.get(token);
-        if(member == null){
-            return ResponseEntity.status(401).build();
-        }
-        return ResponseEntity.ok(member);
-    }
-
+    
     /**
      * 用户登录
      * @param register
@@ -97,13 +85,26 @@ public class FastController {
         return memberRepository.save(member);
     }
 
+    /*
+     * 获取用户信息
+     */
+    @GetMapping("authenticate/info")
+    public ResponseEntity<CtsMember> checkToken(HttpServletRequest request){
+        String token = request.getHeader("token");
+        CtsMember member = ApplicationData.tokenMemberMap.get(token);
+        if(member == null){
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(member);
+    }
+
     /**
      * OneToken 用于添加好友，添加群时给其他服务器验证Token是否有效的一个一次性Token
      * @return
      */
     @GetMapping("one-token")
     public ResponseEntity<String> createToken(){
-        String token = UUID.randomUUID().toString();
+        String token = IdUtil.randomUUID();
         if(getMember() != null){
             ApplicationData.tokenSocketMap.put(token, getMember());
             return ResponseEntity.ok(token);
@@ -112,7 +113,11 @@ public class FastController {
         
     }
 
-    // 验证 one-token
+    /**
+     * 验证 one-token
+     * @param token
+     * @return
+     */
     @GetMapping("/check/{token}")
     public CtsMember checkOneToken(@PathVariable("token") String token){
         CtsMember ctsMember = ApplicationData.tokenSocketMap.get(token);
@@ -121,33 +126,10 @@ public class FastController {
     }
 
     /**
-     * 创建一个组
-     * @param object
+     * 获取登录的用户
      * @return
      */
-    @PostMapping("group/create")
-    public CtsGroup createGroup(@RequestBody JSONObject object){
-        
-        String groupName = object.getString("groupName");
-        CtsMember member = getMember();
-
-        CtsGroup group = new CtsGroup();
-        group.setNickname(groupName);
-        group.setCreateMemberId(member.getId());
-        group.setNickname(groupName);
-        group.setCreateTime(new Date());
-        groupRepository.save(group);
-
-        CtsGroupRelation relationGroup = new CtsGroupRelation();
-        relationGroup.setGroupId(group.getId());
-        relationGroup.setMemberId(member.getId());
-        relationGroup.setCreateTime(new Date());
-        relationGroupRepository.save(relationGroup);
-
-        return group;
-    }
-
-    public CtsMember getMember(){
+    private CtsMember getMember(){
         return ApplicationData.tokenMemberMap.get(request.getHeader("token"));
     }
 }

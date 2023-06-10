@@ -3,10 +3,13 @@ package net.ttcxy.chat.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import net.ttcxy.chat.util.SpringUtil;
 
 /**
  * 注册用户
@@ -17,30 +20,24 @@ import lombok.Setter;
 public class CtsMember implements Serializable{
 
     @Id
+    @JsonIgnore
     private String id;
 
-    /**
-     * 6~15位英文数字组合，不可变更
-     */
     private String username;
 
-    /**
-     * 昵称
-     */
     private String nickname;
 
-    /**
-     * 登录密码
-     */
+    @JsonIgnore
     private String password;
 
-    /**
-     * 创建时间
-     */
     private Date createTime;
 
-    public String getWs(){
-        return "ws://localhost:9090/member/"+username;
+    public String getAccount(){
+        String prefix = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.member-prefix");
+        String domain = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.domain");
+        String netVersion = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.net-version");
+        // base64加密
+        return java.util.Base64.getEncoder().encodeToString((netVersion+"$"+domain+"$"+prefix+"/"+username).getBytes());
     }
 
 }

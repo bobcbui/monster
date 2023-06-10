@@ -1,7 +1,7 @@
 let template = // html
 `
 <div style='padding:10px;padding-top:0px;'>
-    <input  style='width:100%;margin-bottom:5px;' v-model="ws" placeholder='ws地址'>
+    <input  style='width:100%;margin-bottom:5px;' v-model="account" placeholder='账户地址'>
     <button style='width:100%;margin-bottom:5px;' @click="searchMember">查询好友</button>
 	<div v-if='member' style='padding:10px;padding-top:0px;'>
         username:{{member.username}}<br>
@@ -24,7 +24,7 @@ export default {
                 type: "message-member",
                 text: "",
             },
-            ws: "",
+            account: "",
             checkUrl: "",
             memberSocket: null,
             member: null,
@@ -40,14 +40,15 @@ export default {
     },
     methods: {
         toMemberMessage(item){
-            this.$router.push({ path: '/member-message', query: { ws: item.ws }})
+            this.$router.push({ path: '/member-message', query: { account: item.account }})
         },
         searchMember(){
             request({
                 method: 'get',
                 url: '/one-token',
             }).then(response => {
-                let socket = new WebSocket(this.ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
+                let ws = decodeAccount(this.account);
+                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
                 this.$store.state.socketMember = socket;
                 let _this = this;
                 socket.onopen = function(e){
@@ -56,7 +57,6 @@ export default {
                 };
                 socket.onmessage = function(e){
                     let data = JSON.parse(e.data);
-                   
                     if(data.type == "joinMember"){
                         _this.$store.state.socketLocal.send(JSON.stringify({ type: "addMember", data: data.member}))
                         _this.$store.state.socketLocal.send(JSON.stringify({ type: "memberList"}))

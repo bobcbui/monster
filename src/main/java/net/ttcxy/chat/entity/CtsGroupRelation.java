@@ -39,14 +39,9 @@ public class CtsGroupRelation implements Serializable {
 
     
     /**
-     * 成员WebSocket URL
+     * 成员账户
      */
-    private String memberWs;
-
-    /**
-     * 成员用户名
-     */
-    private String memberUsername;
+    private String memberAccount;
 
     /**
      * 成员昵称

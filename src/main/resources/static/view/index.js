@@ -44,7 +44,7 @@ export default {
 			let socket = new WebSocket(url + "?token=" + localStorage.getItem("token"));
 			socket.onopen = function(e){
 				// 加载成功获取member 和 group 列表
-				//that.$store.state.socketLocal = socket;
+				that.$store.state.socketLocal = socket;
 				socket.send(JSON.stringify({type: "memberList"}))
 				socket.send(JSON.stringify({type: "groupList"}))
 			};
@@ -69,6 +69,10 @@ export default {
 				if(data.type == "groupMessage"){
 					that.$store.state.groupList = data
 					console.log(data.data)
+				}
+				if(data.type == "message"){
+					data.to = false
+					that.$store.state.memberListMessage[data.sendAccount].push(data)
 				}
 			};
 			socket.onclose = function(e){

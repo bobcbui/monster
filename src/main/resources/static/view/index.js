@@ -56,6 +56,11 @@ export default {
 					console.log(data.data)
 				}
 
+				if(data.type == "loadMemberMessage"){
+					debugger
+					that.$store.state.memberListMessage[data.account] = data.data
+				}
+
 				if(data.type == "memberMessage"){
 					//that.$store.state.memberMessage[data.ws].push(data)
 					console.log(data)
@@ -72,6 +77,10 @@ export default {
 				}
 				if(data.type == "message"){
 					data.to = false
+					data.state = true
+					if(that.$store.state.memberListMessage[data.sendAccount] == undefined){
+						that.$store.state.memberListMessage[data.sendAccount] = []
+					}
 					that.$store.state.memberListMessage[data.sendAccount].push(data)
 				}
 			};

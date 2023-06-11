@@ -2,12 +2,15 @@ package net.ttcxy.chat.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import net.ttcxy.chat.entity.CtsMemberMessage;
 
 public interface MemberMessageRepository extends CrudRepository<CtsMemberMessage,String>  {
 
-    List<CtsMemberMessage> findMemberMessageByMemberId(String id);
+    @Query(value = "select * from cts_member_message where account = ?1 and with_account = ?2 order by create_time limit 0,50",nativeQuery = true)
+    List<CtsMemberMessage> findByAccountAndWithAccount(String account, String string);
+
 
 }

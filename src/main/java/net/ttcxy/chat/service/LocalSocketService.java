@@ -58,8 +58,6 @@ public class LocalSocketService {
     }
 
     public void memberMessageHandler(JSONObject parse, Session session) {
-        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
-        List<CtsMemberMessage> memberMessageList = memberMessageRepository.findMemberMessageByMemberId(member.getId());
     }
 
     public void addMemberHandler(JSONObject parse, Session session) {
@@ -97,6 +95,31 @@ public class LocalSocketService {
     }
 
     public void saveMemberHandler(JSONObject parse, Session session) {
+    }
+
+    public void saveMessageHandler(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
+        CtsMemberMessage memberMessage = new CtsMemberMessage();
+        memberMessage.setId(IdUtil.objectId());
+        memberMessage.setOrderId(data.getString("orderId"));
+        memberMessage.setSendAccount(member.getAccount());
+        memberMessage.setAcceptAccount(data.getString("account"));
+        memberMessage.setCreateTime(DateUtil.date());
+        memberMessage.setContent(data.getString("content"));
+        memberMessage.setAccount(member.getAccount());
+        memberMessage.setWithAccount(data.getString("account"));
+
+        memberMessageRepository.save(memberMessage);
+    }
+
+    public void loadMemberMessageHandler(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
+        List<CtsMemberMessage> messageList = memberMessageRepository.findByAccountAndWithAccount(member.getAccount(),data.getString("account"));
+        Map<String,Object> result = new HashMap<>();
+        result.put("type", "loadMemberMessage");
+        result.put("account", data.getString("account"));
+        result.put("data", messageList);
+        session.getAsyncRemote().sendText(JSON.toJSONString(result));
     }
 
 }

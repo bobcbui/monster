@@ -19,8 +19,6 @@ import cn.hutool.core.util.IdUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.entity.CtsMember;
-import net.ttcxy.chat.repository.GroupRelationRepository;
-import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberRepository;
 
 @RestController
@@ -28,13 +26,7 @@ import net.ttcxy.chat.repository.MemberRepository;
 public class MainController {
 
     @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private GroupRelationRepository relationGroupRepository;
 
     @Autowired
     private HttpServletRequest request;

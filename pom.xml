@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.5</version>
+        <version>3.1.0</version>
         <relativePath/>
     </parent>
     <groupId>net.ttcxy</groupId>
@@ -14,6 +14,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>Chat</name>
     <description>Chat project for Spring Boot</description>
+
 
     <properties>
         <java.version>17</java.version>
@@ -112,7 +113,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.0.5</version>
+                <version>3.1.0</version>
                 <configuration>
                     <excludes>
                         <exclude>

@@ -1,7 +1,6 @@
 package net.ttcxy.chat.socket;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -21,13 +18,8 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import net.ttcxy.chat.entity.CtsMember;
-import net.ttcxy.chat.entity.CtsMemberRelation;
-import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberRepository;
 import net.ttcxy.chat.service.MemberSocketService;
-import net.ttcxy.chat.repository.MemberMessageRepository;
-import net.ttcxy.chat.repository.GroupRelationRepository;
-import net.ttcxy.chat.repository.MemberRelationRepository;
 
 /**
  * 发送消息使用
@@ -35,16 +27,6 @@ import net.ttcxy.chat.repository.MemberRelationRepository;
 @ServerEndpoint(value = "/member/{username}")
 @Component
 public class MemberSocket {
-
-    private static Map<String, List<Session>> memberSession = new HashMap<>();
-
-    private static GroupRelationRepository groupRelationRepository;
-
-    private static GroupRepository groupRepository;
-
-    private static MemberRelationRepository memberRelationRepository;
-
-    private static MemberMessageRepository messageRepository;
 
     private static MemberRepository memberRepository;
 
@@ -56,29 +38,8 @@ public class MemberSocket {
     }
 
     @Autowired
-    public void setGroupRelationRepository(GroupRelationRepository relationGroupRepository) {
-        MemberSocket.groupRelationRepository = relationGroupRepository;
-    }
-
-    @Autowired
-    public void setGroupRepository(GroupRepository groupRepository) {
-        MemberSocket.groupRepository = groupRepository;
-    }
-
-    @Autowired
-    public void setMemberRelationRepository(MemberRelationRepository relationMemberRepository) {
-        MemberSocket.memberRelationRepository = relationMemberRepository;
-    }
-
-    @Autowired
     public void setMemberRepository(MemberRepository memberRepository) {
         MemberSocket.memberRepository = memberRepository;
-    }
-
-
-    @Autowired
-    public void setRelationGroupRepository(MemberMessageRepository messageRepository) {
-        MemberSocket.messageRepository = messageRepository;
     }
 
     @OnOpen
@@ -106,25 +67,30 @@ public class MemberSocket {
 
     }
 
-
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         JSONObject jsonObject = JSON.parseObject(message);
         String type = jsonObject.getString("type");
-        switch(type){
-            case "joinMember":
-                memberSocketService.joinMemberHandler(jsonObject, session);
-                break;
-            case "searchMember":
-                memberSocketService.searchMemberHandler(jsonObject, session);
-                break;
-            case "message":
-                memberSocketService.messageHandler(jsonObject, session);
-                break;
-            default:
-                System.out.println("喀什酱豆腐空间打开");
-                break;
+        try {
+            switch (type) {
+                case "joinMember":
+                    memberSocketService.joinMemberHandler(jsonObject, session);
+                    break;
+                case "searchMember":
+                    memberSocketService.searchMemberHandler(jsonObject, session);
+                    break;
+                case "message":
+                    memberSocketService.messageHandler(jsonObject, session);
+                    break;
+                default:
+                    System.out.println("喀什酱豆腐空间打开");
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("******************************");
+            System.out.println(e.getMessage());
         }
+
     }
 
     @OnError

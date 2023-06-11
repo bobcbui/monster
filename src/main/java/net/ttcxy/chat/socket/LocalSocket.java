@@ -9,11 +9,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.IdUtil;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -21,16 +18,7 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import net.ttcxy.chat.code.ApplicationData;
-import net.ttcxy.chat.entity.CtsGroup;
-import net.ttcxy.chat.entity.CtsGroupRelation;
 import net.ttcxy.chat.entity.CtsMember;
-import net.ttcxy.chat.entity.CtsMemberMessage;
-import net.ttcxy.chat.entity.CtsMemberRelation;
-import net.ttcxy.chat.repository.GroupRelationRepository;
-import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.MemberMessageRepository;
-import net.ttcxy.chat.repository.MemberRelationRepository;
-import net.ttcxy.chat.repository.MemberRepository;
 import net.ttcxy.chat.service.LocalSocketService;
 
 /**
@@ -39,41 +27,8 @@ import net.ttcxy.chat.service.LocalSocketService;
 @ServerEndpoint(value = "/local")
 @Component
 public class LocalSocket {
-
-    private static GroupRelationRepository groupRelationRepository;
-
-    private static GroupRepository groupRepository;
-
-    private static MemberRelationRepository memberRelationRepository;
-
-    private static MemberRepository memberRepository;
-
-    private static MemberMessageRepository memberMessageRepository;
-
-    @Autowired
-    public void setRelationGroupRepository(MemberMessageRepository messageRepository) {
-        LocalSocket.memberMessageRepository = messageRepository;
-    }
-
-    @Autowired
-    public void setGroupRelationRepository(GroupRelationRepository relationGroupRepository) {
-        LocalSocket.groupRelationRepository = relationGroupRepository;
-    }
-
-    @Autowired
-    public void setGroupRepository(GroupRepository groupRepository) {
-        LocalSocket.groupRepository = groupRepository;
-    }
-
-    @Autowired
-    public void setMemberRelationRepository(MemberRelationRepository relationUserRepository) {
-        LocalSocket.memberRelationRepository = relationUserRepository;
-    }
-
-    @Autowired
-    public void setMemberRepository(MemberRepository memberRepository) {
-        LocalSocket.memberRepository = memberRepository;
-    }
+    
+    public static Map<String, List<Session>> localSession = new HashMap<>();
 
     private static LocalSocketService localSocketService;
 
@@ -81,8 +36,6 @@ public class LocalSocket {
     public void setLocalSocketService(LocalSocketService localSocketService) {
         LocalSocket.localSocketService = localSocketService;
     }
-
-    public static Map<String, List<Session>> localSession = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
@@ -151,8 +104,14 @@ public class LocalSocket {
                 case "createGroup":
                     localSocketService.createGroupHandler(data, session);
                     break;
+                case "saveMessage":
+                    localSocketService.saveMessageHandler(data, session);
+                    break;
+                case "loadMemberMessage":
+                    localSocketService.loadMemberMessageHandler(data, session);
+                    break;
                 default:
-                    System.out.println("未知类型");
+                    System.out.println("未知类型:"+type);
                     break;
             }
         } catch (Exception e) {
@@ -173,14 +132,4 @@ public class LocalSocket {
         return JSONObject.toJSONString(result);
     }
 
-    private List<Session> getSessionList(String member) {
-        // 获取用户的SessionList
-        List<Session> list = localSession.get(member);
-
-        if (list == null) {
-            list = new ArrayList<>();
-            localSession.put(member, list);
-        }
-        return list;
-    }
 }

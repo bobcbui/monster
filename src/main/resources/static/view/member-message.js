@@ -1,6 +1,7 @@
 let template = // html
     `
 <div style='height: calc(100% - 30px);overflow-y: scroll;'>
+    <div style='border-bottom:1px solid red'>群：{{thisMember == undefined ? "" : thisMember.username}}</div>
   <div v-for='(item,index) in $store.state.memberListMessage[$route.query.account]'>
   <p v-if='item.sendAccount == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
     {{item.content}} : {{member.username}}

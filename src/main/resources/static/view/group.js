@@ -2,10 +2,10 @@ let template = // html
 `
 <div style='padding:10px;padding-top:0px;'>
 	<button style='width:100%;margin-bottom:5px;' @click='showCreateGroup = true'>创建群</button>
-	<button style='width:100%;margin-bottom:5px;'>加入群</button>
+	<button style='width:100%;margin-bottom:5px;' @click='showJoinGroup = true'>加入群</button>
 </div>
 <ul style='margin:0px'>
-	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in groupList' :key='index'>{{item.name}}</li>
+	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in groupList' :key='index' @click='toGroupMessage(item)'>{{item.name}}</li>
 </ul>
 <div class='mode' v-if='showCreateGroup'>
 	<div class='mode-body'>
@@ -53,6 +53,9 @@ export default {
 		}
 	},
 	methods: {
+		toGroupMessage(item){
+			this.$router.push({ path: '/group-message', query: { account: item.account } });
+		},
 		createGroup(){
 			this.$store.state.socketLocal.send(JSON.stringify({ type: "createGroup", data: this.createGroupForm}))
 		},
@@ -61,7 +64,8 @@ export default {
                 method: 'get',
                 url: '/one-token',
             }).then(response => {
-                let socket = new WebSocket(this.joinGroupForm.ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
+				let ws = decodeAccount(this.joinGroupForm.ws);
+                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
                 this.$store.state.socketMember = socket;
                 let _this = this;
                 socket.onopen = function(e){

@@ -52,13 +52,13 @@ export default {
 				let data = JSON.parse(e.data);
 
 				if(data.type == "memberList"){
-					that.$store.state.memberList = JSON.parse(data.data)
+					that.$store.state.memberList = data.data
 					console.log(data.data)
 				}
 
 				if(data.type == "loadMemberMessage"){
 					debugger
-					that.$store.state.memberListMessage[data.account] = data.data
+					that.$store.state.memberListMessage[data.data.account] = data.data.data
 				}
 
 				if(data.type == "memberMessage"){
@@ -67,7 +67,7 @@ export default {
 				}
 				
 				if(data.type == "groupList"){
-					that.$store.state.groupList = JSON.parse(data.data)
+					that.$store.state.groupList = data.data
 					console.log(data.data)
 				}
 
@@ -76,12 +76,12 @@ export default {
 					console.log(data.data)
 				}
 				if(data.type == "message"){
-					data.to = false
-					data.state = true
-					if(that.$store.state.memberListMessage[data.sendAccount] == undefined){
-						that.$store.state.memberListMessage[data.sendAccount] = []
+					data.data.to = false
+					data.data.state = true
+					if(that.$store.state.memberListMessage[data.data.sendAccount] == undefined){
+						that.$store.state.memberListMessage[data.data.sendAccount] = []
 					}
-					that.$store.state.memberListMessage[data.sendAccount].push(data)
+					that.$store.state.memberListMessage[data.data.sendAccount].push(data.data)
 				}
 			};
 			socket.onclose = function(e){

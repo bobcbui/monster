@@ -77,7 +77,6 @@ public class LocalSocket {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @OnMessage

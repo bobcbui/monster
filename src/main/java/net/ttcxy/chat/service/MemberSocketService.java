@@ -12,7 +12,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import jakarta.websocket.Session;
+import net.ttcxy.chat.code.ResultMap;
 import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.entity.CtsMemberMessage;
 import net.ttcxy.chat.entity.CtsMemberRelation;
@@ -45,15 +47,9 @@ public class MemberSocketService {
             memberRelation.setState(0);
             memberRelation.setMemberId(acceptMember.getId());
             memberRelationRepository.save(memberRelation);
-            Map<String, Object> map = new HashMap<>();
-            map.put("type", type);
-            map.put("member", acceptMember);
-            session.getAsyncRemote().sendText(JSON.toJSONString(map));
+            session.getAsyncRemote().sendText(ResultMap.result(type, acceptMember));
         } catch (Exception e) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("type", type);
-            map.put("message", e.getMessage());
-            session.getAsyncRemote().sendText(JSON.toJSONString(e));
+            session.getAsyncRemote().sendText(ResultMap.result(type,e.getMessage()));
         }
         throw new UnsupportedOperationException("Unimplemented method 'onMessage'");
     }
@@ -61,10 +57,7 @@ public class MemberSocketService {
     public void searchMemberHandler(JSONObject data, Session session){
         String type = data.getString("type");
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
-        Map<String, Object> map = new HashMap<>();
-        map.put("type", type);
-        map.put("member", acceptMember);
-        session.getAsyncRemote().sendText(JSON.toJSONString(map));
+        session.getAsyncRemote().sendText(ResultMap.result(type, acceptMember));
     }
 
     public void messageHandler(JSONObject data, Session session){
@@ -73,11 +66,7 @@ public class MemberSocketService {
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
         String account = sendMember.getString("account");
-        Map<String, String> map = new HashMap<>();
-        map.put("type", type);
-        map.put("orderId", orderId);
-        map.put("content", "success");
-        session.getAsyncRemote().sendText(JSON.toJSONString(map));
+
         List<Session> sessionList = LocalSocket.localSession.get(acceptMember.getUsername());
         CtsMemberMessage memberMessage = new CtsMemberMessage();
         memberMessage.setId(IdUtil.objectId());
@@ -90,16 +79,23 @@ public class MemberSocketService {
         memberMessage.setWithAccount(account);
 
         memberMessageRepository.save(memberMessage);
-        if(sessionList == null){
+
+        if(sessionList == null || sessionList.size() == 0 || StrUtil.equals(account, acceptMember.getAccount())){
             return;
         }
+
+        Map<String, String> map = new HashMap<>();
+        map.put("orderId", orderId);
+        map.put("content", "success");
+        
+        session.getAsyncRemote().sendText(ResultMap.result(type, map));
+
         for (Session list : sessionList) {
             JSONObject messageObject = new JSONObject();
-            messageObject.put("type", "message");
             messageObject.put("orderId", orderId);
             messageObject.put("sendAccount", account);
             messageObject.put("content",data.getString("content"));
-            list.getAsyncRemote().sendText(messageObject.toJSONString());
+            list.getAsyncRemote().sendText(ResultMap.result("message", messageObject));
         }
     }
 }

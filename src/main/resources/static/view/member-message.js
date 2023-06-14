@@ -60,13 +60,13 @@ export default {
                     if (data.type == "message") {
                         let orderId = data.orderId
                         _this.$store.state.memberListMessage[_this.$route.query.account].filter(item => {
-                            if (item.orderId == orderId) {
+                            if (item.data.orderId == orderId) {
                                 console.log(item)
-                                item.state = true;
+                                item.data.state = true;
                                 let message = {
                                     type: "saveMessage",
-                                    content: item.content,
-                                    orderId: item.orderId,
+                                    content: item.data.content,
+                                    orderId: item.data.orderId,
                                     account: _this.$route.query.account
                                 }
                                 _this.$store.state.socketLocal.send(JSON.stringify(message))

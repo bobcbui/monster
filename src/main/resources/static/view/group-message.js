@@ -3,11 +3,11 @@ let template = // html
 <div style='height: calc(100% - 30px);overflow-y: scroll;'>
 <div style='border-bottom:1px solid red' @click='toGroupInfo()'>群：{{thisGroup == undefined ? "" : thisGroup.name}}</div>
   <div v-for='(item,index) in $store.state.groupListMessage[$route.query.account]'>
-  <p v-if='item.sendMember.account == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
+  <p v-if='item.sendAccount == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
         {{item.content}} : {{member.username}}
     </p>
     <p v-else style='border: 1px solid black;border-radius: 5px;margin: 5px;margin-bottom: 0px;'>
-        {{item.sendMember.username}} : {{item.content}}
+        {{item.sendNickname}} : {{item.content}}
     </p>
   </div>
 </div>

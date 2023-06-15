@@ -34,17 +34,15 @@ public class GroupSocketService {
      */
     public void groupMessage(JSONObject data, Session session){
         CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
-        JSONObject sendMember = (JSONObject)session.getUserProperties().get("sendMember");
-
         List<CtsGroupMessage> groupMessageList = groupMessageRepository.findByAcceptGroupId(acceptGroup.getId());
         JSONArray resultObject = new JSONArray();
         groupMessageList.forEach(groupMessage -> {
             JSONObject message = new JSONObject();
+            CtsGroupRelation relation = groupRelationRepository.findByMemberAccountAndGroupId(groupMessage.getAccount(), acceptGroup.getId());
             message.put("type", "message");
             message.put("content", groupMessage.getContent());
-            CtsGroupRelation relation = groupRelationRepository.findByMemberAccountAndGroupId(groupMessage.getAccount(), acceptGroup.getId());
             message.put("sendAccount", relation.getMemberAccount());
-            message.put("sendName", relation.getMemberNickname());
+            message.put("sendNickname", relation.getMemberNickname());
             message.put("createTime", DateUtil.format(groupMessage.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
             resultObject.add(message);
         });
@@ -106,10 +104,12 @@ public class GroupSocketService {
                for (Session value : list) {
                     if(value.isOpen()){
                         JSONObject message = new JSONObject();
+                        
                         message.put("type", "message");
                         message.put("content", jsonObject.getString("content"));
-                        message.put("sendMember", sendMember);
                         message.put("createTime", DateUtil.date());
+                        message.put("sendAccount", sendMember.getString("account"));
+                        message.put("sendNickname", sendMember.getString("username"));
                         try {
                             value.getBasicRemote().sendText(message.toJSONString());
                         } catch (IOException e) {

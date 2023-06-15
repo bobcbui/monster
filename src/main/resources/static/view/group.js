@@ -21,8 +21,10 @@ let template = // html
 	<div class='mode-body'>
 		<button style='width:100%;margin-bottom:5px;' @click='showJoinGroup = false'>关闭</button>
 		<br><br>
+		{{joinGroupForm.name}}
 		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='joinGroupForm.ws' >
 		<button style='width:100%;margin-bottom:5px;' @click='searchGroup'>查询</button>
+		<button v-if='joinGroupForm.account != null' style='width:100%;margin-bottom:5px;' @click='joinGroup'>加入群</button>
 	</div>
 </div>
 `
@@ -39,8 +41,8 @@ export default {
 			},
 			showJoinGroup: false,
 			joinGroupForm: {
-				ws: "",
-			},
+				
+			}
 		}
 	},
 	destroyed() {
@@ -64,19 +66,25 @@ export default {
                 method: 'get',
                 url: '/one-token',
             }).then(response => {
+				let account = this.joinGroupForm.ws
 				let ws = decodeAccount(this.joinGroupForm.ws);
                 let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
-                this.$store.state.socketMember = socket;
+				this.$store.state.socketGroup[account] = socket;
+
                 let _this = this;
                 socket.onopen = function(e){
 					_this.groupSocket = socket;
                     socket.send(JSON.stringify({ type: "searchGroup"}))
+
                 };
                 socket.onmessage = function(e){
                     let data = JSON.parse(e.data);
                     if(data.type == "searchGroup"){
                        console.log("========================");
                     }
+					if(data.type == "groupInfo"){
+						_this.joinGroupForm = data.data;
+					}
                 };
                 socket.onclose = function(e){
                     
@@ -89,6 +97,11 @@ export default {
                 console.log(error);
             });
 		
+		},
+		joinGroup(){
+			this.joinGroupForm.memberAccount = this.$store.state.member.account;
+			this.$store.state.socketGroup[this.joinGroupForm.account].send(JSON.stringify({ type: "joinGroup", data: this.joinGroupForm}))
+			this.$store.state.socketLocal.send(JSON.stringify({ type: "joinGroup", data: this.joinGroupForm}))
 		}
 	},
 	created() {

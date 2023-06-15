@@ -19,15 +19,9 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
-import net.ttcxy.chat.code.ApplicationData;
 import net.ttcxy.chat.code.ResultMap;
 import net.ttcxy.chat.entity.CtsGroup;
-import net.ttcxy.chat.entity.CtsMember;
-import net.ttcxy.chat.repository.GroupRelationRepository;
 import net.ttcxy.chat.repository.GroupRepository;
-import net.ttcxy.chat.repository.MemberMessageRepository;
-import net.ttcxy.chat.repository.MemberRelationRepository;
-import net.ttcxy.chat.repository.MemberRepository;
 import net.ttcxy.chat.service.GroupSocketService;
 
 /**
@@ -39,7 +33,7 @@ public class GroupSocket {
 
     private static GroupSocketService groupSocketService;
 
-     private static Map<String, List<Session>> groupSession = new HashMap<>();
+    public static Map<String, List<Session>> groupSession = new HashMap<>();
 
     private static GroupRepository groupRepository;
 
@@ -67,13 +61,14 @@ public class GroupSocket {
             session.close();
             return;
         }else{
+            session.getUserProperties().put("acceptGroup", group);
             // 
             session.getBasicRemote().sendText(ResultMap.result("groupInfo", group));
             // 获取群里的所有在线成员Session
-            List<Session> list = groupSession.get(groupName);
+            List<Session> list = groupSession.get(group.getAccount());
             if (list == null) {
                 list = new ArrayList<>();
-                groupSession.put(groupName, list);
+                groupSession.put(group.getAccount(), list);
             }
             list.add(session);
 
@@ -85,9 +80,9 @@ public class GroupSocket {
 
     @OnClose
     public void onClose(Session session) {
-        String groupName = session.getPathParameters().get("groupName");
-        if (groupSession.get(groupName) == null) {
-            groupSession.get(groupName).remove(session);
+        CtsGroup group = (CtsGroup)session.getUserProperties().get("acceptGroup");
+        if (groupSession.get(group.getAccount()) != null) {
+            groupSession.get(group.getAccount()).remove(session);
         }
     }
 
@@ -97,6 +92,12 @@ public class GroupSocket {
         String type = jsonObject.getString("type");
         try {
             switch (type) {
+                case "joinGroup":
+                    groupSocketService.joinGroup(jsonObject, session);
+                    break;
+                case "message":
+                    groupSocketService.message(jsonObject, session);
+                    break;
                 case "groupInfo":
                     groupSocketService.groupInfo(jsonObject, session);
                     break;
@@ -117,6 +118,7 @@ public class GroupSocket {
                     break;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("ERROR:" + e.getMessage());
         }
     }

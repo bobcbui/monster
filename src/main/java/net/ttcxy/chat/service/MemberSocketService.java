@@ -31,7 +31,7 @@ public class MemberSocketService {
     @Autowired
     MemberMessageRepository memberMessageRepository;
 
-    public void joinMemberHandler(JSONObject data, Session session) {
+    public void joinMember(JSONObject data, Session session) {
         String type = data.getString("type");
         try {
             CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
@@ -54,13 +54,13 @@ public class MemberSocketService {
         throw new UnsupportedOperationException("Unimplemented method 'onMessage'");
     }
 
-    public void searchMemberHandler(JSONObject data, Session session){
+    public void searchMember(JSONObject data, Session session){
         String type = data.getString("type");
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
         session.getAsyncRemote().sendText(ResultMap.result(type, acceptMember));
     }
 
-    public void messageHandler(JSONObject data, Session session){
+    public void message(JSONObject data, Session session){
         String orderId = data.getString("orderId");
         String type = data.getString("type");
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");

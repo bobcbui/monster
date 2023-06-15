@@ -2,12 +2,12 @@ let template = // html
     `
 <div style='height: calc(100% - 30px);overflow-y: scroll;'>
 <div style='border-bottom:1px solid red' @click='toGroupInfo()'>群：{{thisGroup == undefined ? "" : thisGroup.name}}</div>
-  <div v-for='(item,index) in $store.state.memberListMessage[$route.query.account]'>
-    <p v-if='item.sendAccount == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
+  <div v-for='(item,index) in $store.state.groupListMessage[$route.query.account]'>
+  <p v-if='item.sendMember.account == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
         {{item.content}} : {{member.username}}
     </p>
     <p v-else style='border: 1px solid black;border-radius: 5px;margin: 5px;margin-bottom: 0px;'>
-        {{thisMember.username}} : {{item.content}}
+        {{item.sendMember.username}} : {{item.content}}
     </p>
   </div>
 </div>
@@ -29,7 +29,7 @@ export default {
     },
     computed: {
         member() {
-            // 当前登录用户
+            // 当前登录用户 
             return this.$store.state.member;
         },
         thisGroup() {
@@ -48,10 +48,18 @@ export default {
                     account: this.thisGroup.account
                 }
             })
+        },
+        thisGroupSocket() {
+            return this.$store.state.socketGroup[this.thisGroup.account]
         }
     },
     methods: {
-        
+        send() {
+            this.thisGroupSocket.send(JSON.stringify({
+                type: "message",
+                content: this.message,
+            }))
+        }
     },
     created() {
         

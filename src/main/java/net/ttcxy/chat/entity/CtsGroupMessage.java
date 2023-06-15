@@ -22,7 +22,7 @@ public class CtsGroupMessage implements Serializable {
     /**
      * 消息发送人
      */
-    private String sendMemberId;
+    private String account;
 
     /**
      * 接收这个消息的群

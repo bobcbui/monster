@@ -70,14 +70,6 @@ public class MemberSocket {
         }
     }
 
-    @OnClose
-    public void onClose(Session session) {
-        try {
-            session.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
@@ -86,13 +78,13 @@ public class MemberSocket {
         try {
             switch (type) {
                 case "joinMember":
-                    memberSocketService.joinMemberHandler(jsonObject, session);
+                    memberSocketService.joinMember(jsonObject, session);
                     break;
                 case "searchMember":
-                    memberSocketService.searchMemberHandler(jsonObject, session);
+                    memberSocketService.searchMember(jsonObject, session);
                     break;
                 case "message":
-                    memberSocketService.messageHandler(jsonObject, session);
+                    memberSocketService.message(jsonObject, session);
                     break;
                 default:
                     System.out.println("喀什酱豆腐空间打开");
@@ -103,6 +95,15 @@ public class MemberSocket {
             System.out.println(e.getMessage());
         }
 
+    }
+    
+    @OnClose
+    public void onClose(Session session) {
+        try {
+            session.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @OnError

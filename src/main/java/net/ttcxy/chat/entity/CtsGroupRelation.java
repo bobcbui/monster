@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"groupId", "memberId"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"groupId", "memberAccount"}))
 public class CtsGroupRelation implements Serializable {
 
     @Id
@@ -26,11 +26,6 @@ public class CtsGroupRelation implements Serializable {
      * 群ID
      */
     private String groupId;
-
-    /**
-     * 群成员ID
-     */
-    private String memberId;
 
     /**
      * 成员角色 群主：1，管理员：2，普通成员：3

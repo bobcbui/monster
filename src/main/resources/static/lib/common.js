@@ -1,6 +1,3 @@
-function createMemberWebSocket(url,that){
-
-}
 
 
 function decodeAccount(account) {

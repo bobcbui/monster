@@ -58,15 +58,15 @@ export default {
                 socket.onmessage = function (e) {
                     let data = JSON.parse(e.data);
                     if (data.type == "message") {
-                        let orderId = data.orderId
+                        let orderId = data.data.orderId
                         _this.$store.state.memberListMessage[_this.$route.query.account].filter(item => {
-                            if (item.data.orderId == orderId) {
+                            if (item.orderId == orderId) {
                                 console.log(item)
-                                item.data.state = true;
+                                item.state = true;
                                 let message = {
                                     type: "saveMessage",
-                                    content: item.data.content,
-                                    orderId: item.data.orderId,
+                                    content: item.content,
+                                    orderId: item.orderId,
                                     account: _this.$route.query.account
                                 }
                                 _this.$store.state.socketLocal.send(JSON.stringify(message))

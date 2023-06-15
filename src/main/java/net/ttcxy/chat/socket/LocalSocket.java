@@ -18,6 +18,7 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import net.ttcxy.chat.code.ApplicationData;
+import net.ttcxy.chat.code.ResultMap;
 import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.service.LocalSocketService;
 
@@ -47,7 +48,7 @@ public class LocalSocket {
             });
             CtsMember member = ApplicationData.tokenMemberMap.get(token);
             if (member == null) {
-                session.getAsyncRemote().sendText(resultMap("error", "token失效"));
+                session.getAsyncRemote().sendText(ResultMap.result("error","token失效"));
                 session.close();
                 return;
             }
@@ -59,25 +60,13 @@ public class LocalSocket {
 
             list.add(session);
             session.getUserProperties().put("memberData", member);
-            session.getAsyncRemote().sendText(resultMap("system", "连接成功"));
+            session.getAsyncRemote().sendText(ResultMap.result("system","连接成功"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    @OnClose
-    public void onClose(Session session) {
-        try {
-            CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
-            if (member != null) {
-                List<Session> localSession = LocalSocket.localSession.get(member.getUsername());
-                localSession.remove(session);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
@@ -109,6 +98,9 @@ public class LocalSocket {
                 case "loadMemberMessage":
                     localSocketService.loadMemberMessageHandler(data, session);
                     break;
+                case "joinGroup":
+                    localSocketService.joinGroupHandler(data, session);
+                    break;
                 default:
                     System.out.println("未知类型:"+type);
                     break;
@@ -118,17 +110,23 @@ public class LocalSocket {
         }
 
     }
+    
+    @OnClose
+    public void onClose(Session session) {
+        try {
+            CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
+            if (member != null) {
+                List<Session> localSession = LocalSocket.localSession.get(member.getUsername());
+                localSession.remove(session);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @OnError
     public void onError(Session session, Throwable error) {
 
-    }
-
-    private String resultMap(String type, String data) {
-        Map<String, String> result = new HashMap<>();
-        result.put("type", type);
-        result.put("data", data);
-        return JSONObject.toJSONString(result);
     }
 
 }

@@ -22,21 +22,42 @@ export default {
 		
 	},
 	methods: {
-		createGroupWebSocket(url){
-			let socket = new WebSocket(url + "?checkUrl=" + localStorage.getItem("checkUrl"));
-			this.$store.state.socketGroup[url] = socket;
-			socket.onopen = function(e){
-				
-			};
-			socket.onmessage = function(e){
-				
-			};
-			socket.onclose = function(e){
-				
-			};
-			socket.onerror = function(e){
-				
-			};
+		createGroupWebSocket(account){
+			let that = this;
+			// one-token
+			request({
+				method: 'get',
+				url: '/one-token',
+			}).then(response => {
+				// base64 decode
+				let ws = decodeAccount(account);
+				let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
+				that.$store.state.socketGroup[account] = socket;
+				socket.onopen = function(e){
+					socket.send(JSON.stringify({type: "groupMessage"}))
+				};
+				socket.onmessage = function(e){
+					let data = JSON.parse(e.data);
+					if(data.type == "message"){
+						if(that.$store.state.groupListMessage[account] == undefined){
+							that.$store.state.groupListMessage[account] = []
+						}
+						that.$store.state.groupListMessage[account].push(data)
+					}
+					if(data.type == "groupMessage"){
+						that.$store.state.groupListMessage[account] = data.data
+					}
+				};
+				socket.onclose = function(e){
+		
+				};
+				socket.onerror = function(e){
+		
+				};
+			}).catch(function (error) {
+		
+			});
+		
 		},
 		createLoadWebSocket(url){
 			let that = this;
@@ -57,18 +78,19 @@ export default {
 				}
 
 				if(data.type == "loadMemberMessage"){
-					debugger
 					that.$store.state.memberListMessage[data.data.account] = data.data.data
 				}
 
 				if(data.type == "memberMessage"){
-					//that.$store.state.memberMessage[data.ws].push(data)
 					console.log(data)
 				}
 				
 				if(data.type == "groupList"){
 					that.$store.state.groupList = data.data
-					console.log(data.data)
+					data.data.forEach((item) => {
+						that.createGroupWebSocket(item.account)
+					})
+					
 				}
 
 				if(data.type == "groupMessage"){

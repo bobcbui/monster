@@ -45,7 +45,7 @@ public class LocalSocketService {
      */
     public void groupListHandler(JSONObject data, Session session) throws IOException {
         CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
-        List<CtsGroup> groupList = groupRepository.findByMemberId(member.getId());
+        List<CtsGroup> groupList = groupRepository.findByMemberAccount(member.getAccount());
         session.getBasicRemote().sendText(ResultMap.result("groupList", groupList));
     }
 
@@ -96,7 +96,6 @@ public class LocalSocketService {
         CtsGroupRelation groupRelation = new CtsGroupRelation();
         groupRelation.setId(IdUtil.objectId());
         groupRelation.setGroupId(group.getId());
-        groupRelation.setMemberId(member.getId());
         groupRelation.setCreateTime(DateUtil.date());
         groupRelation.setMemberRole("1");
         groupRelation.setMemberNickname(member.getUsername());
@@ -138,6 +137,22 @@ public class LocalSocketService {
         result.put("account", data.getString("account"));
         result.put("data", messageList);
         session.getAsyncRemote().sendText(ResultMap.result("loadMemberMessage", result));
+    }
+
+    public void joinGroupHandler(JSONObject params, Session session) {
+        CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
+        JSONObject sendMember = (JSONObject)session.getUserProperties().get("sendMember");
+
+        JSONObject data = params.getJSONObject("data");
+
+        CtsGroupRelation groupRelation = new CtsGroupRelation();
+        groupRelation.setId(IdUtil.objectId());
+        groupRelation.setGroupId(acceptGroup.getId());
+        groupRelation.setMemberAccount(data.getString("memberAccount"));
+        groupRelation.setMemberNickname(sendMember.getString("username"));
+        groupRelation.setMemberRole("3");
+        groupRelation.setCreateTime(DateUtil.date());
+        groupRelationRepository.save(groupRelation);
     }
 
 }

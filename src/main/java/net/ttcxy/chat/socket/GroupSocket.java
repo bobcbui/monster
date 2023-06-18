@@ -52,12 +52,12 @@ public class GroupSocket {
 
         Map<String, List<String>> requestParameterMap = session.getRequestParameterMap();
         for (Map.Entry<String, List<String>> me : requestParameterMap.entrySet()) {
-            session.getPathParameters().put(me.getKey(), me.getValue().get(0));
+            session.getPathParameters().put(me.getKey(), me.getValue().stream().findFirst().orElseThrow());
         }
         String groupName = session.getPathParameters().get("groupName");
         CtsGroup group = groupRepository.findByName(groupName);
         if(group == null){
-            session.getBasicRemote().sendText("群不存在");
+            session.getBasicRemote().sendText(ResultMap.result("error", "群不存在"));
             session.close();
             return;
         }else{

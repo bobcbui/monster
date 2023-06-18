@@ -1,8 +1,8 @@
 let template = // html
 `
     <div v-if='thisGroup'>
-        名称：{{thisGroup.name}}<br/>
-        群号：{{thisGroup.account}}<br/>
+        名称：{{thisGroup.alias}}<br/>
+        群号：{{thisGroup.groupAccount}}<br/>
     </div>
 `
 import request from '../lib/request.js';
@@ -20,7 +20,7 @@ export default {
         thisGroup() {
             let _thisGroup;
             this.$store.state.groupList.filter(item => {
-                if (item.account == this.$route.query.account) {
+                if (item.groupAccount == this.$route.query.account) {
                     _thisGroup = item; 
                 }
             })

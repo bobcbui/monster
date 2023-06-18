@@ -1,7 +1,7 @@
 let template = // html
     `
 <div style='height: calc(100% - 30px);overflow-y: scroll;'>
-<div style='border-bottom:1px solid red' @click='toGroupInfo()'>群：{{thisGroup == undefined ? "" : thisGroup.name}}</div>
+<div style='border-bottom:1px solid red' @click='toGroupInfo()'>群：{{thisGroup == undefined ? "" : thisGroup.alias}}</div>
   <div v-for='(item,index) in $store.state.groupListMessage[$route.query.account]'>
   <p v-if='item.sendAccount == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
         {{item.content}} : {{member.username}}
@@ -35,25 +35,27 @@ export default {
         thisGroup() {
             let _thisGroup;
             this.$store.state.groupList.filter(item => {
-                if (item.account == this.$route.query.account) {
+                if (item.groupAccount == this.$route.query.account) {
                     _thisGroup = item; 
                 }
             })
             return _thisGroup;
         },
-        toGroupInfo() {
-            this.$router.push({
-                path: '/group-info',
-                query: {
-                    account: this.thisGroup.account
-                }
-            })
-        },
+        
         thisGroupSocket() {
-            return this.$store.state.socketGroup[this.thisGroup.account]
+            return this.$store.state.socketGroup[this.thisGroup.groupAccount]
         }
     },
     methods: {
+        toGroupInfo() {
+            debugger
+            this.$router.push({
+                path: '/group-info',
+                query: {
+                    account: this.thisGroup.groupAccount
+                }
+            })
+        },
         send() {
             this.thisGroupSocket.send(JSON.stringify({
                 type: "message",

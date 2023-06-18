@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.hutool.core.date.DateUtil;
@@ -95,7 +94,10 @@ public class MemberSocketService {
             messageObject.put("orderId", orderId);
             messageObject.put("sendAccount", account);
             messageObject.put("content",data.getString("content"));
-            list.getAsyncRemote().sendText(ResultMap.result("message", messageObject));
+            if(list.isOpen()){
+                list.getAsyncRemote().sendText(ResultMap.result("message", messageObject));
+            }
+            
         }
     }
 }

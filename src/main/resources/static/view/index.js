@@ -42,7 +42,7 @@ export default {
 						if(that.$store.state.groupListMessage[account] == undefined){
 							that.$store.state.groupListMessage[account] = []
 						}
-						that.$store.state.groupListMessage[account].push(data)
+						that.$store.state.groupListMessage[account].push(data.data)
 					}
 					if(data.type == "groupMessage"){
 						that.$store.state.groupListMessage[account] = data.data
@@ -88,7 +88,7 @@ export default {
 				if(data.type == "groupList"){
 					that.$store.state.groupList = data.data
 					data.data.forEach((item) => {
-						that.createGroupWebSocket(item.account)
+						that.createGroupWebSocket(item.groupAccount)
 					})
 					
 				}

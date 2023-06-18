@@ -58,11 +58,11 @@ export default {
                 socket.onmessage = function(e){
                     let data = JSON.parse(e.data);
                     if(data.type == "joinMember"){
-                        _this.$store.state.socketLocal.send(JSON.stringify({ type: "addMember", data: data.member}))
+                        _this.$store.state.socketLocal.send(JSON.stringify({ type: "addMember", data: data.data}))
                         _this.$store.state.socketLocal.send(JSON.stringify({ type: "memberList"}))
                     }
                     if(data.type == "searchMember"){
-                        _this.member = data.member;
+                        _this.member = data.data;
                     }
                 };
                 socket.onclose = function(e){

@@ -16,16 +16,31 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"groupId", "memberAccount"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"groupAccount", "memberAccount"}))
 public class CtsGroupRelation implements Serializable {
 
     @Id
     private String id;
 
     /**
-     * 群ID
+     * 名称
      */
-    private String groupId;
+    private String groupName;
+
+    /**
+     * 群昵称
+     */
+    private String nickname;
+
+    /**
+     * 群别名
+     */
+    private String alias;
+
+    /**
+     * groupAccount
+     */
+    private String groupAccount;
 
     /**
      * 成员角色 群主：1，管理员：2，普通成员：3

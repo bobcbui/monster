@@ -48,7 +48,7 @@ public class MemberSocket {
         // 将所有的参数放入到pathParameters中
         Map<String, List<String>> requestParameterMap = session.getRequestParameterMap();
         for (Map.Entry<String, List<String>> me : requestParameterMap.entrySet()) {
-            session.getPathParameters().put(me.getKey(), me.getValue().get(0));
+            session.getPathParameters().put(me.getKey(), me.getValue().stream().findFirst().orElseThrow());
         }
 
         String checkUrl = session.getPathParameters().get("checkUrl");

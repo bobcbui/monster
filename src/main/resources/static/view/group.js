@@ -5,7 +5,8 @@ let template = // html
 	<button style='width:100%;margin-bottom:5px;' @click='showJoinGroup = true'>加入群</button>
 </div>
 <ul style='margin:0px'>
-	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in groupList' :key='index' @click='toGroupMessage(item)'>{{item.name}}</li>
+	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in groupList' :key='index' @click='toGroupMessage(item)'>
+	{{item.alias}}</li>
 </ul>
 <div class='mode' v-if='showCreateGroup'>
 	<div class='mode-body'>
@@ -56,7 +57,7 @@ export default {
 	},
 	methods: {
 		toGroupMessage(item){
-			this.$router.push({ path: '/group-message', query: { account: item.account } });
+			this.$router.push({ path: '/group-message', query: { account: item.groupAccount } });
 		},
 		createGroup(){
 			this.$store.state.socketLocal.send(JSON.stringify({ type: "createGroup", data: this.createGroupForm}))
@@ -74,7 +75,7 @@ export default {
                 let _this = this;
                 socket.onopen = function(e){
 					_this.groupSocket = socket;
-                    socket.send(JSON.stringify({ type: "searchGroup"}))
+                    socket.send(JSON.stringify({ type: "groupInfo"}))
 
                 };
                 socket.onmessage = function(e){

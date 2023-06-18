@@ -41,10 +41,10 @@ public class LocalSocket {
     @OnOpen
     public void onOpen(Session session) throws IOException {
         try {
-            String token = session.getRequestParameterMap().get("token").get(0);
+            String token = session.getRequestParameterMap().get("token").stream().findFirst().orElseThrow();
             Map<String, List<String>> requestParameterMap = session.getRequestParameterMap();
             requestParameterMap.entrySet().forEach(e -> {
-                session.getUserProperties().put(e.getKey(), e.getValue().get(0));
+                session.getUserProperties().put(e.getKey(), e.getValue().stream().findFirst().orElseThrow());
             });
             CtsMember member = ApplicationData.tokenMemberMap.get(token);
             if (member == null) {
@@ -59,7 +59,7 @@ public class LocalSocket {
             }
 
             list.add(session);
-            session.getUserProperties().put("memberData", member);
+            session.getUserProperties().put("member", member);
             session.getAsyncRemote().sendText(ResultMap.result("system","连接成功"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,31 +75,31 @@ public class LocalSocket {
             String type = data.getString("type");
             switch (type) {
                 case "groupList":
-                   localSocketService.groupListHandler(data, session);
+                   localSocketService.groupList(data, session);
                     break;
                 case "memberList":
-                    localSocketService.memberListHandler(data, session);
+                    localSocketService.memberList(data, session);
                     break;
                 case "memberMessage":
-                    localSocketService.memberMessageHandler(data, session);
+                    localSocketService.memberMessage(data, session);
                     break;
                 case "saveMemberMessage":
-                    localSocketService.saveMemberHandler(data, session);
+                    localSocketService.saveMember(data, session);
                     break;
                 case "addMember":
-                    localSocketService.addMemberHandler(data, session);
+                    localSocketService.addMember(data, session);
                     break;
                 case "createGroup":
-                    localSocketService.createGroupHandler(data, session);
+                    localSocketService.createGroup(data, session);
                     break;
                 case "saveMessage":
-                    localSocketService.saveMessageHandler(data, session);
+                    localSocketService.saveMessage(data, session);
                     break;
                 case "loadMemberMessage":
-                    localSocketService.loadMemberMessageHandler(data, session);
+                    localSocketService.loadMemberMessage(data, session);
                     break;
                 case "joinGroup":
-                    localSocketService.joinGroupHandler(data, session);
+                    localSocketService.joinGroup(data, session);
                     break;
                 default:
                     System.out.println("未知类型:"+type);

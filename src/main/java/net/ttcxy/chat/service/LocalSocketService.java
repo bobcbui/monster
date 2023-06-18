@@ -8,7 +8,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.hutool.core.date.DateUtil;
@@ -43,29 +42,29 @@ public class LocalSocketService {
     /**
      * 指令处理器
      */
-    public void groupListHandler(JSONObject data, Session session) throws IOException {
-        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
-        List<CtsGroup> groupList = groupRepository.findByMemberAccount(member.getAccount());
+    public void groupList(JSONObject data, Session session) throws IOException {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        List<CtsGroupRelation> groupList = groupRelationRepository.findByMemberAccount(member.getAccount());
         session.getBasicRemote().sendText(ResultMap.result("groupList", groupList));
     }
 
     /**
      * 好友列表指令处理器
      */
-    public void memberListHandler(JSONObject data, Session session) throws IOException {
-        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
+    public void memberList(JSONObject data, Session session) throws IOException {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
         session.getBasicRemote().sendText(ResultMap.result("memberList", memberList));
     }
 
-    public void memberMessageHandler(JSONObject parse, Session session) {
+    public void memberMessage(JSONObject parse, Session session) {
     }
 
     /**
      * 添加好友指令处理器
      */
-    public void addMemberHandler(JSONObject parse, Session session) {
-        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
+    public void addMember(JSONObject parse, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
         JSONObject memberObject = parse.getJSONObject("data");
         CtsMemberRelation memberRelation = new CtsMemberRelation();
         memberRelation.setMemberId(member.getId());
@@ -81,8 +80,8 @@ public class LocalSocketService {
     /**
      * 创建群指令处理器
      */
-    public void createGroupHandler(JSONObject parse, Session session) {
-        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
+    public void createGroup(JSONObject parse, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
         JSONObject groupObject = parse.getJSONObject("data");
         // 创建群
         CtsGroup group = new CtsGroup();
@@ -95,23 +94,27 @@ public class LocalSocketService {
         // 将群主加入群
         CtsGroupRelation groupRelation = new CtsGroupRelation();
         groupRelation.setId(IdUtil.objectId());
-        groupRelation.setGroupId(group.getId());
-        groupRelation.setCreateTime(DateUtil.date());
-        groupRelation.setMemberRole("1");
-        groupRelation.setMemberNickname(member.getUsername());
+        groupRelation.setGroupAccount(group.getAccount());
         groupRelation.setMemberAccount(member.getAccount());
+        groupRelation.setMemberNickname(member.getUsername());
+        groupRelation.setMemberRole("1");
+        groupRelation.setCreateTime(DateUtil.date());
+        groupRelation.setAlias(member.getUsername());
+        groupRelation.setNickname(member.getUsername());
         groupRelationRepository.save(groupRelation);
+
+
     }
 
-    public void saveMemberHandler(JSONObject parse, Session session) {
+    public void saveMember(JSONObject parse, Session session) {
 
     }
 
     /**
      * 发送消息处理器
      */
-    public void saveMessageHandler(JSONObject data, Session session) {
-        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
+    public void saveMessage(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
         CtsMemberMessage memberMessage = new CtsMemberMessage();
         memberMessage.setId(IdUtil.objectId());
         memberMessage.setOrderId(data.getString("orderId"));
@@ -127,8 +130,8 @@ public class LocalSocketService {
     /**
      * 加载好友消息处理器
      */
-    public void loadMemberMessageHandler(JSONObject data, Session session) {
-        CtsMember member = (CtsMember) session.getUserProperties().get("memberData");
+    public void loadMemberMessage(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
         String beAccount = member.getAccount();
         String withAccount = data.getString("account");
         List<CtsMemberMessage> messageList = memberMessageRepository
@@ -139,20 +142,20 @@ public class LocalSocketService {
         session.getAsyncRemote().sendText(ResultMap.result("loadMemberMessage", result));
     }
 
-    public void joinGroupHandler(JSONObject params, Session session) {
-        CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
-        JSONObject sendMember = (JSONObject)session.getUserProperties().get("sendMember");
+    public void joinGroup(JSONObject params, Session session) {
+        // String groupAccount = params.getString("groupAccount");
+        // CtsMember member = (CtsMember) session.getUserProperties().get("member");
 
-        JSONObject data = params.getJSONObject("data");
+        // JSONObject data = params.getJSONObject("data");
 
-        CtsGroupRelation groupRelation = new CtsGroupRelation();
-        groupRelation.setId(IdUtil.objectId());
-        groupRelation.setGroupId(acceptGroup.getId());
-        groupRelation.setMemberAccount(data.getString("memberAccount"));
-        groupRelation.setMemberNickname(sendMember.getString("username"));
-        groupRelation.setMemberRole("3");
-        groupRelation.setCreateTime(DateUtil.date());
-        groupRelationRepository.save(groupRelation);
+        // CtsGroupRelation groupRelation = new CtsGroupRelation();
+        // groupRelation.setId(IdUtil.objectId());
+        // groupRelation.setGroupAccount(groupAccount);
+        // groupRelation.setMemberAccount(data.getString("memberAccount"));
+        // groupRelation.setMemberNickname(member.getUsername());
+        // groupRelation.setMemberRole("3");
+        // groupRelation.setCreateTime(DateUtil.date());
+        // groupRelationRepository.save(groupRelation);
     }
 
 }

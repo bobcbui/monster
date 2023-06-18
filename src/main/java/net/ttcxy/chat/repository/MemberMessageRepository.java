@@ -9,7 +9,7 @@ import net.ttcxy.chat.entity.CtsMemberMessage;
 
 public interface MemberMessageRepository extends CrudRepository<CtsMemberMessage,String>  {
 
-    @Query(value = "select * from cts_member_message where account = ?1 and with_account = ?2 order by create_time limit 0,50",nativeQuery = true)
+    @Query(value = "select * from cts_member_message where account = ?1 and with_account = ?2 order by create_time limit 0,20",nativeQuery = true)
     List<CtsMemberMessage> findByAccountAndWithAccount(String account, String string);
 
 

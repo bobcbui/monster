@@ -1,10 +1,10 @@
 package net.ttcxy.chat.service;
 
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
+
+import javax.naming.spi.DirStateFactory.Result;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,13 +38,13 @@ public class GroupSocketService {
         JSONArray resultObject = new JSONArray();
         groupMessageList.forEach(groupMessage -> {
             JSONObject message = new JSONObject();
-            CtsGroupRelation relation = groupRelationRepository.findByMemberAccountAndGroupId(groupMessage.getAccount(), acceptGroup.getId());
+            CtsGroupRelation relation = groupRelationRepository.findByMemberAccountAndGroupAccount(groupMessage.getAccount(), acceptGroup.getAccount());
             message.put("type", "message");
             message.put("content", groupMessage.getContent());
             message.put("sendAccount", relation.getMemberAccount());
             message.put("sendNickname", relation.getMemberNickname());
             message.put("createTime", DateUtil.format(groupMessage.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
-            resultObject.add(message);
+            resultObject.add(0, message);
         });
         session.getAsyncRemote().sendText(ResultMap.result("groupMessage", resultObject));
     }
@@ -67,7 +67,8 @@ public class GroupSocketService {
      * 加载群信息
      */
     public void groupInfo(JSONObject data, Session session){
-
+        CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
+        session.getAsyncRemote().sendText(ResultMap.result("groupInfo", acceptGroup));
     }
 
     /**
@@ -78,8 +79,7 @@ public class GroupSocketService {
     }
 
     @Autowired
-    GroupMessageRepository groupMessageRepository;
-    private Object findByAccountAndGroupId;
+    private GroupMessageRepository groupMessageRepository;
 
     /**
      * 获取消息
@@ -104,14 +104,12 @@ public class GroupSocketService {
                for (Session value : list) {
                     if(value.isOpen()){
                         JSONObject message = new JSONObject();
-                        
-                        message.put("type", "message");
                         message.put("content", jsonObject.getString("content"));
                         message.put("createTime", DateUtil.date());
                         message.put("sendAccount", sendMember.getString("account"));
                         message.put("sendNickname", sendMember.getString("username"));
                         try {
-                            value.getBasicRemote().sendText(message.toJSONString());
+                            value.getBasicRemote().sendText(ResultMap.result("message", message));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -132,11 +130,13 @@ public class GroupSocketService {
 
         CtsGroupRelation groupRelation = new CtsGroupRelation();
         groupRelation.setId(IdUtil.objectId());
-        groupRelation.setGroupId(acceptGroup.getId());
+        groupRelation.setGroupAccount(acceptGroup.getAccount());
         groupRelation.setMemberAccount(data.getString("memberAccount"));
         groupRelation.setMemberNickname(sendMember.getString("username"));
         groupRelation.setMemberRole("3");
         groupRelation.setCreateTime(DateUtil.date());
+        groupRelation.setAlias(acceptGroup.getName());
+        groupRelation.setNickname(acceptGroup.getName());
         groupRelationRepository.save(groupRelation);
 
     }

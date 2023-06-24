@@ -5,7 +5,7 @@ let template = // html
 	<button style='width:100%;margin-bottom:5px;' @click='showJoinGroup = true'>加入群</button>
 </div>
 <ul style='margin:0px'>
-	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in groupList' :key='index' @click='toGroupMessage(item)'>
+	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in groupMap' :key='index' @click='toGroupMessage(item)'>
 	{{item.alias}}</li>
 </ul>
 <div class='mode' v-if='showCreateGroup'>
@@ -51,8 +51,8 @@ export default {
 	},
 	// 计算属性
 	computed: {
-		groupList(){
-			return this.$store.state.groupList;
+		groupMap(){
+			return this.$store.state.groupMap;
 		}
 	},
 	methods: {

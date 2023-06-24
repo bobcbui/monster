@@ -18,13 +18,7 @@ export default {
     },
     computed: {
         thisGroup() {
-            let _thisGroup;
-            this.$store.state.groupList.filter(item => {
-                if (item.groupAccount == this.$route.query.account) {
-                    _thisGroup = item; 
-                }
-            })
-            return _thisGroup;
+            return this.$store.state.groupMap[this.$route.query.account]
         }
     },
     methods: {

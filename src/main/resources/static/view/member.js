@@ -3,16 +3,19 @@ let template = // html
 <div style='padding:10px;padding-top:0px;'>
     <input  style='width:100%;margin-bottom:5px;' v-model="account" placeholder='账户地址'>
     <button style='width:100%;margin-bottom:5px;' @click="searchMember">查询好友</button>
-	<div v-if='member' style='padding:10px;padding-top:0px;'>
-        username:{{member.username}}<br>
-        nickname:{{member.nickname}}<br>
+	<div v-if='searchMember' style='padding:10px;padding-top:0px;'>
+        username:{{searchMember.username}}<br>
+        nickname:{{searchMember.nickname}}<br>
     </div>
-    <button v-if='member' style='width:100%;margin-bottom:5px;' @click="joinMember">增加好友</button>
+    <button v-if='searchMember' style='width:100%;margin-bottom:5px;' @click="joinMember">增加好友</button>
 </div>
 
 
 <ul style='margin:0px'>
-	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in memberList' :key='index' @click='toMemberMessage(item)'>{{item.username}}</li>
+	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' 
+    v-for='(item,index) in memberMap' :key='index' @click='toMemberMessage(item)'>
+    {{item.username}}
+    </li>
 </ul>
 `
 import request from '../lib/request.js'
@@ -27,16 +30,19 @@ export default {
             account: "",
             checkUrl: "",
             memberSocket: null,
-            member: null,
+            searchMember: null,
         }
     },
     wathc:{
     },
     // 计算属性
     computed: {
-        memberList(){
-            return this.$store.state.memberList;
-        }
+        memberMap(){
+            return this.$store.state.memberMap;
+        },
+        member(){
+			return this.$store.state.member;
+		}
     },
     methods: {
         toMemberMessage(item){
@@ -59,10 +65,10 @@ export default {
                     let data = JSON.parse(e.data);
                     if(data.type == "joinMember"){
                         _this.$store.state.socketLocal.send(JSON.stringify({ type: "addMember", data: data.data}))
-                        _this.$store.state.socketLocal.send(JSON.stringify({ type: "memberList"}))
+                        _this.$store.state.socketLocal.send(JSON.stringify({ type: "memberMap"}))
                     }
                     if(data.type == "searchMember"){
-                        _this.member = data.data;
+                        _this.searchMember = data.data;
                     }
                 };
                 socket.onclose = function(e){

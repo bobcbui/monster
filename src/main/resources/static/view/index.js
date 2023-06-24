@@ -29,7 +29,6 @@ export default {
 				method: 'get',
 				url: '/one-token',
 			}).then(response => {
-				// base64 decode
 				let ws = decodeAccount(account);
 				let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
 				that.$store.state.socketGroup[account] = socket;
@@ -39,9 +38,6 @@ export default {
 				socket.onmessage = function(e){
 					let data = JSON.parse(e.data);
 					if(data.type == "message"){
-						if(that.$store.state.groupListMessage[account] == undefined){
-							that.$store.state.groupListMessage[account] = []
-						}
 						that.$store.state.groupListMessage[account].push(data.data)
 					}
 					if(data.type == "groupMessage"){
@@ -66,44 +62,53 @@ export default {
 			socket.onopen = function(e){
 				// 加载成功获取member 和 group 列表
 				that.$store.state.socketLocal = socket;
-				socket.send(JSON.stringify({type: "memberList"}))
-				socket.send(JSON.stringify({type: "groupList"}))
+				socket.send(JSON.stringify({type: "memberMap"}))
+				socket.send(JSON.stringify({type: "groupMap"}))
+				socket.send(JSON.stringify({type: "loadMessage"}))
 			};
 			socket.onmessage = function(e){
 				let data = JSON.parse(e.data);
 
-				if(data.type == "memberList"){
-					that.$store.state.memberList = data.data
+				if(data.type == "memberMap"){
+					that.$store.state.memberMap = data.data
 					console.log(data.data)
 				}
 
-				if(data.type == "loadMemberMessage"){
-					that.$store.state.memberListMessage[data.data.account] = data.data.data
-				}
+				// if(data.type == "loadMemberMessage"){
+				// 	debugger
+				// 	that.$store.state.memberListMessage[data.data.account] = data.data.data
+				// }
 
 				if(data.type == "memberMessage"){
 					console.log(data)
 				}
 				
-				if(data.type == "groupList"){
-					that.$store.state.groupList = data.data
-					data.data.forEach((item) => {
-						that.createGroupWebSocket(item.groupAccount)
-					})
-					
+				if(data.type == "groupMap"){
+					that.$store.state.groupMap = data.data
+					for(let item in data.data){
+						that.createGroupWebSocket(data.data[item].groupAccount)
+					}
 				}
 
 				if(data.type == "groupMessage"){
-					that.$store.state.groupList = data
+					//that.$store.state.group1List = data
 					console.log(data.data)
 				}
+
 				if(data.type == "message"){
-					data.data.to = false
-					data.data.state = true
-					if(that.$store.state.memberListMessage[data.data.sendAccount] == undefined){
-						that.$store.state.memberListMessage[data.data.sendAccount] = []
+					data.data.state = true;
+					that.$store.state.memberListMessage[data.data.withAccount].push(data.data);
+					
+					setTimeout(() => {
+						down(data.data.withAccount)
+					}, 100);
+				}
+				
+				// 记载所有消息
+				if(data.type == "loadMessage"){
+					for(let item of data.data){
+						that.$store.state.memberListMessage[item.account] = item.data
 					}
-					that.$store.state.memberListMessage[data.data.sendAccount].push(data.data)
 				}
 			};
 			socket.onclose = function(e){

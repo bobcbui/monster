@@ -5,6 +5,8 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +16,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+// 唯一键， account 和 withAccount orderId 三个字段
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames={"account","withAccount","orderId"})})
 public class CtsMemberMessage implements Serializable {
 
     @Id

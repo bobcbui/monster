@@ -76,28 +76,22 @@ public class MemberSocketService {
         memberMessage.setContent(data.getString("content"));
         memberMessage.setAccount(acceptMember.getAccount());
         memberMessage.setWithAccount(account);
-
         memberMessageRepository.save(memberMessage);
 
-        if(sessionList == null || sessionList.size() == 0 || StrUtil.equals(account, acceptMember.getAccount())){
-            return;
-        }
-
+        // 消息接收
         Map<String, String> map = new HashMap<>();
         map.put("orderId", orderId);
         map.put("content", "success");
-        
         session.getAsyncRemote().sendText(ResultMap.result(type, map));
 
-        for (Session list : sessionList) {
-            JSONObject messageObject = new JSONObject();
-            messageObject.put("orderId", orderId);
-            messageObject.put("sendAccount", account);
-            messageObject.put("content",data.getString("content"));
-            if(list.isOpen()){
-                list.getAsyncRemote().sendText(ResultMap.result("message", messageObject));
+        // 消息发送当前用户的给所有设备        
+        if(sessionList != null){
+            for (Session list : sessionList) {
+                if(list.isOpen()){
+                    list.getAsyncRemote().sendText(ResultMap.result("message", memberMessage));
+                }
+                
             }
-            
         }
     }
 }

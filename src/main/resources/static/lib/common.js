@@ -16,3 +16,14 @@ function decodeAccount(account) {
     }
     return ws;
 }
+
+function down(id){
+    try{
+        debugger
+        var div = document.getElementById("show_words_"+id);
+        div.scrollTop = div.scrollHeight;
+    }catch(error){
+        console.log(error)
+        console.log("skldjfkladjsfkljasdkfjkdjfkdjfkd")
+    }
+}

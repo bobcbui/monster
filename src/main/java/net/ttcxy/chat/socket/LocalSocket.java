@@ -74,11 +74,11 @@ public class LocalSocket {
             JSONObject data = JSONObject.parseObject(message);
             String type = data.getString("type");
             switch (type) {
-                case "groupList":
-                   localSocketService.groupList(data, session);
+                case "groupMap":
+                   localSocketService.groupMap(data, session);
                     break;
-                case "memberList":
-                    localSocketService.memberList(data, session);
+                case "memberMap":
+                    localSocketService.memberMap(data, session);
                     break;
                 case "memberMessage":
                     localSocketService.memberMessage(data, session);
@@ -97,6 +97,9 @@ public class LocalSocket {
                     break;
                 case "loadMemberMessage":
                     localSocketService.loadMemberMessage(data, session);
+                    break;
+                case "loadMessage":
+                    localSocketService.loadMessage(data, session);
                     break;
                 case "joinGroup":
                     localSocketService.joinGroup(data, session);

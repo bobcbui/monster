@@ -32,14 +32,11 @@ export default {
             // 当前登录用户 
             return this.$store.state.member;
         },
+        groupMap(){
+            return this.$store.state.groupMap
+        },
         thisGroup() {
-            let _thisGroup;
-            this.$store.state.groupList.filter(item => {
-                if (item.groupAccount == this.$route.query.account) {
-                    _thisGroup = item; 
-                }
-            })
-            return _thisGroup;
+            return this.groupMap[this.$route.query.account]
         },
         
         thisGroupSocket() {
@@ -48,7 +45,6 @@ export default {
     },
     methods: {
         toGroupInfo() {
-            debugger
             this.$router.push({
                 path: '/group-info',
                 query: {

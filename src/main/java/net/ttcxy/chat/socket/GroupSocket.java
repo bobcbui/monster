@@ -24,9 +24,6 @@ import net.ttcxy.chat.entity.CtsGroup;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.service.GroupSocketService;
 
-/**
- * 建立群聊通道
- */
 @ServerEndpoint(value = "/group/{groupName}")
 @Component
 public class GroupSocket {

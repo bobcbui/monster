@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.naming.spi.DirStateFactory.Result;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +27,9 @@ public class GroupSocketService {
     @Autowired
     private GroupRelationRepository groupRelationRepository;
 
-    /**
-     * 加载群消息
-     */
+    @Autowired
+    private GroupMessageRepository groupMessageRepository;
+
     public void groupMessage(JSONObject data, Session session){
         CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
         List<CtsGroupMessage> groupMessageList = groupMessageRepository.findByAcceptGroupId(acceptGroup.getId());
@@ -49,45 +47,26 @@ public class GroupSocketService {
         session.getAsyncRemote().sendText(ResultMap.result("groupMessage", resultObject));
     }
 
-    /**
-     * 发送消息
-     */
     public void sendMessage(JSONObject data, Session session){
 
     }
 
-    /**
-     * 加载群成员列表
-     */
     public void groupMember(JSONObject data, Session session){
 
     }
 
-    /**
-     * 加载群信息
-     */
     public void groupInfo(JSONObject data, Session session){
         CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
         session.getAsyncRemote().sendText(ResultMap.result("groupInfo", acceptGroup));
     }
 
-    /**
-     * 加载通知
-     */
     public void notion(JSONObject data, Session session){
 
     }
 
-    @Autowired
-    private GroupMessageRepository groupMessageRepository;
-
-    /**
-     * 获取消息
-     */
     public void message(JSONObject jsonObject, Session session) {
         CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
         JSONObject sendMember = (JSONObject)session.getUserProperties().get("sendMember");
-
 
         CtsGroupMessage groupMessage = new CtsGroupMessage();
         groupMessage.setId(IdUtil.objectId());
@@ -95,7 +74,6 @@ public class GroupSocketService {
         groupMessage.setAccount(sendMember.getString("account"));
         groupMessage.setContent(jsonObject.getString("content"));
         groupMessage.setCreateTime(DateUtil.date());
-
         groupMessageRepository.save(groupMessage);
 
         for (Entry<String,List<Session>> entrySet : GroupSocket.groupSession.entrySet()) {
@@ -125,7 +103,6 @@ public class GroupSocketService {
     public void joinGroup(JSONObject jsonObject, Session session) {
         CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
         JSONObject sendMember = (JSONObject)session.getUserProperties().get("sendMember");
-
         JSONObject data = jsonObject.getJSONObject("data");
 
         CtsGroupRelation groupRelation = new CtsGroupRelation();

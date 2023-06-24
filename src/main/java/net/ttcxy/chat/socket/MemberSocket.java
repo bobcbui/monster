@@ -21,9 +21,6 @@ import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.repository.MemberRepository;
 import net.ttcxy.chat.service.MemberSocketService;
 
-/**
- * 发送消息使用
- */
 @ServerEndpoint(value = "/member/{username}")
 @Component
 public class MemberSocket {

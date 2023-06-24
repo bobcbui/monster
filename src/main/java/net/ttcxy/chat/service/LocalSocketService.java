@@ -21,7 +21,6 @@ import net.ttcxy.chat.entity.CtsGroupRelation;
 import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.entity.CtsMemberMessage;
 import net.ttcxy.chat.entity.CtsMemberRelation;
-import net.ttcxy.chat.repository.GroupMessageRepository;
 import net.ttcxy.chat.repository.GroupRelationRepository;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.repository.MemberMessageRepository;
@@ -42,9 +41,6 @@ public class LocalSocketService {
     @Autowired
     private GroupRelationRepository groupRelationRepository;
 
-    @Autowired
-    private GroupMessageRepository groupMessageRepository;
-
     /**
      * 指令处理器
      */
@@ -58,9 +54,6 @@ public class LocalSocketService {
         session.getBasicRemote().sendText(ResultMap.result("groupMap", jsonObject));
     }
 
-    /**
-     * 好友列表指令处理器
-     */
     public void memberMap(JSONObject data, Session session) throws IOException {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
@@ -76,9 +69,6 @@ public class LocalSocketService {
     public void memberMessage(JSONObject parse, Session session) {
     }
 
-    /**
-     * 添加好友指令处理器
-     */
     public void addMember(JSONObject parse, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         JSONObject memberObject = parse.getJSONObject("data");
@@ -93,13 +83,10 @@ public class LocalSocketService {
         memberRelationRepository.save(memberRelation);
     }
 
-    /**
-     * 创建群指令处理器
-     */
     public void createGroup(JSONObject parse, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         JSONObject groupObject = parse.getJSONObject("data");
-        // 创建群
+
         CtsGroup group = new CtsGroup();
         group.setId(IdUtil.objectId());
         group.setCreateTime(DateUtil.date());
@@ -107,7 +94,6 @@ public class LocalSocketService {
         group.setCreateMemberId(member.getId());
         groupRepository.save(group);
 
-        // 将群主加入群
         CtsGroupRelation groupRelation = new CtsGroupRelation();
         groupRelation.setId(IdUtil.objectId());
         groupRelation.setGroupAccount(group.getAccount());
@@ -118,16 +104,12 @@ public class LocalSocketService {
         groupRelation.setAlias(member.getUsername());
         groupRelation.setNickname(member.getUsername());
         groupRelationRepository.save(groupRelation);
-
     }
 
     public void saveMember(JSONObject parse, Session session) {
 
     }
 
-    /**
-     * 保存发送给好友的消息
-     */
     public void saveMessage(JSONObject data, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         CtsMemberMessage memberMessage = new CtsMemberMessage();
@@ -142,9 +124,6 @@ public class LocalSocketService {
         memberMessageRepository.save(memberMessage);
     }
 
-    /**
-     * 加载好友消息处理器
-     */
     public void loadMemberMessage(JSONObject data, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         String beAccount = member.getAccount();

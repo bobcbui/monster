@@ -22,9 +22,6 @@ import net.ttcxy.chat.code.ResultMap;
 import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.service.LocalSocketService;
 
-/**
- * 本地用户接收消息使用
- */
 @ServerEndpoint(value = "/local")
 @Component
 public class LocalSocket {

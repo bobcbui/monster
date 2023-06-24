@@ -11,7 +11,6 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.StrUtil;
 import jakarta.websocket.Session;
 import net.ttcxy.chat.code.ResultMap;
 import net.ttcxy.chat.entity.CtsMember;
@@ -78,13 +77,11 @@ public class MemberSocketService {
         memberMessage.setWithAccount(account);
         memberMessageRepository.save(memberMessage);
 
-        // 消息接收
         Map<String, String> map = new HashMap<>();
         map.put("orderId", orderId);
         map.put("content", "success");
         session.getAsyncRemote().sendText(ResultMap.result(type, map));
 
-        // 消息发送当前用户的给所有设备        
         if(sessionList != null){
             for (Session list : sessionList) {
                 if(list.isOpen()){

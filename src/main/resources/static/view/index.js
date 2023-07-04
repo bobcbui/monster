@@ -91,13 +91,12 @@ export default {
 				}
 
 				if(data.type == "message"){
-					debugger
 					data.data.state = true;
-					that.$store.state.memberMessageList[data.data.withAccount].push(data.data);
-					
-					setTimeout(() => {
+					debugger
+					if(data.data.account != data.data.withAccount){
+						that.$store.state.memberMessageList[data.data.withAccount].push(data.data);
 						down(data.data.withAccount)
-					}, 100);
+					}
 				}
 				
 				// 记载所有消息

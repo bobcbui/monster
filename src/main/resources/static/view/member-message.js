@@ -3,13 +3,14 @@ let template = // html
 <div style='height: calc(100% - 30px);overflow-y: scroll;' v-if="withMember" :id='"show_words_" + withMember.account'>
     <div style='border-bottom:1px solid red' v-if='withMember'>{{withMember.username}}</div>
     <div v-for='(item,index) in $store.state.memberMessageList[$route.query.account]'>
-    {{$store.state.memberMap}}{{item.sendAccount}}
-        <p v-if='item.sendAccount && $store.state.memberMap && $store.state.memberMap[item.sendAccount]' style='border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
-            {{$store.state.memberMap[item.sendAccount].username}} : {{item.content}}
-        </p>
-        <p v-if='item.sendAccount && $store.state.memberMap && $store.state.memberMap[item.sendAccount]' style='border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;text-align: right;'>
-             {{item.content}} : {{$store.state.memberMap[item.sendAccount].username}}
-        </p>
+        <div v-if='member && member.account != item.sendAccount ' style=' margin: 5px; margin-bottom: 0px;'>
+            {{$store.state.memberMap[item.sendAccount].username}} 
+            <p style='border: 1px solid black; border-radius: 5px;margin:0px'>{{item.content}}&nbsp;</p>
+        </div>
+        <div v-if='member && member.account == item.sendAccount' style=' margin: 5px; margin-bottom: 0px;text-align: right'>
+            {{member.username}}
+            <p style='border: 1px solid black; border-radius: 5px;margin:0px'>&nbsp;{{item.content}}</p>
+        </div>
     </div>
 </div>
 <div style="height:30px">
@@ -83,6 +84,7 @@ export default {
                                     serviceId: data.serviceId,
                                     withAccount: that.account
                                 }))
+                                debugger
                                 that.messageForm.content = ""
                                 return true
                             }
@@ -105,7 +107,7 @@ export default {
         },
         send() {
             this.messageForm.serviceId = new Date().getTime();
-            this.sendAccount = this.$store.state.member.account
+            this.messageForm.sendAccount = this.$store.state.member.account
             this.memberSocket.send(JSON.stringify(this.messageForm))
             this.memberMessageList[this.$route.query.account].push({...this.messageForm})
         }

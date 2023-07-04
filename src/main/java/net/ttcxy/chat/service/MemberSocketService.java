@@ -85,7 +85,6 @@ public class MemberSocketService {
                 if(list.isOpen()){
                     list.getAsyncRemote().sendText(ResultMap.result("message",serviceId , memberMessage));
                 }
-                
             }
         }
     }

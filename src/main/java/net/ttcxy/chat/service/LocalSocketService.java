@@ -45,25 +45,29 @@ public class LocalSocketService {
      * 指令处理器
      */
     public void groupMap(JSONObject data, Session session) throws IOException {
+        String serviceId = data.getString("serviceId");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsGroupRelation> groupRelationList = groupRelationRepository.findByMemberAccount(member.getAccount());
         JSONObject jsonObject = new  JSONObject();
         for (CtsGroupRelation groupRelation : groupRelationList) {
             jsonObject.put(groupRelation.getGroupAccount(), groupRelation);
         }
-        session.getBasicRemote().sendText(ResultMap.result("groupMap", jsonObject));
+        session.getBasicRemote().sendText(ResultMap.result("groupMap",serviceId , jsonObject));
     }
 
     public void memberMap(JSONObject data, Session session) throws IOException {
+        String serviceId = data.getString("serviceId");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
         // memberList to Map 
         Map<String,CtsMemberRelation> likeMap = new LinkedHashMap<>();
+        CtsMemberRelation thisMember = new CtsMemberRelation();
+        thisMember.setAccount(member.getAccount());
         for (CtsMemberRelation memberRelation : memberList) {
             likeMap.put(memberRelation.getAccount(), memberRelation);
         }
 
-        session.getBasicRemote().sendText(ResultMap.result("memberMap", likeMap));
+        session.getBasicRemote().sendText(ResultMap.result("memberMap",serviceId , likeMap));
     }
 
     public void memberMessage(JSONObject parse, Session session) {
@@ -113,18 +117,24 @@ public class LocalSocketService {
     public void saveMessage(JSONObject data, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         CtsMemberMessage memberMessage = new CtsMemberMessage();
-        memberMessage.setId(IdUtil.objectId());
-        memberMessage.setOrderId(data.getString("orderId"));
-        memberMessage.setSendAccount(member.getAccount());
-        memberMessage.setAcceptAccount(data.getString("withAccount"));
-        memberMessage.setCreateTime(DateUtil.date());
-        memberMessage.setContent(data.getString("content"));
-        memberMessage.setAccount(member.getAccount());
-        memberMessage.setWithAccount(data.getString("withAccount"));
-        memberMessageRepository.save(memberMessage);
+        try {
+            memberMessage.setId(IdUtil.objectId());
+            memberMessage.setServiceId(data.getString("serviceId"));
+            memberMessage.setSendAccount(member.getAccount());
+            memberMessage.setAcceptAccount(data.getString("withAccount"));
+            memberMessage.setCreateTime(DateUtil.date());
+            memberMessage.setContent(data.getString("content"));
+            memberMessage.setAccount(member.getAccount());
+            memberMessage.setWithAccount(data.getString("withAccount"));
+            memberMessageRepository.save(memberMessage);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        
     }
 
     public void loadMemberMessage(JSONObject data, Session session) {
+        String serviceId = data.getString("serviceId");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         String beAccount = member.getAccount();
         String withAccount = data.getString("account");
@@ -132,10 +142,10 @@ public class LocalSocketService {
         Map<String, Object> result = new HashMap<>();
         result.put("account", data.getString("account"));
         result.put("data", messageList);
-        session.getAsyncRemote().sendText(ResultMap.result("loadMemberMessage", result));
+        session.getAsyncRemote().sendText(ResultMap.result("loadMemberMessage",serviceId , result));
     }
 
-    public void joinGroup(JSONObject params, Session session) {
+    public void join(JSONObject params, Session session) {
         // String groupAccount = params.getString("groupAccount");
         // CtsMember member = (CtsMember) session.getUserProperties().get("member");
 
@@ -152,6 +162,7 @@ public class LocalSocketService {
     }
 
     public void loadMessage(JSONObject data, Session session) {
+        String serviceId = data.getString("serviceId");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
         JSONArray jsonArray = new JSONArray();
@@ -163,7 +174,7 @@ public class LocalSocketService {
             jsonObject.put("data", memberMessage);
             jsonArray.add(jsonObject);
         });
-        session.getAsyncRemote().sendText(ResultMap.result("loadMessage", jsonArray));
+        session.getAsyncRemote().sendText(ResultMap.result("loadMessage",serviceId , jsonArray));
     }
 
 }

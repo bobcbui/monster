@@ -29,7 +29,8 @@ public class MemberSocketService {
     @Autowired
     MemberMessageRepository memberMessageRepository;
 
-    public void joinMember(JSONObject data, Session session) {
+    public void join(JSONObject data, Session session) {
+        String serviceId = data.getString("serviceId");
         String type = data.getString("type");
         try {
             CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
@@ -45,21 +46,22 @@ public class MemberSocketService {
             memberRelation.setState(0);
             memberRelation.setMemberId(acceptMember.getId());
             memberRelationRepository.save(memberRelation);
-            session.getAsyncRemote().sendText(ResultMap.result(type, acceptMember));
+            session.getAsyncRemote().sendText(ResultMap.result(type ,serviceId , acceptMember));
         } catch (Exception e) {
-            session.getAsyncRemote().sendText(ResultMap.result(type,e.getMessage()));
+            session.getAsyncRemote().sendText(ResultMap.result(type ,serviceId , e.getMessage()));
         }
         throw new UnsupportedOperationException("Unimplemented method 'onMessage'");
     }
 
-    public void searchMember(JSONObject data, Session session){
+    public void info(JSONObject data, Session session){
+        String serviceId = data.getString("serviceId");
         String type = data.getString("type");
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
-        session.getAsyncRemote().sendText(ResultMap.result(type, acceptMember));
+        session.getAsyncRemote().sendText(ResultMap.result(type,serviceId , acceptMember));
     }
 
     public void message(JSONObject data, Session session){
-        String orderId = data.getString("orderId");
+        String serviceId = data.getString("serviceId");
         String type = data.getString("type");
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
@@ -68,7 +70,7 @@ public class MemberSocketService {
         List<Session> sessionList = LocalSocket.localSession.get(acceptMember.getUsername());
         CtsMemberMessage memberMessage = new CtsMemberMessage();
         memberMessage.setId(IdUtil.objectId());
-        memberMessage.setOrderId(orderId);
+        memberMessage.setServiceId(serviceId);
         memberMessage.setSendAccount(account);
         memberMessage.setAcceptAccount(acceptMember.getAccount());
         memberMessage.setCreateTime(DateUtil.date());
@@ -76,16 +78,12 @@ public class MemberSocketService {
         memberMessage.setAccount(acceptMember.getAccount());
         memberMessage.setWithAccount(account);
         memberMessageRepository.save(memberMessage);
-
-        Map<String, String> map = new HashMap<>();
-        map.put("orderId", orderId);
-        map.put("content", "success");
-        session.getAsyncRemote().sendText(ResultMap.result(type, map));
+        session.getAsyncRemote().sendText(ResultMap.result(type, serviceId , "success"));
 
         if(sessionList != null){
             for (Session list : sessionList) {
                 if(list.isOpen()){
-                    list.getAsyncRemote().sendText(ResultMap.result("message", memberMessage));
+                    list.getAsyncRemote().sendText(ResultMap.result("message",serviceId , memberMessage));
                 }
                 
             }

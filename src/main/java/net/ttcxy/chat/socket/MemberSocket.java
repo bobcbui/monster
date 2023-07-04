@@ -74,11 +74,11 @@ public class MemberSocket {
         String type = jsonObject.getString("type");
         try {
             switch (type) {
-                case "joinMember":
-                    memberSocketService.joinMember(jsonObject, session);
+                case "join":
+                    memberSocketService.join(jsonObject, session);
                     break;
-                case "searchMember":
-                    memberSocketService.searchMember(jsonObject, session);
+                case "info":
+                    memberSocketService.info(jsonObject, session);
                     break;
                 case "message":
                     memberSocketService.message(jsonObject, session);

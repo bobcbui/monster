@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @Entity
 // 唯一键， account 和 withAccount orderId 三个字段
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames={"account","withAccount","orderId"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames={"account","withAccount","serviceId"})})
 public class CtsMemberMessage implements Serializable {
 
     @Id
@@ -32,10 +32,10 @@ public class CtsMemberMessage implements Serializable {
     /**发送消息的人 */
     private String sendAccount;
 
+    private String serviceId;
+
     /**接收消息的人 */
     private String acceptAccount;
-    
-    private String orderId;
 
     private String content;
 

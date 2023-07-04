@@ -30,13 +30,15 @@ public class GroupSocketService {
     @Autowired
     private GroupMessageRepository groupMessageRepository;
 
-    public void groupMessage(JSONObject data, Session session){
-        CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
+    public void messages(JSONObject data, Session session) {
+        String serviceId = data.getString("serviceId");
+        CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
         List<CtsGroupMessage> groupMessageList = groupMessageRepository.findByAcceptGroupId(acceptGroup.getId());
         JSONArray resultObject = new JSONArray();
         groupMessageList.forEach(groupMessage -> {
             JSONObject message = new JSONObject();
-            CtsGroupRelation relation = groupRelationRepository.findByMemberAccountAndGroupAccount(groupMessage.getAccount(), acceptGroup.getAccount());
+            CtsGroupRelation relation = groupRelationRepository
+                    .findByMemberAccountAndGroupAccount(groupMessage.getAccount(), acceptGroup.getAccount());
             message.put("type", "message");
             message.put("content", groupMessage.getContent());
             message.put("sendAccount", relation.getMemberAccount());
@@ -44,29 +46,27 @@ public class GroupSocketService {
             message.put("createTime", DateUtil.format(groupMessage.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
             resultObject.add(0, message);
         });
-        session.getAsyncRemote().sendText(ResultMap.result("groupMessage", resultObject));
+        session.getAsyncRemote().sendText(ResultMap.result("groupMessage", serviceId, resultObject));
     }
 
-    public void sendMessage(JSONObject data, Session session){
-
-    }
-
-    public void groupMember(JSONObject data, Session session){
+    public void members(JSONObject data, Session session) {
 
     }
 
-    public void groupInfo(JSONObject data, Session session){
-        CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
-        session.getAsyncRemote().sendText(ResultMap.result("groupInfo", acceptGroup));
+    public void info(JSONObject data, Session session) {
+        String serviceId = data.getString("serviceId");
+        CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
+        session.getAsyncRemote().sendText(ResultMap.result("groupInfo", serviceId, acceptGroup));
     }
 
-    public void notion(JSONObject data, Session session){
+    public void notion(JSONObject data, Session session) {
 
     }
 
     public void message(JSONObject jsonObject, Session session) {
-        CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
-        JSONObject sendMember = (JSONObject)session.getUserProperties().get("sendMember");
+        String serviceId = jsonObject.getString("serviceId");
+        CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
+        JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
 
         CtsGroupMessage groupMessage = new CtsGroupMessage();
         groupMessage.setId(IdUtil.objectId());
@@ -76,33 +76,33 @@ public class GroupSocketService {
         groupMessage.setCreateTime(DateUtil.date());
         groupMessageRepository.save(groupMessage);
 
-        for (Entry<String,List<Session>> entrySet : GroupSocket.groupSession.entrySet()) {
-            if(entrySet.getKey().equals(acceptGroup.getAccount())){
+        for (Entry<String, List<Session>> entrySet : GroupSocket.groupSession.entrySet()) {
+            if (entrySet.getKey().equals(acceptGroup.getAccount())) {
                 List<Session> list = entrySet.getValue();
-               for (Session value : list) {
-                    if(value.isOpen()){
+                for (Session value : list) {
+                    if (value.isOpen()) {
                         JSONObject message = new JSONObject();
                         message.put("content", jsonObject.getString("content"));
                         message.put("createTime", DateUtil.date());
                         message.put("sendAccount", sendMember.getString("account"));
                         message.put("sendNickname", sendMember.getString("username"));
                         try {
-                            value.getBasicRemote().sendText(ResultMap.result("message", message));
+                            value.getBasicRemote().sendText(ResultMap.result("message", serviceId, message));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }else{
+                    } else {
                         list.remove(value);
                     }
-               }
-                
+                }
+
             }
         }
     }
 
-    public void joinGroup(JSONObject jsonObject, Session session) {
-        CtsGroup acceptGroup = (CtsGroup)session.getUserProperties().get("acceptGroup");
-        JSONObject sendMember = (JSONObject)session.getUserProperties().get("sendMember");
+    public void join(JSONObject jsonObject, Session session) {
+        CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
+        JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
         JSONObject data = jsonObject.getJSONObject("data");
 
         CtsGroupRelation groupRelation = new CtsGroupRelation();
@@ -115,7 +115,6 @@ public class GroupSocketService {
         groupRelation.setAlias(acceptGroup.getName());
         groupRelation.setNickname(acceptGroup.getName());
         groupRelationRepository.save(groupRelation);
-
     }
-    
+
 }

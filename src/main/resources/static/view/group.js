@@ -25,7 +25,7 @@ let template = // html
 		{{joinGroupForm.name}}
 		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='joinGroupForm.ws' >
 		<button style='width:100%;margin-bottom:5px;' @click='searchGroup'>查询</button>
-		<button v-if='joinGroupForm.account != null' style='width:100%;margin-bottom:5px;' @click='joinGroup'>加入群</button>
+		<button v-if='joinGroupForm.account != null' style='width:100%;margin-bottom:5px;' @click='join'>加入群</button>
 	</div>
 </div>
 `
@@ -99,10 +99,10 @@ export default {
             });
 		
 		},
-		joinGroup(){
+		join(){
 			this.joinGroupForm.memberAccount = this.$store.state.member.account;
-			this.$store.state.socketGroup[this.joinGroupForm.account].send(JSON.stringify({ type: "joinGroup", data: this.joinGroupForm}))
-			this.$store.state.socketLocal.send(JSON.stringify({ type: "joinGroup", data: this.joinGroupForm}))
+			this.$store.state.socketGroup[this.joinGroupForm.account].send(JSON.stringify({ type: "join", data: this.joinGroupForm}))
+			this.$store.state.socketLocal.send(JSON.stringify({ type: "join", data: this.joinGroupForm}))
 		}
 	},
 	created() {

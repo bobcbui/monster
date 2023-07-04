@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -38,7 +39,7 @@ public class GroupSocket {
     public void setGroupSocketService(GroupSocketService groupSocketService) {
         GroupSocket.groupSocketService = groupSocketService;
     }
-   
+
     @Autowired
     public void setGroupRepository(GroupRepository groupRepository) {
         GroupSocket.groupRepository = groupRepository;
@@ -53,14 +54,14 @@ public class GroupSocket {
         }
         String groupName = session.getPathParameters().get("groupName");
         CtsGroup group = groupRepository.findByName(groupName);
-        if(group == null){
-            session.getBasicRemote().sendText(ResultMap.result("error", "群不存在"));
+        if (group == null) {
+            session.getBasicRemote().sendText(ResultMap.result("error", IdUtil.objectId(), "群不存在"));
             session.close();
             return;
-        }else{
+        } else {
             session.getUserProperties().put("acceptGroup", group);
-            // 
-            session.getBasicRemote().sendText(ResultMap.result("groupInfo", group));
+            //
+            session.getBasicRemote().sendText(ResultMap.result("groupInfo", IdUtil.objectId(), group));
             // 获取群里的所有在线成员Session
             List<Session> list = groupSession.get(group.getAccount());
             if (list == null) {
@@ -77,7 +78,7 @@ public class GroupSocket {
 
     @OnClose
     public void onClose(Session session) {
-        CtsGroup group = (CtsGroup)session.getUserProperties().get("acceptGroup");
+        CtsGroup group = (CtsGroup) session.getUserProperties().get("acceptGroup");
         if (groupSession.get(group.getAccount()) != null) {
             groupSession.get(group.getAccount()).remove(session);
         }
@@ -89,23 +90,20 @@ public class GroupSocket {
         String type = jsonObject.getString("type");
         try {
             switch (type) {
-                case "joinGroup":
-                    groupSocketService.joinGroup(jsonObject, session);
+                case "join":
+                    groupSocketService.join(jsonObject, session);
+                    break;
+                case "info":
+                    groupSocketService.info(jsonObject, session);
+                    break;
+                case "members":
+                    groupSocketService.members(jsonObject, session);
                     break;
                 case "message":
                     groupSocketService.message(jsonObject, session);
                     break;
-                case "groupInfo":
-                    groupSocketService.groupInfo(jsonObject, session);
-                    break;
-                case "groupMember":
-                    groupSocketService.groupMember(jsonObject, session);
-                    break;
-                case "groupMessage":
-                    groupSocketService.groupMessage(jsonObject, session);
-                    break;
-                case "sendMessage":
-                    groupSocketService.sendMessage(jsonObject, session);
+                case "messages":
+                    groupSocketService.messages(jsonObject, session);
                     break;
                 case "notion":
                     groupSocketService.notion(jsonObject, session);

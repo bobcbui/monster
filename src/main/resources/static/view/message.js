@@ -17,20 +17,20 @@ export default {
 	},
 	watch: {
 		memberMessageList(val,oldVal){
-			this.loadMemberListMessage(val)
+			this.loadMemberMessageList(val)
 		}
 	},
 	computed: {
 		memberMessageList() {
-			this.$store.state.memberListMessage
+			this.$store.state.memberMessageList
 		},
 		memberMap(){
 			return this.$store.state.memberMap
 		}
 	},
 	methods: {
-		loadMemberListMessage(val){
-			console.log("memberListMessage change",val)
+		loadMemberMessageList(val){
+			console.log("memberMessageList change",val)
 				this.messageList = []
 				for (let m in val){
 					this.messageList.push(val[m][0])
@@ -46,6 +46,6 @@ export default {
 		
 	},
 	mounted(){
-		this.loadMemberListMessage(this.$store.state.memberListMessage)
+		this.loadMemberMessageList(this.$store.state.memberMessageList)
 	}
 }

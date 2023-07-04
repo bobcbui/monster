@@ -38,10 +38,10 @@ export default {
 				socket.onmessage = function(e){
 					let data = JSON.parse(e.data);
 					if(data.type == "message"){
-						that.$store.state.groupListMessage[account].push(data.data)
+						that.$store.state.groupMessageList[account].push(data.data)
 					}
 					if(data.type == "groupMessage"){
-						that.$store.state.groupListMessage[account] = data.data
+						that.$store.state.groupMessageList[account] = data.data
 					}
 				};
 				socket.onclose = function(e){
@@ -74,11 +74,6 @@ export default {
 					console.log(data.data)
 				}
 
-				// if(data.type == "loadMemberMessage"){
-				// 	debugger
-				// 	that.$store.state.memberListMessage[data.data.account] = data.data.data
-				// }
-
 				if(data.type == "memberMessage"){
 					console.log(data)
 				}
@@ -96,8 +91,9 @@ export default {
 				}
 
 				if(data.type == "message"){
+					debugger
 					data.data.state = true;
-					that.$store.state.memberListMessage[data.data.withAccount].push(data.data);
+					that.$store.state.memberMessageList[data.data.withAccount].push(data.data);
 					
 					setTimeout(() => {
 						down(data.data.withAccount)
@@ -106,9 +102,12 @@ export default {
 				
 				// 记载所有消息
 				if(data.type == "loadMessage"){
+					let account;
 					for(let item of data.data){
-						that.$store.state.memberListMessage[item.account] = item.data
+						that.$store.state.memberMessageList[item.account] = item.data
+						account = item.account;
 					}
+					down(account)
 				}
 			};
 			socket.onclose = function(e){

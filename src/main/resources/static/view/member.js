@@ -2,12 +2,11 @@ let template = // html
 `
 <div style='padding:10px;padding-top:0px;'>
     <input  style='width:100%;margin-bottom:5px;' v-model="account" placeholder='账户地址'>
-    <button style='width:100%;margin-bottom:5px;' @click="searchMember">查询好友</button>
+    <button style='width:100%;margin-bottom:5px;' @click="info()">查询好友</button>
 	<div v-if='searchMember' style='padding:10px;padding-top:0px;'>
-        username:{{searchMember.username}}<br>
-        nickname:{{searchMember.nickname}}<br>
+        username:{{searchMember.username}}
     </div>
-    <button v-if='searchMember' style='width:100%;margin-bottom:5px;' @click="joinMember">增加好友</button>
+    <button v-if='searchMember' style='width:100%;margin-bottom:5px;' @click="join">增加好友</button>
 </div>
 
 
@@ -48,26 +47,26 @@ export default {
         toMemberMessage(item){
             this.$router.push({ path: '/member-message', query: { account: item.account }})
         },
-        searchMember(){
+        info(){
             request({
                 method: 'get',
                 url: '/one-token',
             }).then(response => {
-                let ws = decodeAccount(this.account);
+                let ws = decodeWsAccount(this.account);
                 let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
                 this.$store.state.socketMember = socket;
                 let _this = this;
                 socket.onopen = function(e){
                     _this.memberSocket = socket;
-                    socket.send(JSON.stringify({ type: "searchMember"}))
+                    socket.send(JSON.stringify({ type: "info"}))
                 };
                 socket.onmessage = function(e){
                     let data = JSON.parse(e.data);
-                    if(data.type == "joinMember"){
+                    if(data.type == "join"){
                         _this.$store.state.socketLocal.send(JSON.stringify({ type: "addMember", data: data.data}))
                         _this.$store.state.socketLocal.send(JSON.stringify({ type: "memberMap"}))
                     }
-                    if(data.type == "searchMember"){
+                    if(data.type == "info"){
                         _this.searchMember = data.data;
                     }
                 };
@@ -82,8 +81,8 @@ export default {
                 console.log(error);
             });
         },
-        joinMember(){
-            this.memberSocket.send(JSON.stringify({ type: "joinMember"}))
+        join(){
+            this.memberSocket.send(JSON.stringify({ type: "join"}))
         }
     },
     created() {

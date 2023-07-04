@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.hutool.core.util.IdUtil;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -45,7 +46,7 @@ public class LocalSocket {
             });
             CtsMember member = ApplicationData.tokenMemberMap.get(token);
             if (member == null) {
-                session.getAsyncRemote().sendText(ResultMap.result("error","token失效"));
+                session.getAsyncRemote().sendText(ResultMap.result("error",IdUtil.objectId(),"token失效"));
                 session.close();
                 return;
             }
@@ -57,7 +58,7 @@ public class LocalSocket {
 
             list.add(session);
             session.getUserProperties().put("member", member);
-            session.getAsyncRemote().sendText(ResultMap.result("system","连接成功"));
+            session.getAsyncRemote().sendText(ResultMap.result("system",IdUtil.objectId(),"连接成功"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,8 +99,8 @@ public class LocalSocket {
                 case "loadMessage":
                     localSocketService.loadMessage(data, session);
                     break;
-                case "joinGroup":
-                    localSocketService.joinGroup(data, session);
+                case "join":
+                    localSocketService.join(data, session);
                     break;
                 default:
                     System.out.println("未知类型:"+type);

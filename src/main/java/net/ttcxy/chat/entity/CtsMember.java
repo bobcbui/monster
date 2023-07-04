@@ -34,10 +34,8 @@ public class CtsMember implements Serializable{
 
     public String getAccount(){
         String prefix = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.member-prefix");
-        String domain = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.domain");
-        String netVersion = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.net-version");
-        // base64加密
-        return java.util.Base64.getEncoder().encodeToString((netVersion+"$"+domain+"$"+prefix+"/"+username).getBytes());
+        String domain = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.domain");        
+        return "@"+prefix+"."+username+"@"+domain;
     }
 
 }

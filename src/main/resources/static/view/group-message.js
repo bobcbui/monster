@@ -2,7 +2,7 @@ let template = // html
     `
 <div style='height: calc(100% - 30px);overflow-y: scroll;'>
 <div style='border-bottom:1px solid red' @click='toGroupInfo()'>群：{{thisGroup == undefined ? "" : thisGroup.alias}}</div>
-  <div v-for='(item,index) in $store.state.groupListMessage[$route.query.account]'>
+  <div v-for='(item,index) in $store.state.groupMessageList[$route.query.account]'>
   <p v-if='item.sendAccount == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
         {{item.content}} : {{member.username}}
     </p>
@@ -15,12 +15,10 @@ let template = // html
     <input v-model="message" style="width:70%;height:30px"/><button @click="send" style="width:30%;height:30px">发送</button>
 </div>
 `
-import request from '../lib/request.js';
 export default {
     template: template,
     data: function () {
         return {
-            memberSocket: null,
             socketState: false
         }
     },

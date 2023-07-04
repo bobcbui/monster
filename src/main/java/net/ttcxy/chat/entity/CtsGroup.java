@@ -51,9 +51,8 @@ public class CtsGroup implements Serializable {
     public String getAccount(){
         String prefix = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.group-prefix");
         String domain = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.domain");
-        String netVersion = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.net-version");
-        // base64加密
-        return java.util.Base64.getEncoder().encodeToString((netVersion+"$"+domain+"$"+prefix+"/"+name).getBytes());
+        //String netVersion = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.net-version");
+        return "@"+prefix+"."+name+"@"+domain;
     }
 
 }

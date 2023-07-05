@@ -1,35 +1,29 @@
 let template = // html
 `
-<div style='padding:10px;padding-top:0px;'>
-	<button style='width:100%;margin-bottom:5px;' @click='showCreateGroup = true'>创建群</button>
-	<button style='width:100%;margin-bottom:5px;' @click='showJoinGroup = true'>加入群</button>
-</div>
-<ul style='margin:0px'>
-	<li style='padding:0px 10px;border:1px solid black;margin:0px 10px 10px 10px;border-radius:5px;' v-for='(item,index) in groupMap' :key='index' @click='toGroupMessage(item)'>
-	{{item.alias}}</li>
-</ul>
-<div class='mode' v-if='showCreateGroup'>
-	<div class='mode-body'>
-		<button style='width:100%;margin-bottom:5px;' @click='showCreateGroup = false'>关闭</button>
-		<br><br>
+<cNav title='群组'>
+	<button @click='$refs["cModal"].show = true'>创建</button>&nbsp;
+	<cModal ref='cModal'>
 		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='createGroupForm.name' >
 		<input style='width:100%;margin-bottom:5px;' placeholder='群名称' v-model='createGroupForm.nickname'>
 		<button style='width:100%;margin-bottom:5px;' @click='createGroup'>创建</button>
-	</div>
-</div>
-
-<div class='mode' v-if='showJoinGroup'>
-	<div class='mode-body'>
-		<button style='width:100%;margin-bottom:5px;' @click='showJoinGroup = false'>关闭</button>
-		<br><br>
+	</cModal>
+	<button @click='$refs["jrq"].show = true'>加群</button>
+	<cModal ref='jrq'>
 		{{joinGroupForm.name}}
-		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='joinGroupForm.ws' >
+		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='joinGroupForm.account' >
 		<button style='width:100%;margin-bottom:5px;' @click='searchGroup'>查询</button>
 		<button v-if='joinGroupForm.account != null' style='width:100%;margin-bottom:5px;' @click='join'>加入群</button>
-	</div>
+	</cModal>
+</cNav>
+<div style='padding:10px'>
+	<ul style='margin:0px'>
+		<li style='padding:0px 10px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' v-for='(item,index) in groupMap' :key='index' @click='toGroupMessage(item)'>
+		{{item.alias}}</li>
+	</ul>
 </div>
 `
-
+import cNav from '../component/nav.js'
+import cModal from '../component/modal.js'
 import request from '../lib/request.js'
 export default {
 	template: template,
@@ -45,6 +39,9 @@ export default {
 				
 			}
 		}
+	},
+	components: {
+		cNav,cModal
 	},
 	destroyed() {
 
@@ -67,8 +64,8 @@ export default {
                 method: 'get',
                 url: '/one-token',
             }).then(response => {
-				let account = this.joinGroupForm.ws
-				let ws = decodeAccount(this.joinGroupForm.ws);
+				let account = this.joinGroupForm.account
+				let ws = decodeWsAccount(this.joinGroupForm.account);
                 let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
 				this.$store.state.socketGroup[account] = socket;
 

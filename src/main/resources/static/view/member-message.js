@@ -1,22 +1,27 @@
 let template = // html
 `
-<div style='height: calc(100% - 30px);overflow-y: scroll;' v-if="withMember" :id='"show_words_" + withMember.account'>
-    <div style='border-bottom:1px solid red' v-if='withMember'>{{withMember.username}}</div>
+<cNav v-if='withMember' :title='withMember.nickname' back='true'>
+    <button @click='$router.push({name:"message"})' >返回</button>
+</cNav>
+<div style='height: calc(100% - 74px);overflow-y: scroll;padding-bottom:5px;' v-if="withMember" :id='"show_words_" + withMember.account'>
     <div v-for='(item,index) in $store.state.memberMessageList[$route.query.account]'>
         <div v-if='member && member.account != item.sendAccount ' style=' margin: 5px; margin-bottom: 0px;'>
-            {{$store.state.memberMap[item.sendAccount].username}} 
-            <p style='border: 1px solid black; border-radius: 5px;margin:0px'>{{item.content}}&nbsp;</p>
+            <strong style='color:#3c3ce2'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
+            <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:2px'>{{item.content}}&nbsp;</p>
         </div>
         <div v-if='member && member.account == item.sendAccount' style=' margin: 5px; margin-bottom: 0px;text-align: right'>
-            {{member.username}}
-            <p style='border: 1px solid black; border-radius: 5px;margin:0px'>&nbsp;{{item.content}}</p>
+            <strong style='color:#3c3ce2'>{{member.username}}</strong>
+            <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:2px'>&nbsp;{{item.content}}</p>
         </div>
     </div>
 </div>
-<div style="height:30px">
-    <input v-model="messageForm.content" style="width:70%;height:30px"/><button @click="send" style="width:30%;height:30px">发送</button>
+<div style="height:30px;border-top:1px solid black;padding:2px 10px" v-if="withMember">
+    <input v-model="messageForm.content" style="width: calc(100% - 48px); height: 23px;"/>
+    <button @click="send" style="float:right; height: 23px;margin-top: 1px;">发送</button>
 </div>
 `
+import cNav from '../component/nav.js'
+import cModal from '../component/modal.js'
 import request from '../lib/request.js';
 export default {
     template: template,
@@ -29,6 +34,9 @@ export default {
                 content: ""
             },
         }
+    },
+    components:{
+        cNav,cModal
     },
     computed:{
         withMember(){
@@ -51,6 +59,7 @@ export default {
         "$store.state.memberMessageList":{
             handler(val){
                 down(this.$route.query.account)
+                console.log("asdfjkashdfjkahsdfjk")
             },
             deep: true,
             immediate: true,
@@ -68,6 +77,7 @@ export default {
                 socket.onopen = function (e) {
                     that.memberSocket = socket;
                     that.socketState = true;
+                    down(that.$route.query.account)
                 };
                 socket.onmessage = function (e) {
                     let data = JSON.parse(e.data);
@@ -84,7 +94,7 @@ export default {
                                     serviceId: data.serviceId,
                                     withAccount: that.account
                                 }))
-                                debugger
+                                
                                 that.messageForm.content = ""
                                 return true
                             }
@@ -110,15 +120,14 @@ export default {
             this.messageForm.sendAccount = this.$store.state.member.account
             this.memberSocket.send(JSON.stringify(this.messageForm))
             this.memberMessageList[this.$route.query.account].push({...this.messageForm})
+            down(this.$route.query.account)
         }
     },
     created() {
         this.createMemberSocket()
     },
     mounted(){
-        setTimeout(() => {
-            down(this.$route.query.account)
-        }, 100);
+        // $store.state.memberMessageList[$route.query.account] 渲染完毕后，滚动到底部,休眠100毫秒
         
     }
 }

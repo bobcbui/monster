@@ -44,17 +44,28 @@
 			position:fixed;
 			top:0;
 			left:0;
-			background:black;
 		}
 		.mode-body{
 			width:500px;
-			height:500px;
+			max-width: 100%;
+			height:100%;
 			margin: auto;
 			background-color: white;
-			margin-top: 10px;
-			border-radius: 5px;
 			border: 1px solid black;
+			padding: 10px;
 		}
+		a{
+			color:black !important;
+			text-decoration: none;
+		}
+		.n-active{
+			border-bottom: 2px solid black;
+		}
+
+		[v-cloak] {
+			display: none;
+		}
+		
 	</style>
 </head>
 
@@ -66,13 +77,30 @@
 <script type="module">
 	const routes = [
 		{
-			path: '/', redirect:"message", component: () => import('./view/index.js'),
+			path: '/', redirect:"home", component: () => import('./view/index.js'),
 			children: [
 				{
-					path: "/message", name: "message", component: () => import('./view/message.js')
-				},
-				{
-					path: "/member", name: "member", component: () => import('./view/member.js')
+					path: '/', name:'home', redirect: 'message', component: () => import('./view/home.js'),
+					children: [
+						{
+							path: "/message", name: "message", component: () => import('./view/message.js')
+						},
+						{
+							path: "/more", name: "more", component: () => import('./view/more.js')
+						},
+						{
+							path: "/member", name: "member", component: () => import('./view/member.js')
+						},
+						{
+							path: "/group", name: "group", component: () => import('./view/group.js')
+						},
+						{
+							path: "/group-info", name: "group-info", component: () => import('./view/group-info.js')
+						},
+						{
+							path: "/me", name: "me", component: () => import('./view/me.js')
+						}
+					]
 				},
 				{
 					path: "/member-message", name: "member-message", component: () => import('./view/member-message.js')
@@ -80,17 +108,10 @@
 				{
 					path: "/group-message", name: "group-message", component: () => import('./view/group-message.js')
 				},
-				{
-					path: "/group", name: "group", component: () => import('./view/group.js')
-				},
-				{
-					path: "/group-info", name: "group-info", component: () => import('./view/group-info.js')
-				},
-				{
-					path: "/me", name: "me", component: () => import('./view/me.js')
-				}
+				
 			]
 		},
+		
 		{
 			path: "/login", name: "login", component: () => import('./view/login.js')
 		},
@@ -122,6 +143,7 @@
 	router.afterEach((to) => {
 	})
 
+	
 	app.use(router)
 	app.use(store)
 	app.mount('#app')

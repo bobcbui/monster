@@ -1,11 +1,16 @@
 let template = // html
 `
-<cNav v-if='withMember' :title='withMember.nickname' back='true'>
-    <button @click='$router.push({name:"message"})' >返回</button>
+<cNav v-if='withMember' :title='withMember.nickname'>
+    <button @click='backClick()'>返回</button>&nbsp;
+    <button @click='$refs["cModal"].show = true'>设置</button>
+	<cModal ref='cModal'>
+        <p>账号: {{withMember.account}}</p>
+        <button style='width:100%' @click='deleteFriend()'>删除好友</button>
+	</cModal>
 </cNav>
-<div style='height: calc(100% - 74px);overflow-y: scroll;padding-bottom:5px;' v-if="withMember" :id='"show_words_" + withMember.account'>
+<div style='height: calc(100% - 84px);overflow-y: scroll;padding:5px;' v-if="withMember" :id='"show_words_" + withMember.account'>
     <div v-for='(item,index) in $store.state.memberMessageList[$route.query.account]'>
-        <div v-if='member && member.account != item.sendAccount ' style=' margin: 5px; margin-bottom: 0px;'>
+        <div v-if='member && member.account != item.sendAccount ' style='margin: 5px; margin-bottom: 0px;'>
             <strong style='color:#3c3ce2'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
             <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:2px'>{{item.content}}&nbsp;</p>
         </div>
@@ -15,9 +20,9 @@ let template = // html
         </div>
     </div>
 </div>
-<div style="height:30px;border-top:1px solid black;padding:2px 10px" v-if="withMember">
-    <input v-model="messageForm.content" style="width: calc(100% - 48px); height: 23px;"/>
-    <button @click="send" style="float:right; height: 23px;margin-top: 1px;">发送</button>
+<div style="height:40px;border-top:1px solid black;padding:4px 10px" v-if="withMember">
+    <input v-model="messageForm.content" style="width: calc(100% - 48px); height: 100%;"/>
+    <button @click="send()" style="float:right; height: 100%;">发送</button>
 </div>
 `
 import cNav from '../component/nav.js'
@@ -59,13 +64,16 @@ export default {
         "$store.state.memberMessageList":{
             handler(val){
                 down(this.$route.query.account)
-                console.log("asdfjkashdfjkahsdfjk")
             },
             deep: true,
             immediate: true,
         }
     },
     methods: {
+        backClick(){
+            let routerName = this.$route.query.routerName == null ? "message" : this.$route.query.routerName;
+            this.$router.push({name: routerName})
+        },
         createMemberSocket() {
             let that = this;
             request({
@@ -115,6 +123,14 @@ export default {
 
 
         },
+        deleteFriend(){
+            // 删除好友
+            this.memberSocket.send(JSON.stringify({ type: "delete" }));
+            this.$store.state.socketLocal.send(JSON.stringify({
+                type: "deleteMember",
+                account: this.$route.query.account
+            }));
+        },
         send() {
             this.messageForm.serviceId = new Date().getTime();
             this.messageForm.sendAccount = this.$store.state.member.account
@@ -127,7 +143,6 @@ export default {
         this.createMemberSocket()
     },
     mounted(){
-        // $store.state.memberMessageList[$route.query.account] 渲染完毕后，滚动到底部,休眠100毫秒
         
     }
 }

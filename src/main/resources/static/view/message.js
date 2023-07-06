@@ -52,20 +52,24 @@ export default {
 	methods: {
 		openMessage(item){
 			// 路由跳转到member
-			this.$router.push({ path: '/member-message', query: { account: item.withAccount }})
+			this.$router.push({
+				name: 'member-message', 
+				query: {
+					account: item.withAccount,
+					routerName: this.$route.name
+				}
+			})
 		},
 		loadMemberMessageList(val){
-			console.log("memberMessageList change",val)
-				this.messageList = []
-				for (let m in val){
-					// val 最后一条消息
-					debugger
-					this.messageList.push(val[m][val[m].length - 1])
-				}
-				// 通过createTime 排序，最新的在最下面
-				this.messageList.sort((a,b)=>{
-					return b.createTime - a.createTime
-				})
+			this.messageList = []
+			for (let m in val){
+				// val 最后一条消息
+				this.messageList.push(val[m][val[m].length - 1])
+			}
+			// 通过createTime 排序，最新的在最下面
+			this.messageList.sort((a,b)=>{
+				return b.createTime - a.createTime
+			})
 		}
 		
 	},

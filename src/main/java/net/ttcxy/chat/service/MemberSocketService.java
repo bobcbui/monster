@@ -1,8 +1,6 @@
 package net.ttcxy.chat.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,5 +85,11 @@ public class MemberSocketService {
                 }
             }
         }
+    }
+
+    public void delete(JSONObject jsonObject, Session session) {
+        CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
+        JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
+        memberRelationRepository.deleteByMemberIdAndAccount(acceptMember.getId(), sendMember.getString("accept"));
     }
 }

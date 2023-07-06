@@ -84,7 +84,6 @@ export default {
 
 				if(data.type == "message"){
 					data.data.state = true;
-					debugger
 					if(data.data.account != data.data.withAccount){
 						that.$store.state.memberMessageList[data.data.withAccount].push(data.data);
 						down(data.data.withAccount)

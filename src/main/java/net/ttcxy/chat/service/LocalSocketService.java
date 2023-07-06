@@ -177,4 +177,11 @@ public class LocalSocketService {
         session.getAsyncRemote().sendText(ResultMap.result("loadMessage",serviceId , jsonArray));
     }
 
+    public void deleteMember(JSONObject data, Session session) {
+        String account = data.getString("account");
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        memberRelationRepository.deleteByMemberIdAndAccount(member.getId(), account);
+        
+    }
+
 }

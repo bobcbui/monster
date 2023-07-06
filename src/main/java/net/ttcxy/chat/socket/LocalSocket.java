@@ -102,6 +102,9 @@ public class LocalSocket {
                 case "join":
                     localSocketService.join(data, session);
                     break;
+                case "deleteMember":
+                    localSocketService.deleteMember(data, session);
+                    break;
                 default:
                     System.out.println("未知类型:"+type);
                     break;

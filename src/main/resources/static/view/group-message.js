@@ -8,7 +8,7 @@ let template = // html
         群号：{{thisGroup.groupAccount}}<br/>
 	</cModal>
 </cNav>
-<div style='height: calc(100% - 72px);overflow-y: scroll;' v-if='thisGroup'>
+<div style='height: calc(100% - 84px);overflow-y: scroll;' v-if='thisGroup'>
   <div v-for='(item,index) in $store.state.groupMessageList[$route.query.account]'>
   <p v-if='item.sendAccount == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
         {{item.content}} : {{member.username}}
@@ -18,9 +18,9 @@ let template = // html
     </p>
   </div>
 </div>
-<div style="height:30px;border-top:1px solid black;padding:2px 10px" v-if="thisGroup">
-    <input v-model="message" style="width: calc(100% - 48px); height: 23px;"/>
-    <button @click="send" style="float:right; height: 23px;margin-top: 1px;">发送</button>
+<div style="height:40px;border-top:1px solid black;padding:4px 10px" v-if="thisGroup">
+    <input v-model="message" style="width: calc(100% - 48px); height: 100%;"/>
+    <button @click="send" style="float:right; height: 100%;">发送</button>
 </div>
 `
 import cNav from '../component/nav.js'

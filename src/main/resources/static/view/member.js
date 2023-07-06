@@ -15,7 +15,7 @@ let template = // html
     <ul style='margin:0px'>
         <li style='padding:0px 5px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' 
         v-for='(item,index) in memberMap' :key='index' @click='toMemberMessage(item)'>
-        {{item.username}}
+            {{item.username}}
         </li>
     </ul>
 </div>
@@ -53,7 +53,7 @@ export default {
     },
     methods: {
         toMemberMessage(item){
-            this.$router.push({ path: '/member-message', query: { account: item.account }})
+            this.$router.push({ name: 'member-message', query: { account: item.account, routerName: this.$route.name}})
         },
         info(){
             request({

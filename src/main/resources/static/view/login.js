@@ -32,6 +32,7 @@ export default {
             }).then(response => {
                 localStorage.setItem("token", response.data)
                 location.href = '/'
+                this.$router.push({ name: 'message' })
             }).catch(function (error) {
                 console.log(error);
             });

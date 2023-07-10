@@ -117,6 +117,11 @@ public class MainController {
         return ctsMember;
     }
 
+    @GetMapping("/logout")
+    public void logout(){
+        ApplicationData.tokenMemberMap.remove(request.getHeader("token"));
+    }
+
     /**
      * 获取登录的用户
      * @return

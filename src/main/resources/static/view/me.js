@@ -3,7 +3,7 @@ let template = // html
 <cNav title='我的'>
 	<button @click='$refs["cModal"].show = true'>设置</button>
 	<cModal ref='cModal'>
-        sdfasdf
+        <button @click="logout" style="width: 100%;">退出登录</button>
 	</cModal>
 </cNav>
 <div v-if="member!=null" style='padding:10px'>
@@ -33,6 +33,10 @@ export default {
 
 	},
 	methods: {
+		logout(){
+			localStorage.removeItem('token');
+			location.href = '/'
+		}
 		
 	},
 	created() {

@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import jakarta.websocket.Session;
-import net.ttcxy.chat.code.ResultMap;
+import net.ttcxy.chat.code.Result;
 import net.ttcxy.chat.entity.CtsGroup;
 import net.ttcxy.chat.entity.CtsGroupRelation;
 import net.ttcxy.chat.entity.CtsMember;
@@ -45,18 +45,16 @@ public class LocalSocketService {
      * 指令处理器
      */
     public void groupMap(JSONObject data, Session session) throws IOException {
-        String serviceId = data.getString("serviceId");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsGroupRelation> groupRelationList = groupRelationRepository.findByMemberAccount(member.getAccount());
         JSONObject jsonObject = new  JSONObject();
         for (CtsGroupRelation groupRelation : groupRelationList) {
             jsonObject.put(groupRelation.getGroupAccount(), groupRelation);
         }
-        session.getBasicRemote().sendText(ResultMap.result("groupMap",serviceId , jsonObject));
+        session.getBasicRemote().sendText(Result.r("groupMap", Result.success,jsonObject));
     }
 
     public void memberMap(JSONObject data, Session session) throws IOException {
-        String serviceId = data.getString("serviceId");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
         // memberList to Map 
@@ -67,7 +65,7 @@ public class LocalSocketService {
             likeMap.put(memberRelation.getAccount(), memberRelation);
         }
 
-        session.getBasicRemote().sendText(ResultMap.result("memberMap",serviceId , likeMap));
+        session.getBasicRemote().sendText(Result.r("memberMap", Result.success,likeMap));
     }
 
     public void memberMessage(JSONObject parse, Session session) {
@@ -134,7 +132,6 @@ public class LocalSocketService {
     }
 
     public void loadMemberMessage(JSONObject data, Session session) {
-        String serviceId = data.getString("serviceId");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         String beAccount = member.getAccount();
         String withAccount = data.getString("account");
@@ -142,27 +139,14 @@ public class LocalSocketService {
         Map<String, Object> result = new HashMap<>();
         result.put("account", data.getString("account"));
         result.put("data", messageList);
-        session.getAsyncRemote().sendText(ResultMap.result("loadMemberMessage",serviceId , result));
+        session.getAsyncRemote().sendText(Result.r("loadMemberMessage", Result.success,result));
     }
 
     public void join(JSONObject params, Session session) {
-        // String groupAccount = params.getString("groupAccount");
-        // CtsMember member = (CtsMember) session.getUserProperties().get("member");
-
-        // JSONObject data = params.getJSONObject("data");
-
-        // CtsGroupRelation groupRelation = new CtsGroupRelation();
-        // groupRelation.setId(IdUtil.objectId());
-        // groupRelation.setGroupAccount(groupAccount);
-        // groupRelation.setMemberAccount(data.getString("memberAccount"));
-        // groupRelation.setMemberNickname(member.getUsername());
-        // groupRelation.setMemberRole("3");
-        // groupRelation.setCreateTime(DateUtil.date());
-        // groupRelationRepository.save(groupRelation);
+        
     }
 
     public void loadMessage(JSONObject data, Session session) {
-        String serviceId = data.getString("serviceId");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
         JSONArray jsonArray = new JSONArray();
@@ -174,7 +158,7 @@ public class LocalSocketService {
             jsonObject.put("data", memberMessage);
             jsonArray.add(jsonObject);
         });
-        session.getAsyncRemote().sendText(ResultMap.result("loadMessage",serviceId , jsonArray));
+        session.getAsyncRemote().sendText(Result.r("loadMessage", Result.success,jsonArray));
     }
 
     public void deleteMember(JSONObject data, Session session) {

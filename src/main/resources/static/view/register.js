@@ -29,7 +29,7 @@ export default {
                 url: '/register',
                 data: this.loginForm,
             }).then(response => {
-                alert(JSON.stringify(data))
+                alert(JSON.stringify(response.data))
             }).catch(function (error) {
                 console.log(error);
             });

@@ -10,7 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import jakarta.websocket.Session;
-import net.ttcxy.chat.code.ResultMap;
+import net.ttcxy.chat.code.Result;
 import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.entity.CtsMemberMessage;
 import net.ttcxy.chat.entity.CtsMemberRelation;
@@ -28,7 +28,6 @@ public class MemberSocketService {
     MemberMessageRepository memberMessageRepository;
 
     public void join(JSONObject data, Session session) {
-        String serviceId = data.getString("serviceId");
         String type = data.getString("type");
         try {
             CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
@@ -44,18 +43,17 @@ public class MemberSocketService {
             memberRelation.setState(0);
             memberRelation.setMemberId(acceptMember.getId());
             memberRelationRepository.save(memberRelation);
-            session.getAsyncRemote().sendText(ResultMap.result(type ,serviceId , acceptMember));
+            session.getAsyncRemote().sendText(Result.r(type, Result.success ,acceptMember));
         } catch (Exception e) {
-            session.getAsyncRemote().sendText(ResultMap.result(type ,serviceId , e.getMessage()));
+            session.getAsyncRemote().sendText(Result.r(type , Result.success, e.getMessage()));
         }
         throw new UnsupportedOperationException("Unimplemented method 'onMessage'");
     }
 
     public void info(JSONObject data, Session session){
-        String serviceId = data.getString("serviceId");
         String type = data.getString("type");
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
-        session.getAsyncRemote().sendText(ResultMap.result(type,serviceId , acceptMember));
+        session.getAsyncRemote().sendText(Result.r(type, Result.success, acceptMember));
     }
 
     public void message(JSONObject data, Session session){
@@ -76,12 +74,12 @@ public class MemberSocketService {
         memberMessage.setAccount(acceptMember.getAccount());
         memberMessage.setWithAccount(account);
         memberMessageRepository.save(memberMessage);
-        session.getAsyncRemote().sendText(ResultMap.result(type, serviceId , "success"));
+        session.getAsyncRemote().sendText(Result.r(type, Result.success, serviceId));
 
         if(sessionList != null){
             for (Session list : sessionList) {
                 if(list.isOpen()){
-                    list.getAsyncRemote().sendText(ResultMap.result("message",serviceId , memberMessage));
+                    list.getAsyncRemote().sendText(Result.r("message", Result.success,memberMessage));
                 }
             }
         }
@@ -90,6 +88,7 @@ public class MemberSocketService {
     public void delete(JSONObject jsonObject, Session session) {
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
-        memberRelationRepository.deleteByMemberIdAndAccount(acceptMember.getId(), sendMember.getString("accept"));
+        memberRelationRepository.deleteByMemberIdAndAccount(acceptMember.getId(), sendMember.getString("account"));
+        session.getAsyncRemote().sendText(Result.r("delete", Result.success,sendMember.getString("accept")));
     }
 }

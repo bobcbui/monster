@@ -25,14 +25,17 @@ export default {
 				let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
 				that.$store.state.socketGroup[account] = socket;
 				socket.onopen = function(e){
-					socket.send(JSON.stringify({type: "groupMessage"}))
+					socket.send(JSON.stringify({type: "messages"}))
 				};
 				socket.onmessage = function(e){
 					let data = JSON.parse(e.data);
 					if(data.type == "message"){
+						if(that.$store.state.groupMessageList[account] == null){
+							that.$store.state.groupMessageList[account] = []
+						}
 						that.$store.state.groupMessageList[account].push(data.data)
 					}
-					if(data.type == "groupMessage"){
+					if(data.type == "messages"){
 						that.$store.state.groupMessageList[account] = data.data
 					}
 				};
@@ -77,7 +80,7 @@ export default {
 					}
 				}
 
-				if(data.type == "groupMessage"){
+				if(data.type == "messages"){
 					//that.$store.state.group1List = data
 					console.log(data.data)
 				}

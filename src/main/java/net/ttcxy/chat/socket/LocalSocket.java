@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 
-import cn.hutool.core.util.IdUtil;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -19,14 +18,14 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import net.ttcxy.chat.code.ApplicationData;
-import net.ttcxy.chat.code.ResultMap;
+import net.ttcxy.chat.code.Result;
 import net.ttcxy.chat.entity.CtsMember;
 import net.ttcxy.chat.service.LocalSocketService;
 
 @ServerEndpoint(value = "/local")
 @Component
 public class LocalSocket {
-    
+
     public static Map<String, List<Session>> localSession = new HashMap<>();
 
     private static LocalSocketService localSocketService;
@@ -46,7 +45,7 @@ public class LocalSocket {
             });
             CtsMember member = ApplicationData.tokenMemberMap.get(token);
             if (member == null) {
-                session.getAsyncRemote().sendText(ResultMap.result("error",IdUtil.objectId(),"token失效"));
+                session.getAsyncRemote().sendText(Result.r("error", Result.success, "token失效"));
                 session.close();
                 return;
             }
@@ -58,13 +57,12 @@ public class LocalSocket {
 
             list.add(session);
             session.getUserProperties().put("member", member);
-            session.getAsyncRemote().sendText(ResultMap.result("system",IdUtil.objectId(),"连接成功"));
+            session.getAsyncRemote().sendText(Result.r("system", Result.success, "连接成功"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
@@ -73,7 +71,7 @@ public class LocalSocket {
             String type = data.getString("type");
             switch (type) {
                 case "groupMap":
-                   localSocketService.groupMap(data, session);
+                    localSocketService.groupMap(data, session);
                     break;
                 case "memberMap":
                     localSocketService.memberMap(data, session);
@@ -106,7 +104,7 @@ public class LocalSocket {
                     localSocketService.deleteMember(data, session);
                     break;
                 default:
-                    System.out.println("未知类型:"+type);
+                    System.out.println("未知类型:" + type);
                     break;
             }
         } catch (Exception e) {
@@ -114,7 +112,7 @@ public class LocalSocket {
         }
 
     }
-    
+
     @OnClose
     public void onClose(Session session) {
         try {

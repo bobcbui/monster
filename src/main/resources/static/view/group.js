@@ -72,7 +72,7 @@ export default {
                 let _this = this;
                 socket.onopen = function(e){
 					_this.groupSocket = socket;
-                    socket.send(JSON.stringify({ type: "groupInfo"}))
+                    socket.send(JSON.stringify({ type: "info"}))
 
                 };
                 socket.onmessage = function(e){
@@ -80,7 +80,7 @@ export default {
                     if(data.type == "searchGroup"){
                        console.log("========================");
                     }
-					if(data.type == "groupInfo"){
+					if(data.type == "info"){
 						_this.joinGroupForm = data.data;
 					}
                 };

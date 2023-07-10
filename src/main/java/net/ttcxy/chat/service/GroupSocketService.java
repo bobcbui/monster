@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import jakarta.websocket.Session;
-import net.ttcxy.chat.code.ResultMap;
+import net.ttcxy.chat.code.Result;
 import net.ttcxy.chat.entity.CtsGroup;
 import net.ttcxy.chat.entity.CtsGroupMessage;
 import net.ttcxy.chat.entity.CtsGroupRelation;
@@ -31,7 +31,6 @@ public class GroupSocketService {
     private GroupMessageRepository groupMessageRepository;
 
     public void messages(JSONObject data, Session session) {
-        String serviceId = data.getString("serviceId");
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
         List<CtsGroupMessage> groupMessageList = groupMessageRepository.findByAcceptGroupId(acceptGroup.getId());
         JSONArray resultObject = new JSONArray();
@@ -46,7 +45,7 @@ public class GroupSocketService {
             message.put("createTime", DateUtil.format(groupMessage.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
             resultObject.add(0, message);
         });
-        session.getAsyncRemote().sendText(ResultMap.result("groupMessage", serviceId, resultObject));
+        session.getAsyncRemote().sendText(Result.r("messages", Result.success, resultObject));
     }
 
     public void members(JSONObject data, Session session) {
@@ -54,9 +53,8 @@ public class GroupSocketService {
     }
 
     public void info(JSONObject data, Session session) {
-        String serviceId = data.getString("serviceId");
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
-        session.getAsyncRemote().sendText(ResultMap.result("groupInfo", serviceId, acceptGroup));
+        session.getAsyncRemote().sendText(Result.r("groupInfo", Result.success, acceptGroup));
     }
 
     public void notion(JSONObject data, Session session) {
@@ -64,7 +62,6 @@ public class GroupSocketService {
     }
 
     public void message(JSONObject jsonObject, Session session) {
-        String serviceId = jsonObject.getString("serviceId");
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
 
@@ -87,7 +84,7 @@ public class GroupSocketService {
                         message.put("sendAccount", sendMember.getString("account"));
                         message.put("sendNickname", sendMember.getString("username"));
                         try {
-                            value.getBasicRemote().sendText(ResultMap.result("message", serviceId, message));
+                            value.getBasicRemote().sendText(Result.r("message", Result.success, message));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 import net.ttcxy.chat.util.SpringUtil;
@@ -17,6 +19,8 @@ import net.ttcxy.chat.util.SpringUtil;
 @Getter
 @Setter
 @Entity
+// username 唯一 不能重复
+@Table(uniqueConstraints = @UniqueConstraint(columnNames= {"username"}))
 public class CtsMember implements Serializable{
 
     @Id

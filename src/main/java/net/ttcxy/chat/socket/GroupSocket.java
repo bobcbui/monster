@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -20,7 +19,7 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
-import net.ttcxy.chat.code.ResultMap;
+import net.ttcxy.chat.code.Result;
 import net.ttcxy.chat.entity.CtsGroup;
 import net.ttcxy.chat.repository.GroupRepository;
 import net.ttcxy.chat.service.GroupSocketService;
@@ -55,13 +54,13 @@ public class GroupSocket {
         String groupName = session.getPathParameters().get("groupName");
         CtsGroup group = groupRepository.findByName(groupName);
         if (group == null) {
-            session.getBasicRemote().sendText(ResultMap.result("error", IdUtil.objectId(), "群不存在"));
+            session.getBasicRemote().sendText(Result.r("error", Result.success, "群不存在"));
             session.close();
             return;
         } else {
             session.getUserProperties().put("acceptGroup", group);
             //
-            session.getBasicRemote().sendText(ResultMap.result("groupInfo", IdUtil.objectId(), group));
+            session.getBasicRemote().sendText(Result.r("groupInfo", Result.success ,group));
             // 获取群里的所有在线成员Session
             List<Session> list = groupSession.get(group.getAccount());
             if (list == null) {

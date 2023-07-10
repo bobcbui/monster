@@ -89,26 +89,34 @@ export default {
                 };
                 socket.onmessage = function (e) {
                     let data = JSON.parse(e.data);
-                    // 发送消息的响应
-                    if (data.type == "message") {
-                        // 修改消息状态
-                        that.memberMessageList[that.$route.query.account].filter(item => {
-                            if (item.serviceId == data.serviceId) {
-                                item.state = 1;
-                                // 保存消息
-                                that.$store.state.socketLocal.send(JSON.stringify({
-                                    type: "saveMessage",
-                                    content: that.messageForm.content,
-                                    serviceId: data.serviceId,
-                                    withAccount: that.account
-                                }))
-                                
-                                that.messageForm.content = ""
-                                return true
+                    switch(data.type){
+                        case "message":
+                            // 修改消息状态
+                            that.memberMessageList[that.$route.query.account].filter(item => {
+                                debugger
+                                if (item.serviceId == data.data) {
+                                    item.state = 1;
+                                    // 保存消息
+                                    debugger
+                                    that.$store.state.socketLocal.send(JSON.stringify({
+                                        type: "saveMessage",
+                                        content: that.messageForm.content,
+                                        serviceId: data.data,
+                                        withAccount: that.account
+                                    }))
+                                    
+                                    that.messageForm.content = ""
+                                    return true
+                                }
+                                return false
+                            })
+                        break;
+                        case "delete":
+                            // 删除好友
+                            if(data.code == "200"){
+                                delete that.$store.state.memberMap[that.$route.query.account];
                             }
-                            return false
-                        })
-                        
+                            break;
                     }
                 };
                 socket.onclose = function (e) {
@@ -126,10 +134,7 @@ export default {
         deleteFriend(){
             // 删除好友
             this.memberSocket.send(JSON.stringify({ type: "delete" }));
-            this.$store.state.socketLocal.send(JSON.stringify({
-                type: "deleteMember",
-                account: this.$route.query.account
-            }));
+            this.$store.state.socketLocal.send(JSON.stringify({ type: "deleteMember", account: this.$route.query.account }));
         },
         send() {
             this.messageForm.serviceId = new Date().getTime();

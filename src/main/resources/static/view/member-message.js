@@ -138,10 +138,12 @@ export default {
         },
         send() {
             this.messageForm.serviceId = new Date().getTime();
-            this.messageForm.sendAccount = this.$store.state.member.account
-            this.memberSocket.send(JSON.stringify(this.messageForm))
-            this.memberMessageList[this.$route.query.account].push({...this.messageForm})
-            down(this.$route.query.account)
+            this.messageForm.sendAccount = this.$store.state.member.account;
+            this.memberSocket.send(JSON.stringify(this.messageForm));
+            this.messageForm.createTime = new Date().getTime();
+            this.messageForm.withAccount = this.$route.query.account
+            this.memberMessageList[this.$route.query.account].push({...this.messageForm});
+            down(this.$route.query.account);
         }
     },
     created() {

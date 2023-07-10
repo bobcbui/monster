@@ -59,8 +59,6 @@ public class GroupSocket {
             return;
         } else {
             session.getUserProperties().put("acceptGroup", group);
-            //
-            session.getBasicRemote().sendText(Result.r("groupInfo", Result.success ,group));
             // 获取群里的所有在线成员Session
             List<Session> list = groupSession.get(group.getAccount());
             if (list == null) {

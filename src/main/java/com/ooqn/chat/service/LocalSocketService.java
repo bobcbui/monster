@@ -44,14 +44,14 @@ public class LocalSocketService {
     /**
      * 指令处理器
      */
-    public void groupMap(JSONObject data, Session session) throws IOException {
+    public void groupList(JSONObject data, Session session) throws IOException {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsGroupRelation> groupRelationList = groupRelationRepository.findByMemberAccount(member.getAccount());
-        JSONObject jsonObject = new  JSONObject();
+        JSONArray jsonArray = new  JSONArray();
         for (CtsGroupRelation groupRelation : groupRelationList) {
-            jsonObject.put(groupRelation.getGroupAccount(), groupRelation);
+            jsonArray.add(groupRelation.getGroupAccount());
         }
-        session.getBasicRemote().sendText(Result.r("groupMap", Result.success,jsonObject));
+        session.getBasicRemote().sendText(Result.r("groupList", Result.success, jsonArray));
     }
 
     public void memberMap(JSONObject data, Session session) throws IOException {

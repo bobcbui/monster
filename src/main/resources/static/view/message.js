@@ -8,12 +8,16 @@ let template = // html
 </cNav>
 <div style='padding:10px'>
 	<div v-for="(item,index) in messageList" style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;' @click='openMessage(item)'>
-		<span v-if='item'>
-			{{memberMap[item.withAccount].username}} : {{item.content}}
+		<span v-if='item && item.withAccount != null'>
+			{{memberMap[item.withAccount].username}} : {{item.content}} 。{{item.createTime}}
+		</span>
+		<span v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]'>
+			{{groupMap[item.withGroupAccount].name}} : {{item.content}} 。{{item.createTime}}
 		</span>
 	</div>
 </div>
 `
+// 
 import cNav from '../component/nav.js'
 import cModal from '../component/modal.js'
 import request from '../lib/request.js'
@@ -34,8 +38,15 @@ export default {
 	},
 	watch: {
 		"$store.state.memberMessageList":{
-            handler(val){
-                this.loadMemberMessageList(val)
+            handler(){
+                this.loadMessageList()
+            },
+            deep: true,
+            immediate: true,
+        },
+		"$store.state.groupMessageList":{
+            handler(){
+                this.loadMessageList()
             },
             deep: true,
             immediate: true,
@@ -47,6 +58,9 @@ export default {
 		},
 		memberMap(){
 			return this.$store.state.memberMap
+		},
+		groupMap(){
+			return this.$store.state.groupMap
 		}
 	},
 	methods: {
@@ -60,16 +74,23 @@ export default {
 				}
 			})
 		},
-		loadMemberMessageList(val){
+		loadMessageList(val){
+			let valMember = this.$store.state.memberMessageList;
+			let valGroup = this.$store.state.groupMessageList;
 			this.messageList = []
-			for (let m in val){
+			for (let m in valMember){
 				// val 最后一条消息
-				this.messageList.push(val[m][val[m].length - 1])
+				this.messageList.push(valMember[m][valMember[m].length - 1])
+			}
+			for (let m in valGroup){
+				// val 最后一条消息
+				this.messageList.push(valGroup[m][valGroup[m].length - 1])
 			}
 			// 通过createTime 排序，最新的在最下面
 			this.messageList.sort((a,b)=>{
 				return b.createTime - a.createTime
 			})
+			
 		}
 		
 	},
@@ -77,6 +98,7 @@ export default {
 		
 	},
 	mounted(){
-		this.loadMemberMessageList(this.$store.state.memberMessageList)
+		this.loadMessageList(this.$store.state.memberMessageList)
+		
 	}
 }

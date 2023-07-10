@@ -70,8 +70,8 @@ public class LocalSocket {
             JSONObject data = JSONObject.parseObject(message);
             String type = data.getString("type");
             switch (type) {
-                case "groupMap":
-                    localSocketService.groupMap(data, session);
+                case "groupList":
+                    localSocketService.groupList(data, session);
                     break;
                 case "memberMap":
                     localSocketService.memberMap(data, session);

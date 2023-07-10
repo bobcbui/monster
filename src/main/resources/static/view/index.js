@@ -26,6 +26,7 @@ export default {
 				that.$store.state.socketGroup[account] = socket;
 				socket.onopen = function(e){
 					socket.send(JSON.stringify({type: "messages"}))
+					socket.send(JSON.stringify({type: "info"}))
 				};
 				socket.onmessage = function(e){
 					let data = JSON.parse(e.data);
@@ -37,6 +38,15 @@ export default {
 					}
 					if(data.type == "messages"){
 						that.$store.state.groupMessageList[account] = data.data
+					}
+				
+					if(data.type == "info"){
+						if(that.$store.state.groupMap == null){
+							that.$store.state.groupMap = {}
+						}
+						debugger
+						that.$store.state.groupMap[account] = data.data
+						
 					}
 				};
 				socket.onclose = function(e){
@@ -58,8 +68,9 @@ export default {
 				// 加载成功获取member 和 group 列表
 				that.$store.state.socketLocal = socket;
 				socket.send(JSON.stringify({type: "memberMap"}))
-				socket.send(JSON.stringify({type: "groupMap"}))
+				socket.send(JSON.stringify({type: "groupList"}))
 				socket.send(JSON.stringify({type: "loadMessage"}))
+
 			};
 			socket.onmessage = function(e){
 				let data = JSON.parse(e.data);
@@ -73,11 +84,12 @@ export default {
 					console.log(data)
 				}
 				
-				if(data.type == "groupMap"){
-					that.$store.state.groupMap = data.data
-					for(let item in data.data){
-						that.createGroupWebSocket(data.data[item].groupAccount)
-					}
+				if(data.type == "groupList"){
+					let groupList = data.data;
+					debugger
+					groupList.forEach(function(item){
+						that.createGroupWebSocket(item)
+					})
 				}
 
 				if(data.type == "messages"){

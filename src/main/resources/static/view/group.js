@@ -18,7 +18,7 @@ let template = // html
 <div style='padding:10px'>
 	<ul style='margin:0px'>
 		<li style='padding:0px 10px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' v-for='(item,index) in groupMap' :key='index' @click='toGroupMessage(item)'>
-		{{item.alias}}</li>
+		{{item.name}}</li>
 	</ul>
 </div>
 `
@@ -54,7 +54,7 @@ export default {
 	},
 	methods: {
 		toGroupMessage(item){
-			this.$router.push({ path: '/group-message', query: { account: item.groupAccount } });
+			this.$router.push({ path: '/group-message', query: { account: item.account } });
 		},
 		createGroup(){
 			this.$store.state.socketLocal.send(JSON.stringify({ type: "createGroup", data: this.createGroupForm}))

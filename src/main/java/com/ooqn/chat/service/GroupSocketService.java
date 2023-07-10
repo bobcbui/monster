@@ -42,7 +42,8 @@ public class GroupSocketService {
             message.put("content", groupMessage.getContent());
             message.put("sendAccount", relation.getMemberAccount());
             message.put("sendNickname", relation.getMemberNickname());
-            message.put("createTime", DateUtil.format(groupMessage.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
+            message.put("createTime", groupMessage.getCreateTime());
+            message.put("withGroupAccount", acceptGroup.getAccount());
             resultObject.add(0, message);
         });
         session.getAsyncRemote().sendText(Result.r("messages", Result.success, resultObject));
@@ -54,7 +55,7 @@ public class GroupSocketService {
 
     public void info(JSONObject data, Session session) {
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
-        session.getAsyncRemote().sendText(Result.r("groupInfo", Result.success, acceptGroup));
+        session.getAsyncRemote().sendText(Result.r("info", Result.success, acceptGroup));
     }
 
     public void notion(JSONObject data, Session session) {
@@ -83,6 +84,7 @@ public class GroupSocketService {
                         message.put("createTime", DateUtil.date());
                         message.put("sendAccount", sendMember.getString("account"));
                         message.put("sendNickname", sendMember.getString("username"));
+                        message.put("withGroupAccount", acceptGroup.getAccount());
                         try {
                             value.getBasicRemote().sendText(Result.r("message", Result.success, message));
                         } catch (IOException e) {

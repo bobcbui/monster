@@ -4,8 +4,8 @@ let template = // html
     <button @click='$router.push({name:"message"})' >返回</button>&nbsp;
     <button @click='$refs["cModal"].show = true'>设置</button>
 	<cModal ref='cModal'>
-        名称：{{thisGroup.alias}}<br/>
-        群号：{{thisGroup.groupAccount}}<br/>
+        名称：{{thisGroup.name}}<br/>
+        群号：{{thisGroup.account}}<br/>
 	</cModal>
 </cNav>
 <div style='height: calc(100% - 84px);overflow-y: scroll;' v-if='thisGroup'>
@@ -51,7 +51,7 @@ export default {
         },
         
         thisGroupSocket() {
-            return this.$store.state.socketGroup[this.thisGroup.groupAccount]
+            return this.$store.state.socketGroup[this.thisGroup.account]
         }
     },
     methods: {
@@ -59,7 +59,7 @@ export default {
             this.$router.push({
                 path: '/group-info',
                 query: {
-                    account: this.thisGroup.groupAccount
+                    account: this.thisGroup.account
                 }
             })
         },

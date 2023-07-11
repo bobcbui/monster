@@ -5,7 +5,7 @@ let template = // html
         sdfasdf
 	</cModal>
 </cNav>
-<div style='padding:10px'>
+<div class='p-10'>
 
 </div>
 `

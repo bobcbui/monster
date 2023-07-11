@@ -2,19 +2,19 @@ let template = // html
 `
 <cNav title='群组'>
 	<cModal buttonName='创建'>
-		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='createGroupForm.name' >
-		<input style='width:100%;margin-bottom:5px;' placeholder='群名称' v-model='createGroupForm.nickname'>
-		<button style='width:100%;margin-bottom:5px;' @click='createGroup'>创建</button>
+		<input class='w-100 m-b-5' placeholder='群号' v-model='createGroupForm.name'>
+		<input class='w-100 m-b-5' placeholder='群名称' v-model='createGroupForm.nickname'>
+		<button class='w-100 m-b-5' @click='createGroup'>创建</button>
 	</cModal>&nbsp;
 	<cModal buttonName='加群'>
 		{{joinGroupForm.name}}
-		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='joinGroupForm.account' >
-		<button style='width:100%;margin-bottom:5px;' @click='searchGroup'>查询</button>
-		<button v-if='joinGroupForm.account != null' style='width:100%;margin-bottom:5px;' @click='join'>加入群</button>
+		<input class='w-100 m-b-5' placeholder='群号' v-model='joinGroupForm.account' >
+		<button class='w-100 m-b-5' @click='searchGroup'>查询</button>
+		<button class='w-100 m-b-5' v-if='joinGroupForm.account != null' @click='join'>加入群</button>
 	</cModal>
 </cNav>
-<div style='padding:10px'>
-	<ul style='margin:0px'>
+<div class='p-10'>
+	<ul class='m-0'>
 		<li style='padding:0px 10px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' v-for='(item,index) in groupMap' :key='index' @click='toGroupMessage(item)'>
 		{{item.name}}</li>
 	</ul>

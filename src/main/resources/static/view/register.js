@@ -1,13 +1,13 @@
 let template = // html
 `
-<div style="margin: auto;padding:10px">
+<div class='p-10'>
     注册
-    <p style='margin-bottom: 2px;'>密码：</p>
-    <input type="text" style="width: 100%;" v-model="loginForm.username" placeholder="用户名">
-    <p style='margin-bottom: 2px;'>用户名：</p>
-    <input type="password" style="width: 100%;" v-model="loginForm.password" placeholder="密码" />
+    <p class='m-b-2'>密码：</p>
+    <input type="text" class='w-100' v-model="loginForm.username" placeholder="用户名">
+    <p class='m-b-2'>用户名：</p>
+    <input type="password" class='w-100' v-model="loginForm.password" placeholder="密码" />
     <br><br>
-    <button style="width: 100%;" @click="register()">注册</button>
+    <button class='w-100' @click="register()">注册</button>
     <br>
     <a href="/#/login">登录</a>
 </div>

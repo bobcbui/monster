@@ -4,7 +4,7 @@ let template = // html
     <button @click='backClick()'>返回</button>&nbsp;
 	<cModal buttonName='设置'>
         <p>账号: {{withMember.account}}</p>
-        <button style='width:100%' @click='deleteFriend()'>删除好友</button>
+        <button class='w-100' @click='deleteFriend()'>删除好友</button>
 	</cModal>
 </cNav>
 <div style='height: calc(100% - 84px);overflow-y: scroll;padding:5px;' v-if="withMember" :id='"show_words_" + withMember.account'>
@@ -20,8 +20,8 @@ let template = // html
     </div>
 </div>
 <div style="height:40px;border-top:1px solid black;padding:4px 10px" v-if="withMember">
-    <input v-model="messageForm.content" style="width: calc(100% - 48px); height: 100%;"/>
-    <button @click="send()" style="float:right; height: 100%;">发送</button>
+    <input v-model="messageForm.content" style="width: calc(100% - 48px);" class='h-100'/>
+    <button @click="send()" class='float-end h-100'>发送</button>
 </div>
 `
 import cNav from '../component/nav.js'

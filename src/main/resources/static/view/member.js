@@ -2,16 +2,16 @@ let template = // html
 `
 <cNav title='好友'>
 	<cModal buttonName='添加'>
-        <input  style='width:100%;margin-bottom:5px;' v-model="account" placeholder='账户地址'>
-        <button style='width:100%;margin-bottom:5px;' @click="info()">查询好友</button>
-        <div v-if='searchMember' style='padding:10px;padding-top:0px;'>
+        <input class='w-100 m-b-5' v-model="account" placeholder='账户地址'>
+        <button class='w-100 m-b-5' @click="info()">查询好友</button>
+        <div v-if='searchMember' class='p-10 p-t-0'>
             username:{{searchMember.username}}
         </div>
         <button v-if='searchMember' style='width:100%;margin-bottom:5px;' @click="join">增加好友</button>
 	</cModal>
 </cNav>
-<div style='padding:10px'>
-    <ul style='margin:0px'>
+<div class='p-10'>
+    <ul class='m-0'>
         <li style='padding:0px 5px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' 
         v-for='(item,index) in memberMap' :key='index' @click='toMemberMessage(item)'>
             {{item.username}}

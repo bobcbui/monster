@@ -2,10 +2,10 @@ let template = // html
 `
 <cNav title='消息'>
 	<cModal buttonName='搜索'>
-		<input style='width:100%' placeholder='搜索'/>
+		<input class='w-100' placeholder='搜索'/>
 	</cModal>
 </cNav>
-<div style='padding:10px'>
+<div class='p-10'>
 	<div v-for="(item,index) in messageList" style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;' @click='openMessage(item)'>
 		<span v-if='item && item.withAccount != null'>
 			{{memberMap[item.withAccount].username}} : {{item.content}} 。{{item.createTime}}

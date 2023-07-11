@@ -1,14 +1,12 @@
 let template = // html
 `
 <cNav title='群组'>
-	<button @click='$refs["cModal"].show = true'>创建</button>&nbsp;
-	<cModal ref='cModal'>
+	<cModal buttonName='创建'>
 		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='createGroupForm.name' >
 		<input style='width:100%;margin-bottom:5px;' placeholder='群名称' v-model='createGroupForm.nickname'>
 		<button style='width:100%;margin-bottom:5px;' @click='createGroup'>创建</button>
-	</cModal>
-	<button @click='$refs["jrq"].show = true'>加群</button>
-	<cModal ref='jrq'>
+	</cModal>&nbsp;
+	<cModal buttonName='加群'>
 		{{joinGroupForm.name}}
 		<input style='width:100%;margin-bottom:5px;' placeholder='群号' v-model='joinGroupForm.account' >
 		<button style='width:100%;margin-bottom:5px;' @click='searchGroup'>查询</button>

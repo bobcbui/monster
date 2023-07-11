@@ -1,8 +1,7 @@
 let template = // html
 `
 <cNav title='我的'>
-	<button @click='$refs["cModal"].show = true'>设置</button>
-	<cModal ref='cModal'>
+	<cModal buttonName='设置'>
         <button @click="logout" style="width: 100%;">退出登录</button>
 	</cModal>
 </cNav>

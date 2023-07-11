@@ -1,8 +1,7 @@
 let template = // html
 `
 <cNav title='更多'>
-	<button @click='$refs["cModal"].show = true'>添加</button>
-	<cModal ref='cModal'>
+	<cModal buttonName='添加'>
         sdfasdf
 	</cModal>
 </cNav>

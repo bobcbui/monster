@@ -2,8 +2,7 @@ let template = // html
 `
 <cNav v-if='withMember' :title='withMember.nickname'>
     <button @click='backClick()'>返回</button>&nbsp;
-    <button @click='$refs["cModal"].show = true'>设置</button>
-	<cModal ref='cModal'>
+	<cModal buttonName='设置'>
         <p>账号: {{withMember.account}}</p>
         <button style='width:100%' @click='deleteFriend()'>删除好友</button>
 	</cModal>

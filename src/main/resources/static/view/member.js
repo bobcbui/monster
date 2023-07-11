@@ -1,8 +1,7 @@
 let template = // html
 `
 <cNav title='好友'>
-	<button @click='$refs["cModal"].show = true'>添加</button>
-	<cModal ref='cModal'>
+	<cModal buttonName='添加'>
         <input  style='width:100%;margin-bottom:5px;' v-model="account" placeholder='账户地址'>
         <button style='width:100%;margin-bottom:5px;' @click="info()">查询好友</button>
         <div v-if='searchMember' style='padding:10px;padding-top:0px;'>

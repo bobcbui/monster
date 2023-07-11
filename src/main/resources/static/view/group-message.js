@@ -1,9 +1,8 @@
 let template = // html
 `
-<cNav v-if='thisGroup' :title='thisGroup.alias' back='true'>
+<cNav v-if='thisGroup' :title='thisGroup.name' back='true'>
     <button @click='$router.push({name:"message"})' >返回</button>&nbsp;
-    <button @click='$refs["cModal"].show = true'>设置</button>
-	<cModal ref='cModal'>
+	<cModal :buttonName='设置'>
         名称：{{thisGroup.name}}<br/>
         群号：{{thisGroup.account}}<br/>
 	</cModal>

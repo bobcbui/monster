@@ -1,8 +1,7 @@
 let template = // html
 `
 <cNav title='消息'>
-	<button @click='$refs["cModal"].show = true'>搜索</button>
-	<cModal ref='cModal'>
+	<cModal buttonName='搜索'>
 		<input style='width:100%' placeholder='搜索'/>
 	</cModal>
 </cNav>
@@ -66,13 +65,24 @@ export default {
 	methods: {
 		openMessage(item){
 			// 路由跳转到member
-			this.$router.push({
-				name: 'member-message', 
-				query: {
-					account: item.withAccount,
-					routerName: this.$route.name
-				}
-			})
+			if(item.withAccount){
+				this.$router.push({
+					name: 'member-message', 
+					query: {
+						account: item.withAccount,
+						routerName: this.$route.name
+					}
+				})
+			}
+			if(item.withGroupAccount){
+				this.$router.push({
+					name: 'group-message',
+					query: {
+						account: item.withGroupAccount,
+						routerName: this.$route.name
+					}
+				})
+			}
 		},
 		loadMessageList(val){
 			let valMember = this.$store.state.memberMessageList;

@@ -44,7 +44,6 @@ export default {
 						if(that.$store.state.groupMap == null){
 							that.$store.state.groupMap = {}
 						}
-						debugger
 						that.$store.state.groupMap[account] = data.data
 						
 					}
@@ -86,7 +85,6 @@ export default {
 				
 				if(data.type == "groupList"){
 					let groupList = data.data;
-					debugger
 					groupList.forEach(function(item){
 						that.createGroupWebSocket(item)
 					})

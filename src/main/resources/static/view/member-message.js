@@ -92,11 +92,9 @@ export default {
                         case "message":
                             // 修改消息状态
                             that.memberMessageList[that.$route.query.account].filter(item => {
-                                debugger
                                 if (item.serviceId == data.data) {
                                     item.state = 1;
                                     // 保存消息
-                                    debugger
                                     that.$store.state.socketLocal.send(JSON.stringify({
                                         type: "saveMessage",
                                         content: that.messageForm.content,
@@ -114,6 +112,8 @@ export default {
                             // 删除好友
                             if(data.code == "200"){
                                 delete that.$store.state.memberMap[that.$route.query.account];
+                                // to message
+                                that.$router.push({name: "message"})
                             }
                             break;
                     }

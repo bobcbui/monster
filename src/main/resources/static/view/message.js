@@ -6,13 +6,17 @@ let template = // html
 	</cModal>
 </cNav>
 <div class='p-10'>
-	<div v-for="(item,index) in messageList" style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;' @click='openMessage(item)'>
-		<span v-if='item && item.withAccount != null'>
-			{{memberMap[item.withAccount].username}} : {{item.content}} 。{{item.createTime}}
-		</span>
-		<span v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]'>
-			{{groupMap[item.withGroupAccount].name}} : {{item.content}} 。{{item.createTime}}
-		</span>
+	<div v-for="(item,index) in messageList" @click='openMessage(item)'>
+		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;'>
+			{{memberMap[item.withAccount].username}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
+			<br>
+			{{item.content}}
+		</div>
+		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;'>
+			{{groupMap[item.withGroupAccount].name}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
+			<br>
+			{{item.content}}
+		</div>
 	</div>
 </div>
 `
@@ -63,6 +67,27 @@ export default {
 		}
 	},
 	methods: {
+		toDate(time){
+			// 时间戳转距离当前有多久，分钟，小时，天，月，年
+			let now = new Date().getTime();
+			let distance = now - time;
+			if(distance < 60 * 1000){
+				return "刚刚"
+			}
+			if(distance < 60 * 60 * 1000){
+				return Math.floor(distance / (60 * 1000)) + "分钟前"
+			}
+			if(distance < 24 * 60 * 60 * 1000){
+				return Math.floor(distance / (60 * 60 * 1000)) + "小时前"
+			}
+			if(distance < 30 * 24 * 60 * 60 * 1000){
+				return Math.floor(distance / (24 * 60 * 60 * 1000)) + "天前"
+			}
+			if(distance < 12 * 30 * 24 * 60 * 60 * 1000){
+				return Math.floor(distance / (30 * 24 * 60 * 60 * 1000)) + "月前"
+			}
+			return Math.floor(distance / (12 * 30 * 24 * 60 * 60 * 1000)) + "年前"
+		},
 		openMessage(item){
 			// 路由跳转到member
 			if(item.withAccount){

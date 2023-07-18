@@ -21,10 +21,12 @@ import com.ooqn.chat.entity.CtsGroupRelation;
 import com.ooqn.chat.entity.CtsMember;
 import com.ooqn.chat.entity.CtsMemberMessage;
 import com.ooqn.chat.entity.CtsMemberRelation;
+import com.ooqn.chat.entity.CtsVerify;
 import com.ooqn.chat.repository.GroupRelationRepository;
 import com.ooqn.chat.repository.GroupRepository;
 import com.ooqn.chat.repository.MemberMessageRepository;
 import com.ooqn.chat.repository.MemberRelationRepository;
+import com.ooqn.chat.repository.VerifyRepository;
 
 @Service
 public class LocalSocketService {
@@ -40,6 +42,9 @@ public class LocalSocketService {
 
     @Autowired
     private GroupRelationRepository groupRelationRepository;
+    
+    @Autowired
+    private VerifyRepository verifyRepository;
 
     /**
      * 指令处理器
@@ -167,5 +172,13 @@ public class LocalSocketService {
         memberRelationRepository.deleteByMemberIdAndAccount(member.getId(), account);
         
     }
+
+
+    public void loadVerify(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        List<CtsVerify> verifyList = verifyRepository.findByMemberId(member.getId());
+        session.getAsyncRemote().sendText(Result.r("loadVerify", Result.success,verifyList));
+    }
+
 
 }

@@ -2,19 +2,21 @@ let template = // html
 `
 <cNav v-if='thisGroup' :title='thisGroup.name' back='true'>
     <button @click='$router.push({name:"message"})' >返回</button>&nbsp;
-	<cModal :buttonName='设置'>
+	<cModal buttonName='设置'>
         名称：{{thisGroup.name}}<br/>
         群号：{{thisGroup.account}}<br/>
 	</cModal>
 </cNav>
-<div style='height: calc(100% - 84px);overflow-y: scroll;' v-if='thisGroup'>
+<div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom: 10px;' v-if='thisGroup' :id='"show_words_" + thisGroup.account'>
   <div v-for='(item,index) in $store.state.groupMessageList[$route.query.account]'>
-  <p v-if='item.sendAccount == member.account' style='text-align: right;border: 1px solid black; border-radius: 5px; margin: 5px; margin-bottom: 0px;'>
-        {{item.content}} : {{member.username}}
-    </p>
-    <p v-else style='border: 1px solid black;border-radius: 5px;margin: 5px;margin-bottom: 0px;'>
-        {{item.sendNickname}} : {{item.content}}
-    </p>
+    <div v-if='item.sendAccount == member.account' style=' margin: 5px; margin-bottom: 0px;text-align: right'>
+        <strong style='color:#3c3ce2'>{{member.username}}</strong>
+        <p  style='border: 1px solid black; border-radius: 5px; margin: 0px; margin-bottom: 0px;'>{{item.content}}</p>
+    </div>
+    <div v-else  style='margin: 5px; margin-bottom: 0px;'>
+        <strong style='color:#3c3ce2'>{{item.sendNickname}} </strong>
+        <p style='border: 1px solid black;border-radius: 5px;margin: 0px;margin-bottom: 0px;'>{{item.content}}</p>
+    </div>
   </div>
 </div>
 <div style="height:40px;border-top:1px solid black;padding:4px 10px" v-if="thisGroup">
@@ -34,8 +36,14 @@ export default {
     components:{
         cNav,cModal
     },
-    wathc: {
-
+    watch:{
+        "$store.state.groupMessageList":{
+            handler(val){
+                down(this.$route.query.account)
+            },
+            deep: true,
+            immediate: true,
+        }
     },
     computed: {
         member() {
@@ -70,6 +78,9 @@ export default {
         }
     },
     created() {
-        
+        // 100毫秒后执行
+        setTimeout(() => {
+            down(this.$route.query.account)
+        }, 100);
     }
 }

@@ -1,8 +1,12 @@
 let template = // html
 `
 <cNav title='消息'>
-	<cModal buttonName='搜索'>
-		<input class='w-100' placeholder='搜索'/>
+	<cModal buttonName='验证消息'>
+		<div v-for="(item,index) in $store.state.verifyList" style='border:1px solid black;padding:5px;border-radius:5px'>
+			{{JSON.parse(item.context).username}} : {{JSON.parse(item.context).context}} （{{item.state}}）
+			<br>
+			<button @click='agreeVerify(item)'>同意</button>&nbsp;&nbsp;<button @click='rejectVerify(item)'>拒绝</button>&nbsp;&nbsp;<button @click='deleteVerify(item)'>删除</button>
+		</div>
 	</cModal>
 </cNav>
 <div class='p-10'>
@@ -126,6 +130,40 @@ export default {
 				return b.createTime - a.createTime
 			})
 			
+		},
+		agreeVerify(item){
+			request({
+                method: 'get',
+                url: '/one-token',
+            }).then(response => {
+				let ws = decodeWsAccount(JSON.parse(item.context).account);
+                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
+                this.$store.state.socketMember = socket;
+                let that = this;
+                socket.onopen = function(e){
+                    socket.send(JSON.stringify({
+						type:"agree",
+						account: that.$store.state.member.account,
+						verifyId: item.id
+					}))
+					
+                };
+                socket.onmessage = function(e){
+					if(e.data == "agree"){
+						if(e.code == 200){
+
+						}
+						// 同意了
+						socket.close()
+					}
+                };
+                socket.onclose = function(e){
+                    
+                };
+                socket.onerror = function(e){
+                    
+                };
+			})
 		}
 		
 	},

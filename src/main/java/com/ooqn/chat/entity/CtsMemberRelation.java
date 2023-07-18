@@ -24,9 +24,6 @@ public class CtsMemberRelation implements Serializable {
 
     private String memberId;
 
-    /**
-     * 被关注者账户
-     */
     private String account;
 
     private String username;
@@ -36,10 +33,14 @@ public class CtsMemberRelation implements Serializable {
     private String alias;
 
     /**
-     * 关系状态，0：被成员关注者，1：互相关注，2：拒绝接收消息
+     * 关系状态，0：已申请，1：申请通过，2：拒收消息
      */
     private Integer state;
     
     private Date createTime;
+
+    private Date updateTime;
+
+    private String cause;
 
 }

@@ -7,6 +7,7 @@ let template = // html
         <div v-if='searchMember' class='p-10 p-t-0'>
             username:{{searchMember.username}}
         </div>
+        <input class='w-100  m-b-5' v-model='context' placeholder='请求信息'>
         <button v-if='searchMember' style='width:100%;margin-bottom:5px;' @click="join">增加好友</button>
 	</cModal>
 </cNav>
@@ -34,6 +35,7 @@ export default {
             checkUrl: "",
             memberSocket: null,
             searchMember: null,
+            context:""
         }
     },
     components:{
@@ -89,7 +91,7 @@ export default {
             });
         },
         join(){
-            this.memberSocket.send(JSON.stringify({ type: "join"}))
+            this.memberSocket.send(JSON.stringify({ type: "join",context: this.context}))
         }
     },
     created() {

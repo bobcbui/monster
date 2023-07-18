@@ -5,6 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 public class Result {
+
+    public static String r(String type,String code) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", code);
+        jsonObject.put("type", type);
+        return JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
+    }
+
     public static String r(String type,String code, Object data) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", code);

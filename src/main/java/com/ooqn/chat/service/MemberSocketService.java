@@ -1,6 +1,7 @@
 package com.ooqn.chat.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,18 +15,24 @@ import com.ooqn.chat.code.Result;
 import com.ooqn.chat.entity.CtsMember;
 import com.ooqn.chat.entity.CtsMemberMessage;
 import com.ooqn.chat.entity.CtsMemberRelation;
+import com.ooqn.chat.entity.CtsVerify;
 import com.ooqn.chat.repository.MemberMessageRepository;
 import com.ooqn.chat.repository.MemberRelationRepository;
+import com.ooqn.chat.repository.VerifyRepository;
 import com.ooqn.chat.socket.LocalSocket;
 
 @Service
 public class MemberSocketService {
 
     @Autowired
-    MemberRelationRepository memberRelationRepository;
+    private MemberRelationRepository memberRelationRepository;
 
     @Autowired
-    MemberMessageRepository memberMessageRepository;
+    private MemberMessageRepository memberMessageRepository;
+
+    @Autowired
+    private VerifyRepository verifyRepository;
+    
 
     public void join(JSONObject data, Session session) {
         String type = data.getString("type");
@@ -43,6 +50,23 @@ public class MemberSocketService {
             memberRelation.setState(0);
             memberRelation.setMemberId(acceptMember.getId());
             memberRelationRepository.save(memberRelation);
+
+            String contextStr = data.getString("context");
+            JSONObject context = new JSONObject();
+            context.put("account", account);
+            context.put("context", contextStr);
+            context.put("username", username);
+
+            CtsVerify verify = new CtsVerify();
+            verify.setId(IdUtil.objectId());
+            verify.setMemberId(acceptMember.getId());
+            verify.setCreateTime(DateUtil.date());
+            verify.setUpdateTime(DateUtil.date());
+            verify.setState(0);
+            verify.setType("1");
+            verify.setContext(context.toJSONString());
+            verifyRepository.save(verify);
+
             session.getAsyncRemote().sendText(Result.r(type, Result.success ,acceptMember));
         } catch (Exception e) {
             session.getAsyncRemote().sendText(Result.r(type , Result.success, e.getMessage()));
@@ -90,5 +114,23 @@ public class MemberSocketService {
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
         memberRelationRepository.deleteByMemberIdAndAccount(acceptMember.getId(), sendMember.getString("account"));
         session.getAsyncRemote().sendText(Result.r("delete", Result.success,sendMember.getString("accept")));
+    }
+
+    public void agree(JSONObject data, Session session) {
+        CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
+        JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
+        String verifyId = data.getString("verifyId");
+        
+        CtsMemberRelation memberRelation = memberRelationRepository.findByMemberIdAndAccount(acceptMember.getId(), sendMember.getString("account"));
+        memberRelation.setState(1);
+        memberRelation.setUpdateTime(DateUtil.date());
+        memberRelationRepository.save(memberRelation);
+
+        Optional<CtsVerify> verify = verifyRepository.findById(verifyId);
+        verify.get().setState(1);
+        verify.get().setUpdateTime(DateUtil.date());
+        verifyRepository.save(verify.get());
+        
+        session.getAsyncRemote().sendText(Result.r("agree", Result.success));
     }
 }

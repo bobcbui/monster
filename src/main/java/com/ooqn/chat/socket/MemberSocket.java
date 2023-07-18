@@ -86,6 +86,9 @@ public class MemberSocket {
                 case "delete":
                     memberSocketService.delete(jsonObject, session);
                     break;  
+                case "agree":
+                    memberSocketService.agree(jsonObject, session);
+                    break;
                 default:
                     System.out.println("喀什酱豆腐空间打开");
                     break;

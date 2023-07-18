@@ -20,5 +20,7 @@ public interface MemberRelationRepository extends CrudRepository<CtsMemberRelati
     @Modifying
     @Transactional
     void deleteByMemberIdAndAccount(String memberId, String account);
+
+    CtsMemberRelation findByMemberIdAndAccount(String id, String account);
     
 }

@@ -70,6 +70,9 @@ public class LocalSocket {
             JSONObject data = JSONObject.parseObject(message);
             String type = data.getString("type");
             switch (type) {
+                case "loadVerify":
+                    localSocketService.loadVerify(data, session);
+                    break;
                 case "groupList":
                     localSocketService.groupList(data, session);
                     break;

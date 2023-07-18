@@ -35,9 +35,17 @@ export default {
 							that.$store.state.groupMessageList[account] = []
 						}
 						that.$store.state.groupMessageList[account].push(data.data)
+						//渲染完毕执行
+						that.$nextTick(function () {
+							down(account)
+						})
 					}
 					if(data.type == "messages"){
 						that.$store.state.groupMessageList[account] = data.data
+						//渲染完毕执行
+						that.$nextTick(function () {
+							down(account)
+						})
 					}
 				
 					if(data.type == "info"){
@@ -69,6 +77,7 @@ export default {
 				socket.send(JSON.stringify({type: "memberMap"}))
 				socket.send(JSON.stringify({type: "groupList"}))
 				socket.send(JSON.stringify({type: "loadMessage"}))
+				socket.send(JSON.stringify({type: "loadVerify"}))
 
 			};
 			socket.onmessage = function(e){
@@ -99,7 +108,9 @@ export default {
 					data.data.state = true;
 					if(data.data.account != data.data.withAccount){
 						that.$store.state.memberMessageList[data.data.withAccount].push(data.data);
-						down(data.data.withAccount)
+						that.$nextTick(function () {
+							down(data.data.withAccount)
+						});
 					}
 				}
 				
@@ -112,6 +123,11 @@ export default {
 					}
 					down(account)
 				}
+
+				if("loadVerify" == data.type){
+					that.$store.state.verifyList = data.data
+				}
+				
 			};
 			socket.onclose = function(e){
 				console.log("onclose")

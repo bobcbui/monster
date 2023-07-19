@@ -12,7 +12,7 @@ import com.ooqn.chat.entity.CtsMemberRelation;
 
 public interface MemberRelationRepository extends CrudRepository<CtsMemberRelation,String>  {
 
-    List<CtsMemberRelation> findByMemberId(String memberId);
+    List<CtsMemberRelation> findByMemberIdAndState(String id, int i);
 
     List<CtsMemberRelation> findByAccount(String account);
 
@@ -22,5 +22,6 @@ public interface MemberRelationRepository extends CrudRepository<CtsMemberRelati
     void deleteByMemberIdAndAccount(String memberId, String account);
 
     CtsMemberRelation findByMemberIdAndAccount(String id, String account);
+    
     
 }

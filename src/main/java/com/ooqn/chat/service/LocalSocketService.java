@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,7 @@ public class LocalSocketService {
 
     public void memberMap(JSONObject data, Session session) throws IOException {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
-        List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
+        List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberIdAndState(member.getId(), 1);
         // memberList to Map 
         Map<String,CtsMemberRelation> likeMap = new LinkedHashMap<>();
         CtsMemberRelation thisMember = new CtsMemberRelation();
@@ -153,7 +154,7 @@ public class LocalSocketService {
 
     public void loadMessage(JSONObject data, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
-        List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberId(member.getId());
+        List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberIdAndState(member.getId(), 1);
         JSONArray jsonArray = new JSONArray();
         memberList.forEach(memberRelation -> {
             String account = memberRelation.getAccount();
@@ -178,6 +179,32 @@ public class LocalSocketService {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsVerify> verifyList = verifyRepository.findByMemberId(member.getId());
         session.getAsyncRemote().sendText(Result.r("loadVerify", Result.success,verifyList));
+    }
+
+    public void deleteVerify(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        verifyRepository.deleteByMemberIdAndId(member.getId(), data.getString("verifyId"));
+        session.getAsyncRemote().sendText(Result.r("deleteVerify", Result.success));
+
+    }
+
+    public void agreeVerify(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        Optional<CtsVerify> verify = verifyRepository.findById(data.getString("verifyId"));
+        if(!verify.get().getMemberId().equals(member.getId())) {
+            return;
+        }
+        String cString = verify.get().getContext();
+        JSONObject jsonObject = JSONObject.parseObject(cString);
+        verify.get().setState(1);
+        verify.get().setUpdateTime(DateUtil.date());
+        verifyRepository.save(verify.get());
+        CtsMemberRelation memberRelation = memberRelationRepository.findByMemberIdAndAccount(member.getId(), jsonObject.getString("account"));
+        memberRelation.setState(1);
+        memberRelation.setUpdateTime(DateUtil.date());
+        memberRelationRepository.save(memberRelation);
+
+        session.getAsyncRemote().sendText(Result.r("deleteVerify", Result.success));
     }
 
 

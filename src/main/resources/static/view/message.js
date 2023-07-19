@@ -2,10 +2,12 @@ let template = // html
 `
 <cNav title='消息'>
 	<cModal buttonName='验证消息'>
-		<div v-for="(item,index) in $store.state.verifyList" style='border:1px solid black;padding:5px;border-radius:5px'>
+		<div v-for="(item,index) in $store.state.verifyList" class='m-b-5' style='border:1px solid black;padding:5px;border-radius:5px'>
 			{{JSON.parse(item.context).username}} : {{JSON.parse(item.context).context}} （{{item.state}}）
 			<br>
-			<button @click='agreeVerify(item)'>同意</button>&nbsp;&nbsp;<button @click='rejectVerify(item)'>拒绝</button>&nbsp;&nbsp;<button @click='deleteVerify(item)'>删除</button>
+			<button @click='agreeVerify(item)'>同意</button>&nbsp;&nbsp;
+			<button @click='rejectVerify(item)'>拒绝</button>&nbsp;&nbsp;
+			<button @click='deleteVerify(item)'>删除</button>
 		</div>
 	</cModal>
 </cNav>
@@ -146,6 +148,11 @@ export default {
 						account: that.$store.state.member.account,
 						verifyId: item.id
 					}))
+
+					that.$store.state.socketLocal.send(JSON.stringify({
+						type:"agreeVerify",
+						verifyId: item.id
+					}))
 					
                 };
                 socket.onmessage = function(e){
@@ -164,6 +171,12 @@ export default {
                     
                 };
 			})
+		},
+		deleteVerify(item){
+			this.$store.state.socketLocal.send(JSON.stringify({
+				type:"deleteVerify",
+				verifyId: item.id
+			}))
 		}
 		
 	},

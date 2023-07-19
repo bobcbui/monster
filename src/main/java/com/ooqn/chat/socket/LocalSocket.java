@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ooqn.chat.code.ApplicationData;
+import com.ooqn.chat.code.Result;
+import com.ooqn.chat.entity.CtsMember;
+import com.ooqn.chat.service.LocalSocketService;
 
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -17,10 +21,6 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
-import com.ooqn.chat.code.ApplicationData;
-import com.ooqn.chat.code.Result;
-import com.ooqn.chat.entity.CtsMember;
-import com.ooqn.chat.service.LocalSocketService;
 
 @ServerEndpoint(value = "/local")
 @Component
@@ -105,6 +105,12 @@ public class LocalSocket {
                     break;
                 case "deleteMember":
                     localSocketService.deleteMember(data, session);
+                    break;
+                case "deleteVerify":
+                    localSocketService.deleteVerify(data, session);
+                    break;
+                case "agreeVerify":
+                    localSocketService.agreeVerify(data, session);
                     break;
                 default:
                     System.out.println("未知类型:" + type);

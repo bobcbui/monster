@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import jakarta.transaction.Transactional;
 import com.ooqn.chat.entity.CtsMemberRelation;
+
+import jakarta.transaction.Transactional;
 
 public interface MemberRelationRepository extends CrudRepository<CtsMemberRelation,String>  {
 

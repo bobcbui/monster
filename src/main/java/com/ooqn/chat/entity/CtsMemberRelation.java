@@ -32,9 +32,7 @@ public class CtsMemberRelation implements Serializable {
 
     private String alias;
 
-    /**
-     * 关系状态，0：已申请，1：申请通过，2：拒收消息
-     */
+    /** 关系状态，0：已申请，1：申请通过，2：拒收消息 */
     private Integer state;
     
     private Date createTime;

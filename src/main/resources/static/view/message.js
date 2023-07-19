@@ -27,8 +27,8 @@ let template = // html
 </div>
 `
 // 
-import cNav from '../component/nav.js'
 import cModal from '../component/modal.js'
+import cNav from '../component/nav.js'
 import request from '../lib/request.js'
 export default {
 	template: template,

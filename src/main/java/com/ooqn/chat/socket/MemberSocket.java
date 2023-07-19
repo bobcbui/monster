@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ooqn.chat.entity.CtsMember;
+import com.ooqn.chat.repository.MemberRepository;
+import com.ooqn.chat.service.MemberSocketService;
 
 import cn.hutool.http.HttpUtil;
 import jakarta.websocket.OnClose;
@@ -17,9 +20,6 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
-import com.ooqn.chat.entity.CtsMember;
-import com.ooqn.chat.repository.MemberRepository;
-import com.ooqn.chat.service.MemberSocketService;
 
 @ServerEndpoint(value = "/member/{username}")
 @Component

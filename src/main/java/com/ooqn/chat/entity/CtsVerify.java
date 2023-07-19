@@ -19,14 +19,10 @@ public class CtsVerify {
 
     private String context;
 
-    /**
-     * 1：好友申请，2：群组申请
-     */
+    /** 1：好友申请，2：群组申请 */
     private String type;
     
-    /**
-     * 0：未处理，1：已处理
-     */
+    /** 0：未处理，1：已处理 */
     private Integer state;
     
     private Date createTime;

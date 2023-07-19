@@ -24,8 +24,8 @@ let template = // html
     <button @click="send()" class='float-end h-100'>发送</button>
 </div>
 `
-import cNav from '../component/nav.js'
-import cModal from '../component/modal.js'
+import cModal from '../component/modal.js';
+import cNav from '../component/nav.js';
 import request from '../lib/request.js';
 export default {
     template: template,

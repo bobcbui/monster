@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ooqn.chat.code.Result;
+import com.ooqn.chat.entity.CtsGroup;
+import com.ooqn.chat.repository.GroupRepository;
+import com.ooqn.chat.service.GroupSocketService;
 
 import cn.hutool.http.HttpUtil;
 import jakarta.websocket.OnClose;
@@ -19,10 +23,6 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
-import com.ooqn.chat.code.Result;
-import com.ooqn.chat.entity.CtsGroup;
-import com.ooqn.chat.repository.GroupRepository;
-import com.ooqn.chat.service.GroupSocketService;
 
 @ServerEndpoint(value = "/group/{groupName}")
 @Component

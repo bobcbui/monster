@@ -12,7 +12,7 @@ let template = // html
     <a href="/#/register">注册</a>
 </div>
 `
-import request from '../lib/request.js'
+import request from '../lib/request.js';
 export default {
     template: template,
     data: function(){

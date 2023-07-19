@@ -10,9 +10,8 @@ let template = // html
 账号：{{member.account}}<br>
 </div>
 `
-import cNav from '../component/nav.js'
 import cModal from '../component/modal.js'
-import request from '../lib/request.js'
+import cNav from '../component/nav.js'
 export default {
 	template: template,
 	data: function () {

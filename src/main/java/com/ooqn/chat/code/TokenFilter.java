@@ -40,6 +40,7 @@ public class TokenFilter implements Filter {
         // 是否不需要登陆
         String[] openUrls = new String[]{"","/","/*","/ws/*","/group/create","/username/*/token/*"};
         
+        // 白名单
         for (String url : openUrls) {
             if(matcher.match(url,requestURI)){
                 filterChain.doFilter(servletRequest, servletResponse);
@@ -47,8 +48,7 @@ public class TokenFilter implements Filter {
             }
         }
 
-        String token = request.getHeader("token");
-        CtsMember member = ApplicationData.tokenMemberMap.get(token);
+        CtsMember member = ApplicationData.tokenMemberMap.get(request.getHeader("token"));
 
         // 未登录
         if(member == null){

@@ -3,22 +3,25 @@ let template = // html
 <cNav title='消息'>
 	<cModal buttonName='验证消息'>
 		<div v-for="(item,index) in $store.state.verifyList" class='m-b-5' style='border:1px solid black;padding:5px;border-radius:5px'>
-			{{JSON.parse(item.context).username}} : {{JSON.parse(item.context).context}} （{{item.state}}）
+			{{JSON.parse(item.data).username}} : {{JSON.parse(item.data).context}}
 			<br>
-			<button @click='agreeVerify(item)'>同意</button>&nbsp;&nbsp;
-			<button @click='rejectVerify(item)'>拒绝</button>&nbsp;&nbsp;
-			<button @click='deleteVerify(item)'>删除</button>
+			<span v-if='item.state == 2' >已申请</span>
+			<span v-if='item.state == 3' >已通过</span>
+			<button v-if='item.state == 0' @click='agreeVerify(item)'>同意</button>&nbsp;&nbsp;
+			<button v-if='item.state == 0' @click='rejectVerify(item)'>拒绝</button>&nbsp;&nbsp;
+			<span style='float:right'>&nbsp;&nbsp;{{toDate(item.createTime)}}</span>
+			<button @click='deleteVerify(item)' style='float:right'>删除</button>
 		</div>
 	</cModal>
 </cNav>
 <div class='p-10'>
 	<div v-for="(item,index) in messageList" @click='openMessage(item)'>
-		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;'>
+		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;padding:5px;'>
 			{{memberMap[item.withAccount].username}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
 			{{item.content}}
 		</div>
-		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;'>
+		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;padding:5px;'>
 			{{groupMap[item.withGroupAccount].name}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
 			{{item.content}}
@@ -138,7 +141,7 @@ export default {
                 method: 'get',
                 url: '/one-token',
             }).then(response => {
-				let ws = decodeWsAccount(JSON.parse(item.context).account);
+				let ws = decodeWsAccount(JSON.parse(item.data).account);
                 let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
                 this.$store.state.socketMember = socket;
                 let that = this;

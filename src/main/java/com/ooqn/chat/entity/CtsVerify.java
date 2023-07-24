@@ -17,12 +17,12 @@ public class CtsVerify {
 
     private String memberId;
 
-    private String context;
+    private String data;
 
     /** 1：好友申请，2：群组申请 */
     private String type;
     
-    /** 0：未处理，1：已处理 */
+    /** 0：未处理，1：已通过 ,2: 等待通过, 3: 被通过 */
     private Integer state;
     
     private Date createTime;

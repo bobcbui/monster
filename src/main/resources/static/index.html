@@ -45,6 +45,10 @@
 			background: #efecec;
 		}
 
+		.border-b-1{
+			border-bottom: 1px solid black;
+		}
+
 		.mode{
 			width:100%;
 			height:100%;
@@ -58,7 +62,6 @@
 			height:100%;
 			margin: auto;
 			background-color: white;
-			padding: 10px;
 		}
 		a{
 			color:black !important;
@@ -85,6 +88,10 @@
 			padding: 10px;
 		}
 
+		.p-b-10{
+			padding-bottom: 10px;
+		}
+
 		.m-0{
 			margin: 0;
 		}
@@ -105,8 +112,26 @@
 			padding-top: 0;
 		}
 
-		
-		
+        @media screen and (min-width:700px){
+            body{
+				padding: 10px;
+			}
+			#app,.mode-body{
+				border-radius: 10px;
+			}
+        }
+
+		button{
+			border: 1px solid black;
+			border-radius: 5px;
+			padding: 2px 8px;
+		}
+
+		input{
+			border: 1px solid black;
+			border-radius: 5px;
+			padding: 2px 8px;
+		}
 	</style>
 </head>
 

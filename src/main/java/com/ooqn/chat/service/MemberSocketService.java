@@ -51,11 +51,10 @@ public class MemberSocketService {
             memberRelation.setMemberId(acceptMember.getId());
             memberRelationRepository.save(memberRelation);
 
-            String contextStr = data.getString("context");
-            JSONObject context = new JSONObject();
-            context.put("account", account);
-            context.put("context", contextStr);
-            context.put("username", username);
+            JSONObject dataJson = new JSONObject();
+            dataJson.put("account", account);
+            dataJson.put("context", data.getString("context"));
+            dataJson.put("username", username);
 
             CtsVerify verify = new CtsVerify();
             verify.setId(IdUtil.objectId());
@@ -64,7 +63,7 @@ public class MemberSocketService {
             verify.setUpdateTime(DateUtil.date());
             verify.setState(0);
             verify.setType("1");
-            verify.setContext(context.toJSONString());
+            verify.setData(dataJson.toJSONString());
             verifyRepository.save(verify);
 
             session.getAsyncRemote().sendText(Result.r(type, Result.success ,acceptMember));

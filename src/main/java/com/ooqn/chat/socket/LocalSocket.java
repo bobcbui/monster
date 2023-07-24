@@ -85,8 +85,8 @@ public class LocalSocket {
                 case "saveMemberMessage":
                     localSocketService.saveMember(data, session);
                     break;
-                case "addMember":
-                    localSocketService.addMember(data, session);
+                case "joinMember":
+                    localSocketService.joinMember(data, session);
                     break;
                 case "createGroup":
                     localSocketService.createGroup(data, session);
@@ -99,9 +99,6 @@ public class LocalSocket {
                     break;
                 case "loadMessage":
                     localSocketService.loadMessage(data, session);
-                    break;
-                case "join":
-                    localSocketService.join(data, session);
                     break;
                 case "deleteMember":
                     localSocketService.deleteMember(data, session);

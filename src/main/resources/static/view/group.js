@@ -15,7 +15,7 @@ let template = // html
 </cNav>
 <div class='p-10'>
 	<ul class='m-0'>
-		<li style='padding:0px 10px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' v-for='(item,index) in groupMap' :key='index' @click='toGroupMessage(item)'>
+		<li style='border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;padding:5px;' v-for='(item,index) in groupMap' :key='index' @click='toGroupMessage(item)'>
 		{{item.name}}</li>
 	</ul>
 </div>

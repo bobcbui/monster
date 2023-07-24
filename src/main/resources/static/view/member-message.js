@@ -7,15 +7,15 @@ let template = // html
         <button class='w-100' @click='deleteFriend()'>删除好友</button>
 	</cModal>
 </cNav>
-<div style='height: calc(100% - 84px);overflow-y: scroll;padding:5px;' v-if="withMember" :id='"show_words_" + withMember.account'>
+<div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom:10px' v-if="withMember" :id='"show_words_" + withMember.account'>
     <div v-for='(item,index) in $store.state.memberMessageList[$route.query.account]'>
-        <div v-if='member && member.account != item.sendAccount ' style='margin: 5px; margin-bottom: 0px;'>
+        <div v-if='member && member.account != item.sendAccount ' style='margin: 10px; margin-bottom: 0px;'>
             <strong style='color:#3c3ce2'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
-            <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:2px'>{{item.content}}&nbsp;</p>
+            <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:5px;'>{{item.content}}&nbsp;</p>
         </div>
-        <div v-if='member && member.account == item.sendAccount' style=' margin: 5px; margin-bottom: 0px;text-align: right'>
+        <div v-if='member && member.account == item.sendAccount' style='margin: 10px; margin-bottom: 0px;text-align: right'>
             <strong style='color:#3c3ce2'>{{member.username}}</strong>
-            <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:2px'>&nbsp;{{item.content}}</p>
+            <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:5px;'>&nbsp;{{item.content}}</p>
         </div>
     </div>
 </div>

@@ -9,13 +9,13 @@ let template = // html
 </cNav>
 <div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom: 10px;' v-if='thisGroup' :id='"show_words_" + thisGroup.account'>
   <div v-for='(item,index) in $store.state.groupMessageList[$route.query.account]'>
-    <div v-if='item.sendAccount == member.account' style=' margin: 5px; margin-bottom: 0px;text-align: right'>
+    <div v-if='item.sendAccount == member.account' style='margin: 10px; margin-bottom: 0px;text-align: right'>
         <strong style='color:#3c3ce2'>{{member.username}}</strong>
-        <p  style='border: 1px solid black; border-radius: 5px; margin: 0px; margin-bottom: 0px;'>{{item.content}}</p>
+        <p  style='border: 1px solid black; border-radius: 5px; margin: 0px; margin-bottom: 0px;padding:5px;'>{{item.content}}</p>
     </div>
-    <div v-else  style='margin: 5px; margin-bottom: 0px;'>
+    <div v-else style='margin: 10px; margin-bottom: 0px;'>
         <strong style='color:#3c3ce2'>{{item.sendNickname}} </strong>
-        <p style='border: 1px solid black;border-radius: 5px;margin: 0px;margin-bottom: 0px;'>{{item.content}}</p>
+        <p style='border: 1px solid black;border-radius: 5px;margin: 0px;margin-bottom: 0px;padding:5px;'>{{item.content}}</p>
     </div>
   </div>
 </div>

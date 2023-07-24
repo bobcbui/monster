@@ -77,8 +77,9 @@ public class LocalSocketService {
     public void memberMessage(JSONObject parse, Session session) {
     }
 
-    public void addMember(JSONObject parse, Session session) {
+    public void joinMember(JSONObject parse, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        
         JSONObject memberObject = parse.getJSONObject("data");
         CtsMemberRelation memberRelation = new CtsMemberRelation();
         memberRelation.setMemberId(member.getId());
@@ -89,6 +90,22 @@ public class LocalSocketService {
         memberRelation.setAccount(memberObject.getString("account"));
         memberRelation.setState(0);
         memberRelationRepository.save(memberRelation);
+
+        JSONObject dataJson = new JSONObject();
+        dataJson.put("account", memberObject.getString("account"));
+        dataJson.put("context", parse.getString("context"));
+        dataJson.put("username", memberObject.getString("username"));
+
+        CtsVerify verify = new CtsVerify();
+        verify.setId(IdUtil.objectId());
+        verify.setMemberId(member.getId());
+        verify.setCreateTime(DateUtil.date());
+        verify.setUpdateTime(DateUtil.date());
+        verify.setState(2);
+        verify.setType("1");
+        verify.setData(dataJson.toJSONString());
+
+        verifyRepository.save(verify);
     }
 
     public void createGroup(JSONObject parse, Session session) {
@@ -148,10 +165,6 @@ public class LocalSocketService {
         session.getAsyncRemote().sendText(Result.r("loadMemberMessage", Result.success,result));
     }
 
-    public void join(JSONObject params, Session session) {
-        
-    }
-
     public void loadMessage(JSONObject data, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberIdAndState(member.getId(), 1);
@@ -194,7 +207,7 @@ public class LocalSocketService {
         if(!verify.get().getMemberId().equals(member.getId())) {
             return;
         }
-        String cString = verify.get().getContext();
+        String cString = verify.get().getData();
         JSONObject jsonObject = JSONObject.parseObject(cString);
         verify.get().setState(1);
         verify.get().setUpdateTime(DateUtil.date());

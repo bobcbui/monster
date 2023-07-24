@@ -1,19 +1,21 @@
 let template = // html
-`
+    `
 <cNav title='好友'>
 	<cModal buttonName='添加'>
         <input class='w-100 m-b-5' v-model="account" placeholder='账户地址'>
         <button class='w-100 m-b-5' @click="info()">查询好友</button>
-        <div v-if='searchMember' class='p-10 p-t-0'>
-            username:{{searchMember.username}}
+        <div v-if='searchMember.account' class='p-b-10 p-t-0'>
+            名称 ： {{searchMember.username}}
+            <br>
+            账户 ： {{searchMember.account}}
         </div>
-        <input class='w-100  m-b-5' v-model='context' placeholder='请求信息'>
-        <button v-if='searchMember' style='width:100%;margin-bottom:5px;' @click="join">增加好友</button>
+        <input  v-if='searchMember.account' class='w-100  m-b-5' v-model='context' placeholder='请求信息'>
+        <button v-if='searchMember.account' style='width:100%;margin-bottom:5px;' @click="join">增加好友</button>
 	</cModal>
 </cNav>
 <div class='p-10'>
     <ul class='m-0'>
-        <li style='padding:0px 5px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' 
+        <li style='padding:5px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' 
         v-for='(item,index) in memberMap' :key='index' @click='toMemberMessage(item)'>
             {{item.username}}
         </li>
@@ -34,29 +36,29 @@ export default {
             account: "",
             checkUrl: "",
             memberSocket: null,
-            searchMember: null,
-            context:""
+            searchMember: {},
+            context: ""
         }
     },
-    components:{
-        cNav,cModal
+    components: {
+        cNav, cModal
     },
-    wathc:{
+    wathc: {
     },
     // 计算属性
     computed: {
-        memberMap(){
+        memberMap() {
             return this.$store.state.memberMap;
         },
-        member(){
-			return this.$store.state.member;
-		}
+        member() {
+            return this.$store.state.member;
+        }
     },
     methods: {
-        toMemberMessage(item){
-            this.$router.push({ name: 'member-message', query: { account: item.account, routerName: this.$route.name}})
+        toMemberMessage(item) {
+            this.$router.push({ name: 'member-message', query: { account: item.account, routerName: this.$route.name } })
         },
-        info(){
+        info() {
             request({
                 method: 'get',
                 url: '/one-token',
@@ -64,37 +66,37 @@ export default {
                 let ws = decodeWsAccount(this.account);
                 let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
                 this.$store.state.socketMember = socket;
-                let _this = this;
-                socket.onopen = function(e){
-                    _this.memberSocket = socket;
-                    socket.send(JSON.stringify({ type: "info"}))
+                let that = this;
+                socket.onopen = function (e) {
+                    that.memberSocket = socket;
+                    socket.send(JSON.stringify({ type: "info" }))
                 };
-                socket.onmessage = function(e){
+                socket.onmessage = function (e) {
                     let data = JSON.parse(e.data);
-                    if(data.type == "join"){
-                        _this.$store.state.socketLocal.send(JSON.stringify({ type: "addMember", data: data.data}))
-                        _this.$store.state.socketLocal.send(JSON.stringify({ type: "memberMap"}))
+                    if (data.type == "join") {
+                        that.$store.state.socketLocal.send(JSON.stringify({ type: "joinMember", data: data.data,context: that.context }))
+                        that.$store.state.socketLocal.send(JSON.stringify({ type: "memberMap" }))
                     }
-                    if(data.type == "info"){
-                        _this.searchMember = data.data;
+                    if (data.type == "info") {
+                        that.searchMember = data.data;
                     }
                 };
-                socket.onclose = function(e){
-                    
+                socket.onclose = function (e) {
+
                 };
-                socket.onerror = function(e){
-                    
+                socket.onerror = function (e) {
+
                 };
-                
+
             }).catch(function (error) {
                 console.log(error);
             });
         },
-        join(){
-            this.memberSocket.send(JSON.stringify({ type: "join",context: this.context}))
+        join() {
+            this.memberSocket.send(JSON.stringify({ type: "join", context: this.context }))
         }
     },
     created() {
-       
+
     }
 }

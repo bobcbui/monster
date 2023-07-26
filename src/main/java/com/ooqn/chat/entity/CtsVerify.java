@@ -22,7 +22,7 @@ public class CtsVerify {
     /** 1：好友申请，2：群组申请 */
     private String type;
     
-    /** 0：未处理，1：已通过 ,2: 等待通过, 3: 被通过 */
+    /** 0：未处理，1：你已通过 ,2: 你已拒绝, 3: 等待验证, 4：申请被通过，5: 申请被拒绝 */
     private Integer state;
     
     private Date createTime;

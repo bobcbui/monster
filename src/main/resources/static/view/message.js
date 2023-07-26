@@ -5,12 +5,19 @@ let template = // html
 		<div v-for="(item,index) in $store.state.verifyList" class='m-b-5' style='border:1px solid black;padding:5px;border-radius:5px'>
 			{{JSON.parse(item.data).username}} : {{JSON.parse(item.data).context}}
 			<br>
-			<span v-if='item.state == 2' >已申请</span>
-			<span v-if='item.state == 3' >已通过</span>
-			<button v-if='item.state == 0' @click='agreeVerify(item)'>同意</button>&nbsp;&nbsp;
-			<button v-if='item.state == 0' @click='rejectVerify(item)'>拒绝</button>&nbsp;&nbsp;
-			<span style='float:right'>&nbsp;&nbsp;{{toDate(item.createTime)}}</span>
-			<button @click='deleteVerify(item)' style='float:right'>删除</button>
+			<span style='vertical-align: unset;'>
+				<button v-if='item.state == 5' >申请被拒绝</button>
+				<button v-if='item.state == 4' >申请被通过</button>
+				<button v-if='item.state == 3' >等待验证</button>
+				<button v-if='item.state == 2' >你已拒绝</button>
+				<button v-if='item.state == 1' >你已通过</button>
+				<button v-if='item.state == 0' @click='agreeVerify(item)'>同意</button>&nbsp;&nbsp;
+				<button v-if='item.state == 0' @click='rejectVerify(item)'>拒绝</button>&nbsp;&nbsp;
+			</span>
+			<span style='float:right;vertical-align: unset;'>
+				<span>{{toDate(item.createTime)}}</span>&nbsp;&nbsp;
+				<button @click='deleteVerify(item)'>删除</button>
+			</span>
 		</div>
 	</cModal>
 </cNav>
@@ -152,10 +159,49 @@ export default {
 						verifyId: item.id
 					}))
 
-					that.$store.state.socketLocal.send(JSON.stringify({
+					that.$store.state.socketLocal.send({
 						type:"agreeVerify",
 						verifyId: item.id
+					})
+					
+                };
+                socket.onmessage = function(e){
+					if(e.data == "agree"){
+						if(e.code == 200){
+
+						}
+						// 同意了
+						socket.close()
+					}
+                };
+                socket.onclose = function(e){
+                    
+                };
+                socket.onerror = function(e){
+                    
+                };
+			})
+		},
+		rejectVerify(item){
+			request({
+                method: 'get',
+                url: '/one-token',
+            }).then(response => {
+				let ws = decodeWsAccount(JSON.parse(item.data).account);
+                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
+                this.$store.state.socketMember = socket;
+                let that = this;
+                socket.onopen = function(e){
+                    socket.send(JSON.stringify({
+						type:"reject",
+						account: that.$store.state.member.account,
+						verifyId: item.id
 					}))
+
+					that.$store.state.socketLocal.send({
+						type:"rejectVerify",
+						verifyId: item.id
+					})
 					
                 };
                 socket.onmessage = function(e){
@@ -176,10 +222,10 @@ export default {
 			})
 		},
 		deleteVerify(item){
-			this.$store.state.socketLocal.send(JSON.stringify({
+			this.$store.state.socketLocal.send({
 				type:"deleteVerify",
 				verifyId: item.id
-			}))
+			})
 		}
 		
 	},

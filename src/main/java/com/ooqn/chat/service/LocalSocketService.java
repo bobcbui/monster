@@ -57,7 +57,7 @@ public class LocalSocketService {
         for (CtsGroupRelation groupRelation : groupRelationList) {
             jsonArray.add(groupRelation.getGroupAccount());
         }
-        session.getBasicRemote().sendText(Result.r("groupList", Result.success, jsonArray));
+        session.getBasicRemote().sendText(Result.r(data.getString("transactionId"), "groupList", Result.success, jsonArray));
     }
 
     public void memberMap(JSONObject data, Session session) throws IOException {
@@ -71,7 +71,7 @@ public class LocalSocketService {
             likeMap.put(memberRelation.getAccount(), memberRelation);
         }
 
-        session.getBasicRemote().sendText(Result.r("memberMap", Result.success,likeMap));
+        session.getBasicRemote().sendText(Result.r(data.getString("transactionId"), "memberMap", Result.success,likeMap));
     }
 
     public void memberMessage(JSONObject parse, Session session) {
@@ -101,7 +101,7 @@ public class LocalSocketService {
         verify.setMemberId(member.getId());
         verify.setCreateTime(DateUtil.date());
         verify.setUpdateTime(DateUtil.date());
-        verify.setState(2);
+        verify.setState(3);
         verify.setType("1");
         verify.setData(dataJson.toJSONString());
 
@@ -148,6 +148,7 @@ public class LocalSocketService {
             memberMessage.setAccount(member.getAccount());
             memberMessage.setWithAccount(data.getString("withAccount"));
             memberMessageRepository.save(memberMessage);
+            
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -162,7 +163,7 @@ public class LocalSocketService {
         Map<String, Object> result = new HashMap<>();
         result.put("account", data.getString("account"));
         result.put("data", messageList);
-        session.getAsyncRemote().sendText(Result.r("loadMemberMessage", Result.success,result));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "loadMemberMessage", Result.success,result));
     }
 
     public void loadMessage(JSONObject data, Session session) {
@@ -177,7 +178,7 @@ public class LocalSocketService {
             jsonObject.put("data", memberMessage);
             jsonArray.add(jsonObject);
         });
-        session.getAsyncRemote().sendText(Result.r("loadMessage", Result.success,jsonArray));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "loadMessage", Result.success,jsonArray));
     }
 
     public void deleteMember(JSONObject data, Session session) {
@@ -191,13 +192,13 @@ public class LocalSocketService {
     public void loadVerify(JSONObject data, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsVerify> verifyList = verifyRepository.findByMemberId(member.getId());
-        session.getAsyncRemote().sendText(Result.r("loadVerify", Result.success,verifyList));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "loadVerify", Result.success,verifyList));
     }
 
     public void deleteVerify(JSONObject data, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         verifyRepository.deleteByMemberIdAndId(member.getId(), data.getString("verifyId"));
-        session.getAsyncRemote().sendText(Result.r("deleteVerify", Result.success));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "deleteVerify", Result.success));
 
     }
 
@@ -217,7 +218,26 @@ public class LocalSocketService {
         memberRelation.setUpdateTime(DateUtil.date());
         memberRelationRepository.save(memberRelation);
 
-        session.getAsyncRemote().sendText(Result.r("deleteVerify", Result.success));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "deleteVerify", Result.success));
+    }
+
+    public void rejectVerify(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        Optional<CtsVerify> verify = verifyRepository.findById(data.getString("verifyId"));
+        if(!verify.get().getMemberId().equals(member.getId())) {
+            return;
+        }
+        String cString = verify.get().getData();
+        JSONObject jsonObject = JSONObject.parseObject(cString);
+        verify.get().setState(2);
+        verify.get().setUpdateTime(DateUtil.date());
+        verifyRepository.save(verify.get());
+        CtsMemberRelation memberRelation = memberRelationRepository.findByMemberIdAndAccount(member.getId(), jsonObject.getString("account"));
+        memberRelation.setState(1);
+        memberRelation.setUpdateTime(DateUtil.date());
+        memberRelationRepository.save(memberRelation);
+
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "deleteVerify", Result.success));
     }
 
 

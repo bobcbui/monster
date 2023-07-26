@@ -46,7 +46,7 @@ export default {
     },
     methods: {
 		createGroup(){
-			this.$store.state.socketLocal.send(JSON.stringify({ type: "createGroup", data: this.createGroupForm}))
+			this.$store.state.socketLocal.send({ type: "createGroup", data: this.createGroupForm})
 		},
 		searchGroup(){
 			request({
@@ -88,7 +88,7 @@ export default {
 		joinGroup(){
 			this.joinGroupForm.memberAccount = this.$store.state.member.account;
 			this.$store.state.socketGroup[this.joinGroupForm.account].send(JSON.stringify({ type: "joinGroup", data: this.joinGroupForm}))
-			this.$store.state.socketLocal.send(JSON.stringify({ type: "joinGroup", data: this.joinGroupForm}))
+			this.$store.state.socketLocal.send({ type: "joinGroup", data: this.joinGroupForm})
 		},
         searchMemberClick(){
             this.joinButtonText = "加为好友";
@@ -107,8 +107,8 @@ export default {
                 socket.onmessage = function(e){
                     let data = JSON.parse(e.data);
                     if(data.type == "join"){
-                        that.$store.state.socketLocal.send(JSON.stringify({ type: "joinMember", data: data.data}))
-                        that.$store.state.socketLocal.send(JSON.stringify({ type: "memberMap"}))
+                        that.$store.state.socketLocal.send({ type: "joinMember", data: data.data})
+                        that.$store.state.socketLocal.send({ type: "memberMap"})
                     }
                     if(data.type == "info"){
                         that.searchMember = data.data;

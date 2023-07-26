@@ -6,18 +6,20 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 
 public class Result {
 
-    public static String r(String type,String code) {
+    public static String r(String transactionId, String type, String code) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", code);
         jsonObject.put("type", type);
+        jsonObject.put("transactionId", transactionId);
         return JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
     }
 
-    public static String r(String type,String code, Object data) {
+    public static String r(String transactionId, String type,String code, Object data) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", code);
         jsonObject.put("type", type);
         jsonObject.put("data", data);
+        jsonObject.put("transactionId", transactionId);
         return JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
     }
 

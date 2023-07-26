@@ -36,6 +36,7 @@ public class MemberSocketService {
 
     public void join(JSONObject data, Session session) {
         String type = data.getString("type");
+        String transactionId = data.getString("transactionId");
         try {
             CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
             JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
@@ -57,7 +58,8 @@ public class MemberSocketService {
             dataJson.put("username", username);
 
             CtsVerify verify = new CtsVerify();
-            verify.setId(IdUtil.objectId());
+            String verifyId = IdUtil.objectId();
+            verify.setId(verifyId);
             verify.setMemberId(acceptMember.getId());
             verify.setCreateTime(DateUtil.date());
             verify.setUpdateTime(DateUtil.date());
@@ -66,9 +68,9 @@ public class MemberSocketService {
             verify.setData(dataJson.toJSONString());
             verifyRepository.save(verify);
 
-            session.getAsyncRemote().sendText(Result.r(type, Result.success ,acceptMember));
+            session.getAsyncRemote().sendText(Result.r(transactionId, type, Result.success ,acceptMember));
         } catch (Exception e) {
-            session.getAsyncRemote().sendText(Result.r(type , Result.success, e.getMessage()));
+            session.getAsyncRemote().sendText(Result.r(transactionId, type , Result.success, e.getMessage()));
         }
         throw new UnsupportedOperationException("Unimplemented method 'onMessage'");
     }
@@ -76,7 +78,7 @@ public class MemberSocketService {
     public void info(JSONObject data, Session session){
         String type = data.getString("type");
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
-        session.getAsyncRemote().sendText(Result.r(type, Result.success, acceptMember));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), type, Result.success, acceptMember));
     }
 
     public void message(JSONObject data, Session session){
@@ -97,22 +99,22 @@ public class MemberSocketService {
         memberMessage.setAccount(acceptMember.getAccount());
         memberMessage.setWithAccount(account);
         memberMessageRepository.save(memberMessage);
-        session.getAsyncRemote().sendText(Result.r(type, Result.success, serviceId));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), type, Result.success, serviceId));
 
         if(sessionList != null){
             for (Session list : sessionList) {
                 if(list.isOpen()){
-                    list.getAsyncRemote().sendText(Result.r("message", Result.success,memberMessage));
+                    list.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "message", Result.success,memberMessage));
                 }
             }
         }
     }
 
-    public void delete(JSONObject jsonObject, Session session) {
+    public void delete(JSONObject data, Session session) {
         CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
         memberRelationRepository.deleteByMemberIdAndAccount(acceptMember.getId(), sendMember.getString("account"));
-        session.getAsyncRemote().sendText(Result.r("delete", Result.success,sendMember.getString("accept")));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "delete", Result.success,sendMember.getString("accept")));
     }
 
     public void agree(JSONObject data, Session session) {
@@ -126,10 +128,28 @@ public class MemberSocketService {
         memberRelationRepository.save(memberRelation);
 
         Optional<CtsVerify> verify = verifyRepository.findById(verifyId);
-        verify.get().setState(1);
+        verify.get().setState(4);
         verify.get().setUpdateTime(DateUtil.date());
         verifyRepository.save(verify.get());
         
-        session.getAsyncRemote().sendText(Result.r("agree", Result.success));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "agree", Result.success));
+    }
+
+    public void reject(JSONObject data, Session session) {
+        CtsMember acceptMember = (CtsMember) session.getUserProperties().get("acceptMember");
+        JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
+        String verifyId = data.getString("verifyId");
+        
+        CtsMemberRelation memberRelation = memberRelationRepository.findByMemberIdAndAccount(acceptMember.getId(), sendMember.getString("account"));
+        memberRelation.setState(1);
+        memberRelation.setUpdateTime(DateUtil.date());
+        memberRelationRepository.save(memberRelation);
+
+        Optional<CtsVerify> verify = verifyRepository.findById(verifyId);
+        verify.get().setState(5);
+        verify.get().setUpdateTime(DateUtil.date());
+        verifyRepository.save(verify.get());
+        
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "agree", Result.success));
     }
 }

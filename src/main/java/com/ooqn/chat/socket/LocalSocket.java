@@ -109,8 +109,12 @@ public class LocalSocket {
                 case "agreeVerify":
                     localSocketService.agreeVerify(data, session);
                     break;
+                case "rejectVerify":
+                    localSocketService.rejectVerify(data, session);
+                    break;
                 default:
                     System.out.println("未知类型:" + type);
+                    session.getAsyncRemote().sendText(data.toJSONString());
                     break;
             }
         } catch (Exception e) {

@@ -95,12 +95,12 @@ export default {
                                 if (item.serviceId == data.data) {
                                     item.state = 1;
                                     // 保存消息
-                                    that.$store.state.socketLocal.send(JSON.stringify({
+                                    that.$store.state.socketLocal.send({
                                         type: "saveMessage",
                                         content: that.messageForm.content,
                                         serviceId: data.data,
                                         withAccount: that.account
-                                    }))
+                                    })
                                     
                                     that.messageForm.content = ""
                                     return true
@@ -133,7 +133,7 @@ export default {
         deleteFriend(){
             // 删除好友
             this.memberSocket.send(JSON.stringify({ type: "delete" }));
-            this.$store.state.socketLocal.send(JSON.stringify({ type: "deleteMember", account: this.$route.query.account }));
+            this.$store.state.socketLocal.send({ type: "deleteMember", account: this.$route.query.account });
         },
         send() {
             this.messageForm.serviceId = new Date().getTime();

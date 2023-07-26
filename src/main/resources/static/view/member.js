@@ -74,8 +74,8 @@ export default {
                 socket.onmessage = function (e) {
                     let data = JSON.parse(e.data);
                     if (data.type == "join") {
-                        that.$store.state.socketLocal.send(JSON.stringify({ type: "joinMember", data: data.data,context: that.context }))
-                        that.$store.state.socketLocal.send(JSON.stringify({ type: "memberMap" }))
+                        that.$store.state.socketLocal.send({ type: "joinMember", data: data.data,context: that.context })
+                        that.$store.state.socketLocal.send({ type: "memberMap" })
                     }
                     if (data.type == "info") {
                         that.searchMember = data.data;

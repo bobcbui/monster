@@ -46,7 +46,7 @@ public class GroupSocketService {
             message.put("withGroupAccount", acceptGroup.getAccount());
             resultObject.add(0, message);
         });
-        session.getAsyncRemote().sendText(Result.r("messages", Result.success, resultObject));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "messages", Result.success, resultObject));
     }
 
     public void members(JSONObject data, Session session) {
@@ -55,14 +55,14 @@ public class GroupSocketService {
 
     public void info(JSONObject data, Session session) {
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
-        session.getAsyncRemote().sendText(Result.r("info", Result.success, acceptGroup));
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "info", Result.success, acceptGroup));
     }
 
     public void notion(JSONObject data, Session session) {
 
     }
 
-    public void message(JSONObject jsonObject, Session session) {
+    public void message(JSONObject data, Session session) {
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
 
@@ -70,7 +70,7 @@ public class GroupSocketService {
         groupMessage.setId(IdUtil.objectId());
         groupMessage.setAcceptGroupId(acceptGroup.getId());
         groupMessage.setAccount(sendMember.getString("account"));
-        groupMessage.setContent(jsonObject.getString("content"));
+        groupMessage.setContent(data.getString("content"));
         groupMessage.setCreateTime(DateUtil.date());
         groupMessageRepository.save(groupMessage);
 
@@ -80,13 +80,13 @@ public class GroupSocketService {
                 for (Session value : list) {
                     if (value.isOpen()) {
                         JSONObject message = new JSONObject();
-                        message.put("content", jsonObject.getString("content"));
+                        message.put("content", data.getString("content"));
                         message.put("createTime", DateUtil.date());
                         message.put("sendAccount", sendMember.getString("account"));
                         message.put("sendNickname", sendMember.getString("username"));
                         message.put("withGroupAccount", acceptGroup.getAccount());
                         try {
-                            value.getBasicRemote().sendText(Result.r("message", Result.success, message));
+                            value.getBasicRemote().sendText(Result.r(data.getString("transactionId"), "message", Result.success, message));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

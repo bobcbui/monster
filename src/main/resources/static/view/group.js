@@ -55,7 +55,7 @@ export default {
 			this.$router.push({ path: '/group-message', query: { account: item.account } });
 		},
 		createGroup(){
-			this.$store.state.socketLocal.send(JSON.stringify({ type: "createGroup", data: this.createGroupForm}))
+			this.$store.state.socketLocal.send({ type: "createGroup", data: this.createGroupForm})
 		},
 		searchGroup(){
 			request({
@@ -97,7 +97,7 @@ export default {
 		join(){
 			this.joinGroupForm.memberAccount = this.$store.state.member.account;
 			this.$store.state.socketGroup[this.joinGroupForm.account].send(JSON.stringify({ type: "join", data: this.joinGroupForm}))
-			this.$store.state.socketLocal.send(JSON.stringify({ type: "join", data: this.joinGroupForm}))
+			this.$store.state.socketLocal.send({ type: "join", data: this.joinGroupForm})
 		}
 	},
 	created() {

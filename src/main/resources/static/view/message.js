@@ -191,6 +191,11 @@ export default {
 			this.$store.state.socketLocal.send({
 				type:"deleteVerify",
 				verifyId: item.id
+			}, (data) => {
+				// 删除 this.$store.state.verifyList 中的 item
+				this.$store.state.verifyList = this.$store.state.verifyList.filter((v)=>{
+					return v.id != item.id
+				})
 			})
 		}
 		

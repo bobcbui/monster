@@ -71,16 +71,10 @@ export default {
         },
         createMemberSocket() {
             let that = this;
-            createMemberSocket(
-                that.$route.query.account,
-                (appSocket) => {
-                    // 加载成功
-                    that.memberSocket = appSocket;
-                },
-                (data, appSocket) => {
-                    // 没有回调函数的处理器
-                }
-            );
+            createMemberSocket(that.$route.query.account, (appSocket) => {
+                // 加载成功
+                that.memberSocket = appSocket;
+            });
 
         },
         deleteFriend() {

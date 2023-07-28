@@ -37,10 +37,6 @@ export default {
 
 				// 保存socket到state在
 				that.$store.state.socketGroup[account] = appSocket;
-
-			}, (data, appSocket) => {
-				// 其他没有回调的消息
-				console.log("other message group socket")
 			})
 
 		},

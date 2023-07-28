@@ -1,7 +1,7 @@
 let template = // html
 `
 <div style='width:100%;border-bottom: 1px solid black;padding:10px;height: 44px;'>
-    <strong>{{title}}</strong>
+    <strong>🙂{{title}}</strong>
     <div style='float:right'>
         <slot></slot>
     </div>

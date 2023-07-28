@@ -59,7 +59,8 @@ export default {
 		},
 		search(){
 			createGroupSocket(this.joinGroupForm.account, (socket) => {
-				that.$store.state.socketGroup[account] = socket;
+				let that = this;
+				that.$store.state.socketGroup[this.joinGroupForm.account] = socket;
 				socket.send({ type: "info"}, (data, socket) => {
 					that.joinGroupForm = data.data;
 				})
@@ -70,7 +71,7 @@ export default {
 		},
 		join(){
 			this.joinGroupForm.memberAccount = this.$store.state.member.account;
-			this.$store.state.socketGroup[this.joinGroupForm.account].send(JSON.stringify({ type: "join", data: this.joinGroupForm}))
+			this.$store.state.socketGroup[this.joinGroupForm.account].send({ type: "join", data: this.joinGroupForm})
 			this.$store.state.socketLocal.send({ type: "join", data: this.joinGroupForm})
 		}
 	},

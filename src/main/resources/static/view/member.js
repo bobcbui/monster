@@ -34,7 +34,6 @@ export default {
                 text: "",
             },
             account: "",
-            checkUrl: "",
             memberSocket: null,
             searchMember: {},
             context: ""
@@ -59,19 +58,14 @@ export default {
             this.$router.push({ name: 'member-message', query: { account: item.account, routerName: this.$route.name } })
         },
         info() {
-            createMemberSocket(
-                this.account,
-                (appSocket) => {
-                    // 加载成功
-                    that.memberSocket = appSocket;
-                    appSocket.send({ type: "info" }, (data) => {
-                        that.searchMember = data.data;
-                    })
-                },
-                (data, appSocket) => {
-                    // 没有回调函数的处理器
-                }
-            );
+            let that = this;
+            createMemberSocket(this.account, (appSocket) => {
+                // 加载成功
+                that.memberSocket = appSocket;
+                appSocket.send({ type: "info" }, (data) => {
+                    that.searchMember = data.data;
+                })
+            });
         },
         join() {
             let that = this;

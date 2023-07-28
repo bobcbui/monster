@@ -9,13 +9,13 @@ let template = // html
 </cNav>
 <div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom:10px' v-if="withMember" :id='"show_words_" + withMember.account'>
     <div v-for='(item,index) in $store.state.memberMessageList[$route.query.account]'>
-        <div v-if='member && member.account != item.sendAccount ' style='margin: 10px; margin-bottom: 0px;'>
-            <strong style='color:#3c3ce2'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
-            <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:5px;'>{{item.content}}&nbsp;</p>
+        <div v-if='member && member.account != item.sendAccount ' class='m-10 m-b-0'>
+            <strong class='name-color'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
+            <p class='message-body'>{{item.content}}&nbsp;</p>
         </div>
-        <div v-if='member && member.account == item.sendAccount' style='margin: 10px; margin-bottom: 0px;text-align: right'>
-            <strong style='color:#3c3ce2'>{{member.username}}</strong>
-            <p style='border: 1px solid black; border-radius: 5px;margin:0px;padding:5px;'>&nbsp;{{item.content}}</p>
+        <div v-if='member && member.account == item.sendAccount' class='m-10 m-b-0 text-right' style='text-align: right'>
+            <strong class='name-color'>{{member.username}}</strong>
+            <p class='message-body'>&nbsp;{{item.content}}</p>
         </div>
     </div>
 </div>
@@ -26,42 +26,38 @@ let template = // html
 `
 import cModal from '../component/modal.js';
 import cNav from '../component/nav.js';
-import request from '../lib/request.js';
+import { createMemberSocket } from '../core/app-socket.js';
 export default {
     template: template,
-    data: function () {
+    data: () => {
         return {
             socketState: false,
-            messageForm:{
-                type: "message",
-                state: 0,
-                content: ""
-            },
+            messageForm: {},
         }
     },
-    components:{
-        cNav,cModal
+    components: {
+        cNav, cModal
     },
-    computed:{
-        withMember(){
+    computed: {
+        withMember() {
             return this.$store.state.memberMap[this.$route.query.account];
         },
-        member(){
+        member() {
             return this.$store.state.member;
         },
-        memberMap(){
+        memberMap() {
             return this.$store.state.memberMap;
         },
-        memberMessageList(){
+        memberMessageList() {
             return this.$store.state.memberMessageList;
         },
-        account(){
+        account() {
             return this.$route.query.account;
         }
     },
-    watch:{
-        "$store.state.memberMessageList":{
-            handler(val){
+    watch: {
+        "$store.state.memberMessageList": {
+            handler(val) {
                 down(this.$route.query.account)
             },
             deep: true,
@@ -69,86 +65,78 @@ export default {
         }
     },
     methods: {
-        backClick(){
+        backClick() {
             let routerName = this.$route.query.routerName == null ? "message" : this.$route.query.routerName;
-            this.$router.push({name: routerName})
+            this.$router.push({ name: routerName })
         },
         createMemberSocket() {
             let that = this;
-            request({
-                method: 'get',
-                url: '/one-token',
-            }).then(response => {
-                let ws = decodeWsAccount(this.$route.query.account);
-                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
-                socket.onopen = function (e) {
-                    that.memberSocket = socket;
-                    that.socketState = true;
-                    down(that.$route.query.account)
-                };
-                socket.onmessage = function (e) {
-                    let data = JSON.parse(e.data);
-                    switch(data.type){
-                        case "message":
-                            // 修改消息状态
-                            that.memberMessageList[that.$route.query.account].filter(item => {
-                                if (item.serviceId == data.data) {
-                                    item.state = 1;
-                                    // 保存消息
-                                    that.$store.state.socketLocal.send({
-                                        type: "saveMessage",
-                                        content: that.messageForm.content,
-                                        serviceId: data.data,
-                                        withAccount: that.account
-                                    })
-                                    
-                                    that.messageForm.content = ""
-                                    return true
-                                }
-                                return false
-                            })
-                        break;
-                        case "delete":
-                            // 删除好友
-                            if(data.code == "200"){
-                                delete that.$store.state.memberMap[that.$route.query.account];
-                                // to message
-                                that.$router.push({name: "message"})
-                            }
-                            break;
-                    }
-                };
-                socket.onclose = function (e) {
-
-                };
-                socket.onerror = function (e) {
-
-                };
-            }).catch(function (error) {
-
-            });
-
+            createMemberSocket(
+                that.$route.query.account,
+                (appSocket) => {
+                    // 加载成功
+                    that.memberSocket = appSocket;
+                },
+                (data, appSocket) => {
+                    // 没有回调函数的处理器
+                }
+            );
 
         },
-        deleteFriend(){
-            // 删除好友
-            this.memberSocket.send(JSON.stringify({ type: "delete" }));
+        deleteFriend() {
+            let that = this;
+            // 删除好友服务器记录
+            this.memberSocket.send({ type: "delete" }, (data, appSocket) => {
+                if (data.code == "200") {
+                    delete that.$store.state.memberMap[that.$route.query.account];
+                    that.backClick()
+                }
+            });
+            // 删除好友本地记录
             this.$store.state.socketLocal.send({ type: "deleteMember", account: this.$route.query.account });
         },
         send() {
-            this.messageForm.serviceId = new Date().getTime();
-            this.messageForm.sendAccount = this.$store.state.member.account;
-            this.memberSocket.send(JSON.stringify(this.messageForm));
-            this.messageForm.createTime = new Date().getTime();
-            this.messageForm.withAccount = this.$route.query.account
-            this.memberMessageList[this.$route.query.account].push({...this.messageForm});
-            down(this.$route.query.account);
+            let that = this;
+            that.messageForm.type = "message";
+            that.messageForm.serviceId = new Date().getTime();
+            that.messageForm.sendAccount = that.$store.state.member.account;
+            that.messageForm.createTime = new Date().getTime();
+            that.messageForm.withAccount = that.$route.query.account
+            that.messageForm.state = 0;
+            that.memberMessageList[that.$route.query.account].push({ ...that.messageForm });
+            that.memberSocket.send(that.messageForm, (data, appSocket) => {
+                // 发送消息回调
+                that.$nextTick(() => {
+                    down(that.$route.query.account)
+                });
+                // 修改消息状态
+                that.memberMessageList[that.$route.query.account].filter(item => {
+                    if (item.serviceId == data.data) {
+                        item.state = 1;
+                        // 保存消息
+                        that.$store.state.socketLocal.send({
+                            type: "saveMessage",
+                            content: that.messageForm.content,
+                            serviceId: data.data,
+                            withAccount: that.account
+                        }, (data, appSocket) => {
+                            console.log("保存消息成功")
+                        })
+                        that.messageForm.content = ""
+                    }
+                })
+            })
         }
     },
     created() {
         this.createMemberSocket()
     },
-    mounted(){
-        
+    mounted() {
+        // 等待几秒调用down
+        let _this = this;
+        setTimeout(() => {
+            down(_this.$route.query.account)
+        }, 100)
+
     }
 }

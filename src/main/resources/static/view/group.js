@@ -4,12 +4,12 @@ let template = // html
 	<cModal buttonName='创建'>
 		<input class='w-100 m-b-5' placeholder='群号' v-model='createGroupForm.name'>
 		<input class='w-100 m-b-5' placeholder='群名称' v-model='createGroupForm.nickname'>
-		<button class='w-100 m-b-5' @click='createGroup'>创建</button>
+		<button class='w-100 m-b-5' @click='create'>创建</button>
 	</cModal>&nbsp;
 	<cModal buttonName='加群'>
 		{{joinGroupForm.name}}
 		<input class='w-100 m-b-5' placeholder='群号' v-model='joinGroupForm.account' >
-		<button class='w-100 m-b-5' @click='searchGroup'>查询</button>
+		<button class='w-100 m-b-5' @click='search'>查询</button>
 		<button class='w-100 m-b-5' v-if='joinGroupForm.account != null' @click='join'>加入群</button>
 	</cModal>
 </cNav>
@@ -22,10 +22,10 @@ let template = // html
 `
 import cModal from '../component/modal.js'
 import cNav from '../component/nav.js'
-import request from '../lib/request.js'
+import { createGroupSocket } from '../core/app-socket.js'
 export default {
 	template: template,
-	data: function () {
+	data: () => {
 		return {
 			showCreateGroup: false,
 			createGroupForm: {
@@ -54,44 +54,18 @@ export default {
 		toGroupMessage(item){
 			this.$router.push({ path: '/group-message', query: { account: item.account } });
 		},
-		createGroup(){
+		create(){
 			this.$store.state.socketLocal.send({ type: "createGroup", data: this.createGroupForm})
 		},
-		searchGroup(){
-			request({
-                method: 'get',
-                url: '/one-token',
-            }).then(response => {
-				let account = this.joinGroupForm.account
-				let ws = decodeWsAccount(this.joinGroupForm.account);
-                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
-				this.$store.state.socketGroup[account] = socket;
-
-                let _this = this;
-                socket.onopen = function(e){
-					_this.groupSocket = socket;
-                    socket.send(JSON.stringify({ type: "info"}))
-
-                };
-                socket.onmessage = function(e){
-                    let data = JSON.parse(e.data);
-                    if(data.type == "searchGroup"){
-                       console.log("========================");
-                    }
-					if(data.type == "info"){
-						_this.joinGroupForm = data.data;
-					}
-                };
-                socket.onclose = function(e){
-                    
-                };
-                socket.onerror = function(e){
-                    
-                };
-                
-            }).catch(function (error) {
-                console.log(error);
-            });
+		search(){
+			createGroupSocket(this.joinGroupForm.account, (socket) => {
+				that.$store.state.socketGroup[account] = socket;
+				socket.send({ type: "info"}, (data, socket) => {
+					that.joinGroupForm = data.data;
+				})
+			}, (data, socket) => {
+				console.log("other message");
+			});
 		
 		},
 		join(){

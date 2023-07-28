@@ -24,10 +24,10 @@ let template = // html
 `
 import cModal from '../component/modal.js'
 import cNav from '../component/nav.js'
-import request from '../lib/request.js'
+import { createMemberSocket } from '../core/app-socket.js'
 export default {
     template: template,
-    data: function () {
+    data: () => {
         return {
             form: {
                 type: "message-member",
@@ -59,41 +59,27 @@ export default {
             this.$router.push({ name: 'member-message', query: { account: item.account, routerName: this.$route.name } })
         },
         info() {
-            request({
-                method: 'get',
-                url: '/one-token',
-            }).then(response => {
-                let ws = decodeWsAccount(this.account);
-                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
-                this.$store.state.socketMember = socket;
-                let that = this;
-                socket.onopen = function (e) {
-                    that.memberSocket = socket;
-                    socket.send(JSON.stringify({ type: "info" }))
-                };
-                socket.onmessage = function (e) {
-                    let data = JSON.parse(e.data);
-                    if (data.type == "join") {
-                        that.$store.state.socketLocal.send({ type: "joinMember", data: data.data,context: that.context })
-                        that.$store.state.socketLocal.send({ type: "memberMap" })
-                    }
-                    if (data.type == "info") {
+            createMemberSocket(
+                this.account,
+                (appSocket) => {
+                    // 加载成功
+                    that.memberSocket = appSocket;
+                    appSocket.send({ type: "info" }, (data) => {
                         that.searchMember = data.data;
-                    }
-                };
-                socket.onclose = function (e) {
-
-                };
-                socket.onerror = function (e) {
-
-                };
-
-            }).catch(function (error) {
-                console.log(error);
-            });
+                    })
+                },
+                (data, appSocket) => {
+                    // 没有回调函数的处理器
+                }
+            );
         },
         join() {
-            this.memberSocket.send(JSON.stringify({ type: "join", context: this.context }))
+            let that = this;
+            this.memberSocket.send({ type: "join", context: this.context }, (data) => {
+                that.$store.state.socketLocal.send({ type: "joinMember", data: data.data, context: that.context })
+                that.$store.state.socketLocal.send({ type: "memberMap" })
+                alert("申请成功")
+            })
         }
     },
     created() {

@@ -37,12 +37,12 @@ let template = // html
 </div>
 `
 // 
-import cModal from '../component/modal.js'
-import cNav from '../component/nav.js'
-import request from '../lib/request.js'
+import cModal from '../component/modal.js';
+import cNav from '../component/nav.js';
+import { createMemberSocket } from '../core/app-socket.js';
 export default {
 	template: template,
-	data: function () {
+	data: () => {
 		return {
 			messageList:[],
 			show:false
@@ -144,81 +144,47 @@ export default {
 			
 		},
 		agreeVerify(item){
-			request({
-                method: 'get',
-                url: '/one-token',
-            }).then(response => {
-				let ws = decodeWsAccount(JSON.parse(item.data).account);
-                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
-                this.$store.state.socketMember = socket;
-                let that = this;
-                socket.onopen = function(e){
-                    socket.send(JSON.stringify({
-						type:"agree",
-						account: that.$store.state.member.account,
-						verifyId: item.id
-					}))
+			let that = this;
+			let account = JSON.parse(item.data).account;
+			createMemberSocket(account, (socket)=>{
+				// 同意好友申请
+				socket.send({
+					type:"agree",
+					account: that.$store.state.member.account,
+					verifyId: item.id
+				}, (data) => {
+					console.log("同意了");
+				});
 
-					that.$store.state.socketLocal.send({
-						type:"agreeVerify",
-						verifyId: item.id
-					})
-					
-                };
-                socket.onmessage = function(e){
-					if(e.data == "agree"){
-						if(e.code == 200){
-
-						}
-						// 同意了
-						socket.close()
-					}
-                };
-                socket.onclose = function(e){
-                    
-                };
-                socket.onerror = function(e){
-                    
-                };
+				// 修改本地数据
+				that.$store.state.socketLocal.send({
+					type:"agreeVerify",
+					verifyId: item.id
+				}, (data) => {
+					console.log("同意了 并修改本地数据");
+				});
 			})
 		},
 		rejectVerify(item){
-			request({
-                method: 'get',
-                url: '/one-token',
-            }).then(response => {
-				let ws = decodeWsAccount(JSON.parse(item.data).account);
-                let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
-                this.$store.state.socketMember = socket;
-                let that = this;
-                socket.onopen = function(e){
-                    socket.send(JSON.stringify({
-						type:"reject",
-						account: that.$store.state.member.account,
-						verifyId: item.id
-					}))
+			let that = this;
+			let account = JSON.parse(item.data).account;
+			createMemberSocket(account, (socket)=>{
+				// 拒绝好友申请
+				socket.send({
+					type:"reject",
+					account: that.$store.state.member.account,
+					verifyId: item.id
+				}, (data) => {
+					console.log("拒绝了");
+				})
+				// 修改本地数据
+				that.$store.state.socketLocal.send({
+					type:"rejectVerify",
+					verifyId: item.id
+				}, (data) => {
+					console.log("拒绝了 并修改本地数据");
+				});
 
-					that.$store.state.socketLocal.send({
-						type:"rejectVerify",
-						verifyId: item.id
-					})
-					
-                };
-                socket.onmessage = function(e){
-					if(e.data == "agree"){
-						if(e.code == 200){
-
-						}
-						// 同意了
-						socket.close()
-					}
-                };
-                socket.onclose = function(e){
-                    
-                };
-                socket.onerror = function(e){
-                    
-                };
 			})
 		},
 		deleteVerify(item){

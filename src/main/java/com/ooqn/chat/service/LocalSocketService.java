@@ -148,7 +148,9 @@ public class LocalSocketService {
             memberMessage.setAccount(member.getAccount());
             memberMessage.setWithAccount(data.getString("withAccount"));
             memberMessageRepository.save(memberMessage);
-            
+
+            // 保存成功
+            session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "saveMessage", Result.success));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

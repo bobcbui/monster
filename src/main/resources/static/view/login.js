@@ -15,7 +15,7 @@ let template = // html
 import request from '../lib/request.js';
 export default {
     template: template,
-    data: function(){
+    data: () => {
         return {
             loginForm: {
                 username:"",
@@ -33,7 +33,7 @@ export default {
                 localStorage.setItem("token", response.data)
                 location.href = '/'
                 this.$router.push({ name: 'message' })
-            }).catch(function (error) {
+            }).catch((error) => {
                 console.log(error);
             });
         }

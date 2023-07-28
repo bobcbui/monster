@@ -4,10 +4,10 @@ let template = // html
 `
 
 import request from '../lib/request.js';
-import MySocket from '../core/my-socket.js';
+import { createLocalSocket, createGroupSocket } from '../core/app-socket.js';
 export default {
 	template: template,
-	data: function () {
+	data: () => {
 		return {
 		}
 	},
@@ -15,76 +15,50 @@ export default {
 
 	},
 	methods: {
-		createGroupWebSocket(account) {
+		createGroupSocket(account) {
 			let that = this;
-			// one-token
-			request({
-				method: 'get',
-				url: '/one-token',
-			}).then(response => {
-				let ws = decodeWsAccount(account);
-				let socket = new WebSocket(ws + "?checkUrl=" + document.location.origin + "/check/" + response.data);
-				that.$store.state.socketGroup[account] = socket;
-				socket.onopen = function (e) {
-					socket.send(JSON.stringify({ type: "messages" }))
-					socket.send(JSON.stringify({ type: "info" }))
-				};
-				socket.onmessage = function (e) {
-					let data = JSON.parse(e.data);
-					if (data.type == "message") {
-						if (that.$store.state.groupMessageList[account] == null) {
-							that.$store.state.groupMessageList[account] = []
-						}
-						that.$store.state.groupMessageList[account].push(data.data)
-						//渲染完毕执行
-						that.$nextTick(function () {
-							down(account)
-						})
+			createGroupSocket(account, (appSocket) => {
+				// 获取群消息列表
+				appSocket.send({ type: "messages" }, (data) => {
+					that.$store.state.groupMessageList[account] = data.data
+					//渲染完毕执行
+					that.$nextTick(() => {
+						down(account)
+					})
+				});
+
+				// 获取群信息
+				appSocket.send({ type: "info" }, (data) => {
+					if (that.$store.state.groupMap == null) {
+						that.$store.state.groupMap = {}
 					}
-					if (data.type == "messages") {
-						that.$store.state.groupMessageList[account] = data.data
-						//渲染完毕执行
-						that.$nextTick(function () {
-							down(account)
-						})
-					}
+					that.$store.state.groupMap[account] = data.data
+				});
 
-					if (data.type == "info") {
-						if (that.$store.state.groupMap == null) {
-							that.$store.state.groupMap = {}
-						}
-						that.$store.state.groupMap[account] = data.data
+				// 保存socket到state在
+				that.$store.state.socketGroup[account] = appSocket;
 
-					}
-				};
-				socket.onclose = function (e) {
-
-				};
-				socket.onerror = function (e) {
-
-				};
-			}).catch(function (error) {
-
-			});
+			}, (data, appSocket) => {
+				// 其他没有回调的消息
+				console.log("other message group socket")
+			})
 
 		},
 		createLocalWebSocket() {
-			let _this = this;
-			new MySocket("ws://localhost:9090/local?token=" + localStorage.getItem("token"),
-				(that) => {
+			let that = this;
+			createLocalSocket(
+				"ws://localhost:9090/local?token=" + localStorage.getItem("token"),
+				(appSocket) => {
 					// 加载成功获取member 和 group 列表
-					_this.$store.state.socketLocal = that;
-					that.send({ type: "memberMap" })
-					that.send({ type: "groupList" })
-					that.send({ type: "loadMessage" })
-					that.send({ type: "loadVerify" })
-					that.send({ type: "asdfasdf" }, (e, that) => {
-
-					})
-				},
-				(data, that) => {
+					that.$store.state.socketLocal = appSocket;
+					appSocket.send({ type: "memberMap" })
+					appSocket.send({ type: "groupList" })
+					appSocket.send({ type: "loadMessage" })
+					appSocket.send({ type: "loadVerify" })
+					appSocket.send({ type: "asdfasdf" }, (data, socket) => { console.log(data); })
+				}, (data, socket) => {
 					if (data.type == "memberMap") {
-						_this.$store.state.memberMap = data.data
+						that.$store.state.memberMap = data.data
 						console.log(data.data)
 					}
 
@@ -95,22 +69,15 @@ export default {
 					if (data.type == "groupList") {
 						let groupList = data.data;
 						groupList.forEach((item) => {
-							_this.createGroupWebSocket(item)
+							that.createGroupSocket(item)
 						})
-					}
-
-					if (data.type == "messages") {
-						//that.$store.state.group1List = data
-						console.log(data.data)
 					}
 
 					if (data.type == "message") {
 						data.data.state = true;
 						if (data.data.account != data.data.withAccount) {
-							_this.$store.state.memberMessageList[data.data.withAccount].push(data.data);
-							_this.$nextTick(function () {
-								down(data.data.withAccount)
-							});
+							that.$store.state.memberMessageList[data.data.withAccount].push(data.data);
+							that.$nextTick(() => { down(data.data.withAccount); });
 						}
 					}
 
@@ -118,14 +85,14 @@ export default {
 					if (data.type == "loadMessage") {
 						let account;
 						for (let item of data.data) {
-							_this.$store.state.memberMessageList[item.account] = item.data
+							that.$store.state.memberMessageList[item.account] = item.data
 							account = item.account;
 						}
 						down(account)
 					}
 
 					if ("loadVerify" == data.type) {
-						_this.$store.state.verifyList = data.data
+						that.$store.state.verifyList = data.data
 					}
 				}
 			);
@@ -137,7 +104,8 @@ export default {
 	mounted() {
 		request({
 			url: "/authenticate/info",
-			method: "GET"
+			method: "GET",
+			async: false
 		}).then((response) => {
 			this.$store.state.member = response.data
 			this.createLocalWebSocket()

@@ -15,7 +15,7 @@ let template = // html
 import request from '../lib/request.js';
 export default {
     template: template,
-    data: function(){
+    data: () => {
         return {
             loginForm: {
 
@@ -30,7 +30,7 @@ export default {
                 data: this.loginForm,
             }).then(response => {
                 alert(JSON.stringify(response.data))
-            }).catch(function (error) {
+            }).catch((error) => {
                 console.log(error);
             });
         }

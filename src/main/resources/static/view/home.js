@@ -13,7 +13,7 @@ let template = // html
 `
 export default {
 	template: template,
-	data: function () {
+	data: () => {
 		return {
 		}
 	},

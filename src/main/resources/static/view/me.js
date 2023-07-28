@@ -14,7 +14,7 @@ import cModal from '../component/modal.js'
 import cNav from '../component/nav.js'
 export default {
 	template: template,
-	data: function () {
+	data: () => {
 		return {
 			
 		}

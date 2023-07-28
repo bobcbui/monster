@@ -19,7 +19,7 @@ export default {
             default: '按钮'
         }
     },
-    data: function () {
+    data: () => {
         return {
             show: false
         }

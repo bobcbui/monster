@@ -31,7 +31,16 @@ public class GroupSocketService {
     private GroupMessageRepository groupMessageRepository;
 
     public void messages(JSONObject data, Session session) {
+        JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
+
+        String memberRole = memberRole(sendMember.getString("account"), acceptGroup.getAccount());
+
+        if(memberRole == null){
+            session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "messages", Result.error, "您不是该群成员了！"));
+            return;
+        }
+
         List<CtsGroupMessage> groupMessageList = groupMessageRepository.findByAcceptGroupId(acceptGroup.getId());
         JSONArray resultObject = new JSONArray();
         groupMessageList.forEach(groupMessage -> {
@@ -55,7 +64,17 @@ public class GroupSocketService {
 
     public void info(JSONObject data, Session session) {
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "info", Result.success, acceptGroup));
+        JSONObject resultObj = JSONObject.parseObject(JSONObject.toJSONString(acceptGroup));
+        JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
+        String account = sendMember.getString("account"); 
+        String memberRole = memberRole(account, acceptGroup.getAccount());
+        
+        if(memberRole != null){
+            JSONObject parseObject = JSONObject.parseObject(JSONObject.toJSONString(acceptGroup));
+            parseObject.put("memberRole", memberRole);
+        }
+        
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "info", Result.success, resultObj));
     }
 
     public void notion(JSONObject data, Session session) {
@@ -114,6 +133,14 @@ public class GroupSocketService {
         groupRelation.setAlias(acceptGroup.getName());
         groupRelation.setNickname(acceptGroup.getName());
         groupRelationRepository.save(groupRelation);
+    }
+
+    private String memberRole(String account, String groupAccount) {
+        CtsGroupRelation groupRelation = groupRelationRepository.findByMemberAccountAndGroupAccount(account, groupAccount);
+        if (groupRelation != null) {
+            return groupRelation.getMemberRole();
+        }
+        return null;
     }
 
 }

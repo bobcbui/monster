@@ -33,7 +33,7 @@ export default {
 	methods: {
 		logout(){
 			localStorage.removeItem('token');
-			location.href = '/'
+			location.href = '/';
 		}
 		
 	},

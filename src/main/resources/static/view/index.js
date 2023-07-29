@@ -17,55 +17,56 @@ export default {
 	methods: {
 		createGroupSocket(account) {
 			let that = this;
-			createGroupSocket(account, (appSocket) => {
+			createGroupSocket(account, (socket) => {
 				// 获取群消息列表
-				appSocket.send({ type: "messages" }, (data) => {
-					that.$store.state.groupMessageList[account] = data.data
+				socket.send({ type: "messages" }, (data) => {
+					that.$store.state.groupMessageList[account] = data.data;
 					//渲染完毕执行
 					that.$nextTick(() => {
-						down(account)
+						down(account);
 					})
 				});
 
 				// 获取群信息
-				appSocket.send({ type: "info" }, (data) => {
+				socket.send({ type: "info" }, (data) => {
 					if (that.$store.state.groupMap == null) {
 						that.$store.state.groupMap = {}
 					}
-					that.$store.state.groupMap[account] = data.data
+					that.$store.state.groupMap[account] = data.data;
 				});
 
 				// 保存socket到state在
-				that.$store.state.socketGroup[account] = appSocket;
+				that.$store.state.socketGroup[account] = socket;
 			})
 
 		},
 		createLocalWebSocket() {
 			let that = this;
 			createLocalSocket(
-				"ws://localhost:9090/local?token=" + localStorage.getItem("token"),
-				(appSocket) => {
+
+				"ws://" + window.location.host + "/local?token=" + localStorage.getItem("token"),
+				(socket) => {
 					// 加载成功获取member 和 group 列表
-					that.$store.state.socketLocal = appSocket;
-					appSocket.send({ type: "memberMap" })
-					appSocket.send({ type: "groupList" })
-					appSocket.send({ type: "loadMessage" })
-					appSocket.send({ type: "loadVerify" })
-					appSocket.send({ type: "asdfasdf" }, (data, socket) => { console.log(data); })
+					that.$store.state.socketLocal = socket;
+					socket.send({ type: "memberMap" });
+					socket.send({ type: "groupList" });
+					socket.send({ type: "loadMessage" });
+					socket.send({ type: "loadVerify" });
+					socket.send({ type: "asdfasdf" }, (data, socket) => { console.log(data); });
 				}, (data, socket) => {
 					if (data.type == "memberMap") {
-						that.$store.state.memberMap = data.data
-						console.log(data.data)
+						that.$store.state.memberMap = data.data;
+						console.log(data.data);
 					}
 
 					if (data.type == "memberMessage") {
-						console.log(data)
+						console.log(data);
 					}
 
 					if (data.type == "groupList") {
 						let groupList = data.data;
 						groupList.forEach((item) => {
-							that.createGroupSocket(item)
+							that.createGroupSocket(item);
 						})
 					}
 
@@ -81,14 +82,14 @@ export default {
 					if (data.type == "loadMessage") {
 						let account;
 						for (let item of data.data) {
-							that.$store.state.memberMessageList[item.account] = item.data
+							that.$store.state.memberMessageList[item.account] = item.data;
 							account = item.account;
 						}
 						down(account)
 					}
 
 					if ("loadVerify" == data.type) {
-						that.$store.state.verifyList = data.data
+						that.$store.state.verifyList = data.data;
 					}
 				}
 			);
@@ -103,8 +104,8 @@ export default {
 			method: "GET",
 			async: false
 		}).then((response) => {
-			this.$store.state.member = response.data
-			this.createLocalWebSocket()
+			this.$store.state.member = response.data;
+			this.createLocalWebSocket();
 		});
 	}
 }

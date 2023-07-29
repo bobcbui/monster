@@ -1,5 +1,3 @@
-import axios from '../lib/axios.min.js'
-
 var service = axios.create();
 
 	//请求前拦截

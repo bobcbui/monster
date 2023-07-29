@@ -41,6 +41,10 @@ class AppSocket {
         this.socket.send(JSON.stringify(obj))
     }
 
+    close() {
+        this.socket.close();
+    }
+
     print() {
         return "AppSocket"
     }

@@ -1,9 +1,13 @@
 let template = // html
 `
-<div style='width:100%;border-bottom: 1px solid black;padding:10px;height: 44px;'>
-    <strong>🙂{{title}}</strong>
-    <div style='float:right'>
-        <slot></slot>
+<div style='width:100%;border-bottom: 1px solid black;padding:10px;background:#ffdefc;'>
+    <div style='display: flex;'>
+        <div style='width: 50%;'>
+            <strong>🙂{{title}}</strong>
+        </div>
+        <div style='width: 50%;text-align: right;'>
+            <slot></slot>
+        </div>
     </div>
 </div>
 `

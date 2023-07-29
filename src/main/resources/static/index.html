@@ -5,9 +5,10 @@
 	<meta charset="utf-8">
 	<title></title>
 	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
-	<script src="/lib/vue.global.js"></script>
-	<script src="/lib/vue-router.global.js"></script>
-	<script src="/lib/vuex.global.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.min.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/vue-router/4.1.6/vue-router.global.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/vuex/4.1.0/vuex.global.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.js"></script>
 	<script src="/lib/common.js"></script>
 	<style>
 		body {
@@ -21,7 +22,7 @@
 		}
 
 		#app {
-			max-width: 500px;
+			max-width: 800px;
 			border:1px solid black;
 			margin:auto;
 			position: relative;
@@ -45,6 +46,18 @@
 			background: #efecec;
 		}
 
+		button{
+			border: 1px solid black;
+			border-radius: 5px;
+			padding: 2px 8px;
+		}
+
+		input{
+			border: 1px solid black;
+			border-radius: 5px;
+			padding: 2px 8px;
+		}
+
 		.border-b-1{
 			border-bottom: 1px solid black;
 		}
@@ -57,7 +70,7 @@
 			left:0;
 		}
 		.mode-body{
-			width:500px;
+			width:800px;
 			max-width: 100%;
 			height:100%;
 			margin: auto;
@@ -75,15 +88,38 @@
 			display: none;
 		}
 
-		/* ********************** */
+		/* 通用CSS */
+
+		.float-end{
+			float: right;
+		}
+
+		.text-right{
+			text-align: right;
+		}
+
 		.w-100{
 			width: 100%;
 		}
 
-		
+		.h-100{
+			height: 100%;
+		}
+
+		.p-5{
+			padding: 5px;
+		}
 
 		.p-10{
 			padding: 10px;
+		}
+		
+		.p-t-0{
+			padding-top: 0;
+		}
+
+		.p-b-5{
+			padding-bottom: 5px;
 		}
 
 		.p-b-10{
@@ -106,25 +142,23 @@
 			margin-bottom: 2px;
 		}
 
-		.float-end{
-			float: right;
-		}
-
-		.h-100{
-			height: 100%;
-		}
-
 		.m-b-5{
 			margin-bottom: 5px;
 		}
 
-		.p-t-0{
-			padding-top: 0;
+		.m-b-10{
+			margin-bottom: 10px;
 		}
 
-		.text-right{
-			text-align: right;
+		.b-r-5{
+			border-radius: 5px;
 		}
+
+		.b-1{
+			border: 1px solid black;
+		}
+
+		/* 指定CSS */
 
 		.message-body{
 			border: 1px solid black;
@@ -134,31 +168,61 @@
 			padding:5px;
 		}
 
-        @media screen and (min-width:700px){
-            body{
-				padding: 10px;
-			}
-			#app,.mode-body{
-				border-radius: 10px;
-			}
-        }
-
-		button{
-			border: 1px solid black;
-			border-radius: 5px;
-			padding: 2px 8px;
-		}
-
-		input{
-			border: 1px solid black;
-			border-radius: 5px;
-			padding: 2px 8px;
-		}
 
 		.name-color{
 			color: #3c3ce2;
 		}
 
+		@media screen and (min-width:700px){
+            body{
+				padding: 10px;
+			}
+			#app,.mode-body{
+				border-radius: 15px;
+				overflow: hidden;
+			}
+        }
+
+
+		.visible-scrollbar, .invisible-scrollbar, .mostly-customized-scrollbar {
+
+display: block;
+
+width: 10em;
+
+overflow: auto;
+
+height: 2em;
+
+}
+
+.invisible-scrollbar::-webkit-scrollbar {
+
+display: none;
+
+}
+
+/* Demonstrate a "mostly customized" scrollbar
+
+* (won't be visible otherwise if width/height is specified) */
+
+.mostly-customized-scrollbar::-webkit-scrollbar {
+
+width: 5px;
+
+height: 8px;
+
+background-color: #aaa; /* or add it to the track */
+
+}
+
+/* Add a thumb */
+
+.mostly-customized-scrollbar::-webkit-scrollbar-thumb {
+
+background: #000;
+
+}
 	</style>
 </head>
 
@@ -233,11 +297,11 @@
 
 	router.afterEach((to) => {
 	})
-
 	
 	app.use(router)
 	app.use(store)
 	app.mount('#app')
+	
 </script>
 
 </html>

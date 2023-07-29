@@ -2,7 +2,7 @@ let template = // html
 `
 <cNav title='消息'>
 	<cModal buttonName='验证消息'>
-		<div v-for="(item,index) in $store.state.verifyList" class='m-b-5' style='border:1px solid black;padding:5px;border-radius:5px'>
+		<div v-for="(item,index) in $store.state.verifyList" class='m-b-10 b-r-5 b-1 p-5'>
 			{{JSON.parse(item.data).username}} : {{JSON.parse(item.data).context}}
 			<br>
 			<span style='vertical-align: unset;'>
@@ -23,12 +23,12 @@ let template = // html
 </cNav>
 <div class='p-10'>
 	<div v-for="(item,index) in messageList" @click='openMessage(item)'>
-		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;padding:5px;'>
+		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' class='m-b-10 b-r-5 b-1 p-5'>
 			{{memberMap[item.withAccount].username}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
 			{{item.content}}
 		</div>
-		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' style='border: 1px solid black; border-radius: 5px; margin-bottom: 10px;padding:5px;'>
+		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' class='m-b-10 b-r-5 b-1 p-5'>
 			{{groupMap[item.withGroupAccount].name}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
 			{{item.content}}
@@ -58,14 +58,14 @@ export default {
 	watch: {
 		"$store.state.memberMessageList":{
             handler(){
-                this.loadMessageList()
+                this.loadMessageList();
             },
             deep: true,
             immediate: true,
         },
 		"$store.state.groupMessageList":{
             handler(){
-                this.loadMessageList()
+                this.loadMessageList();
             },
             deep: true,
             immediate: true,
@@ -73,36 +73,18 @@ export default {
 	},
 	computed: {
 		memberMessageList() {
-			this.$store.state.memberMessageList
+			this.$store.state.memberMessageList;
 		},
 		memberMap(){
-			return this.$store.state.memberMap
+			return this.$store.state.memberMap;
 		},
 		groupMap(){
-			return this.$store.state.groupMap
+			return this.$store.state.groupMap;
 		}
 	},
 	methods: {
 		toDate(time){
-			// 时间戳转距离当前有多久，分钟，小时，天，月，年
-			let now = new Date().getTime();
-			let distance = now - time;
-			if(distance < 60 * 1000){
-				return "刚刚"
-			}
-			if(distance < 60 * 60 * 1000){
-				return Math.floor(distance / (60 * 1000)) + "分钟前"
-			}
-			if(distance < 24 * 60 * 60 * 1000){
-				return Math.floor(distance / (60 * 60 * 1000)) + "小时前"
-			}
-			if(distance < 30 * 24 * 60 * 60 * 1000){
-				return Math.floor(distance / (24 * 60 * 60 * 1000)) + "天前"
-			}
-			if(distance < 12 * 30 * 24 * 60 * 60 * 1000){
-				return Math.floor(distance / (30 * 24 * 60 * 60 * 1000)) + "月前"
-			}
-			return Math.floor(distance / (12 * 30 * 24 * 60 * 60 * 1000)) + "年前"
+			return toDate(time);
 		},
 		openMessage(item){
 			// 路由跳转到member
@@ -155,13 +137,14 @@ export default {
 				}, (data) => {
 					console.log("同意了");
 				});
-
+				socket.close();
 				// 修改本地数据
 				that.$store.state.socketLocal.send({
 					type:"agreeVerify",
 					verifyId: item.id
 				}, (data) => {
 					console.log("同意了 并修改本地数据");
+					that.$store.state.socketLocal.send({type:"memberList"});
 				});
 			})
 		},
@@ -176,7 +159,8 @@ export default {
 					verifyId: item.id
 				}, (data) => {
 					console.log("拒绝了");
-				})
+				});
+				socket.close();
 				// 修改本地数据
 				that.$store.state.socketLocal.send({
 					type:"rejectVerify",
@@ -193,9 +177,9 @@ export default {
 				verifyId: item.id
 			}, (data) => {
 				// 删除 this.$store.state.verifyList 中的 item
-				this.$store.state.verifyList = this.$store.state.verifyList.filter((v)=>{
-					return v.id != item.id
-				})
+				this.$store.state.verifyList = this.$store.state.verifyList.filter((verify)=>{
+					return verify.id != item.id
+				});
 			})
 		}
 		

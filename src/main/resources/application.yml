@@ -31,3 +31,4 @@ chat:
   domain: localhost:9090
   member-prefix: member
   group-prefix: group
+

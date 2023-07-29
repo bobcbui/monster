@@ -26,6 +26,13 @@ public class CtsGroup implements Serializable {
 
     private String createMemberId;
 
+    // 1:公开 2:验证 3:正确答案 4:拒绝任何人 
+    private String verifyType;
+
+    private String verifyQuestion;
+
+    private String verifyValue;
+
     private Date createTime;
 
     public String getAccount(){

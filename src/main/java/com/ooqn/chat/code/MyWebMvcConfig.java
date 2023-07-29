@@ -1,6 +1,7 @@
 package com.ooqn.chat.code;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 
 /**
@@ -8,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
  * @author huanglei
  */
 @Configuration
-public class MyWebMvcConfig {
+public class MyWebMvcConfig extends WebMvcConfigurerAdapter{
+   
+    
 
 }

@@ -15,8 +15,7 @@ let template = // html
 </cNav>
 <div class='p-10'>
     <ul class='m-0'>
-        <li style='padding:5px;border:1px solid black;margin:0px 0px 10px 0px;border-radius:5px;' 
-        v-for='(item,index) in memberMap' :key='index' @click='toMemberMessage(item)'>
+        <li  class='m-b-10 b-r-5 b-1 p-5' v-for='(item,index) in memberMap' :key='index' @click='toMemberMessage(item)'>
             {{item.username}}
         </li>
     </ul>
@@ -34,7 +33,6 @@ export default {
                 text: "",
             },
             account: "",
-            memberSocket: null,
             searchMember: {},
             context: ""
         }
@@ -55,25 +53,29 @@ export default {
     },
     methods: {
         toMemberMessage(item) {
-            this.$router.push({ name: 'member-message', query: { account: item.account, routerName: this.$route.name } })
+            this.$router.push({ name: 'member-message', query: { account: item.account, routerName: this.$route.name } });
         },
         info() {
             let that = this;
-            createMemberSocket(this.account, (appSocket) => {
+            createMemberSocket(this.account, (socket) => {
                 // 加载成功
-                that.memberSocket = appSocket;
-                appSocket.send({ type: "info" }, (data) => {
+                socket.send({ type: "info" }, (data) => {
                     that.searchMember = data.data;
+                    socket.close();
                 })
             });
         },
         join() {
             let that = this;
-            this.memberSocket.send({ type: "join", context: this.context }, (data) => {
-                that.$store.state.socketLocal.send({ type: "joinMember", data: data.data, context: that.context })
-                that.$store.state.socketLocal.send({ type: "memberMap" })
-                alert("申请成功")
-            })
+            createMemberSocket(this.account, (socket) => {
+                // 加载成功
+                socket.send({ type: "join" , context: this.context}, (data) => {
+                    that.$store.state.socketLocal.send({ type: "joinMember", data: data.data, context: that.context });
+                    that.$store.state.socketLocal.send({ type: "memberMap" });
+                    alert("申请成功");
+                    socket.close();
+                })
+            });
         }
     },
     created() {

@@ -1,25 +1,26 @@
 let template = // html
 `
 <cNav v-if='withMember' :title='withMember.nickname'>
-    <button @click='backClick()'>返回</button>&nbsp;
+    <button @click='backClick()' class='h-100'>返回</button>&nbsp;
 	<cModal buttonName='设置'>
-        <p>账号: {{withMember.account}}</p>
-        <button class='w-100' @click='deleteFriend()'>删除好友</button>
+        <div class='p-b-5'>名称: {{withMember.nickname}}</div>
+        <div class='p-b-5'>账号: {{withMember.account}}</div>
+        <div class='p-b-5'><button class='w-100' @click='deleteFriend()'>删除好友</button></div>
 	</cModal>
 </cNav>
-<div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom:10px' v-if="withMember" :id='"show_words_" + withMember.account'>
+<div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom:10px;background: rgb(255, 248, 248);' v-if="withMember" :id='"show_words_" + withMember.account'>
     <div v-for='(item,index) in $store.state.memberMessageList[$route.query.account]'>
         <div v-if='member && member.account != item.sendAccount ' class='m-10 m-b-0'>
             <strong class='name-color'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
             <p class='message-body'>{{item.content}}&nbsp;</p>
         </div>
-        <div v-if='member && member.account == item.sendAccount' class='m-10 m-b-0 text-right' style='text-align: right'>
+        <div v-if='member && member.account == item.sendAccount' class='m-10 m-b-0 text-right'>
             <strong class='name-color'>{{member.username}}</strong>
             <p class='message-body'>&nbsp;{{item.content}}</p>
         </div>
     </div>
 </div>
-<div style="height:40px;border-top:1px solid black;padding:4px 10px" v-if="withMember">
+<div style="height:40px;border-top:1px solid black;padding:4px 10px;background: rgb(255, 222, 252);" v-if="withMember">
     <input v-model="messageForm.content" style="width: calc(100% - 48px);" class='h-100'/>
     <button @click="send()" class='float-end h-100'>发送</button>
 </div>
@@ -58,7 +59,9 @@ export default {
     watch: {
         "$store.state.memberMessageList": {
             handler(val) {
-                down(this.$route.query.account)
+                this.$nextTick(() => {
+                    down(this.$route.query.account);
+                });
             },
             deep: true,
             immediate: true,
@@ -67,23 +70,23 @@ export default {
     methods: {
         backClick() {
             let routerName = this.$route.query.routerName == null ? "message" : this.$route.query.routerName;
-            this.$router.push({ name: routerName })
+            this.$router.push({ name: routerName });
         },
         createMemberSocket() {
             let that = this;
-            createMemberSocket(that.$route.query.account, (appSocket) => {
+            createMemberSocket(that.$route.query.account, (socket) => {
                 // 加载成功
-                that.memberSocket = appSocket;
+                that.memberSocket = socket;
             });
 
         },
         deleteFriend() {
             let that = this;
             // 删除好友服务器记录
-            this.memberSocket.send({ type: "delete" }, (data, appSocket) => {
+            this.memberSocket.send({ type: "delete" }, (data, socket) => {
                 if (data.code == "200") {
                     delete that.$store.state.memberMap[that.$route.query.account];
-                    that.backClick()
+                    that.backClick();
                 }
             });
             // 删除好友本地记录
@@ -95,13 +98,13 @@ export default {
             that.messageForm.serviceId = new Date().getTime();
             that.messageForm.sendAccount = that.$store.state.member.account;
             that.messageForm.createTime = new Date().getTime();
-            that.messageForm.withAccount = that.$route.query.account
+            that.messageForm.withAccount = that.$route.query.account;
             that.messageForm.state = 0;
             that.memberMessageList[that.$route.query.account].push({ ...that.messageForm });
-            that.memberSocket.send(that.messageForm, (data, appSocket) => {
+            that.memberSocket.send(that.messageForm, (data, socket) => {
                 // 发送消息回调
                 that.$nextTick(() => {
-                    down(that.$route.query.account)
+                    down(that.$route.query.account);
                 });
                 // 修改消息状态
                 that.memberMessageList[that.$route.query.account].filter(item => {
@@ -113,10 +116,11 @@ export default {
                             content: that.messageForm.content,
                             serviceId: data.data,
                             withAccount: that.account
-                        }, (data, appSocket) => {
-                            console.log("保存消息成功")
+                        }, (data, socket) => {
+                            console.log("保存消息成功");
+                            console.log(socket);
                         })
-                        that.messageForm.content = ""
+                        that.messageForm.content = "";
                     }
                 })
             })
@@ -126,11 +130,6 @@ export default {
         this.createMemberSocket()
     },
     mounted() {
-        // 等待几秒调用down
-        let _this = this;
-        setTimeout(() => {
-            down(_this.$route.query.account)
-        }, 100)
 
     }
 }

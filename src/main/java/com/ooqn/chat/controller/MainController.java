@@ -65,16 +65,22 @@ public class MainController {
      * @return
      */
     @PostMapping("register")
-    public CtsMember register(@RequestBody JSONObject register){
+    public ResponseEntity<?> register(@RequestBody JSONObject register){
         String username = register.getString("username");
         String password = register.getString("password");
+
+        CtsMember member = memberRepository.findByUsername(username);
+        if(member != null){
+            return ResponseEntity.notFound().build();
+        }
+
         password = BCrypt.hashpw(password, BCrypt.gensalt());
-        CtsMember member = new CtsMember();
+        member = new CtsMember();
         member.setId(IdUtil.objectId());
         member.setUsername(username);
         member.setCreateTime(new Date());
         member.setPassword(password);
-        return memberRepository.save(member);
+        return ResponseEntity.ok().body(memberRepository.save(member));
     }
 
     /*

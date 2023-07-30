@@ -4,41 +4,44 @@ class AppSocket {
     constructor(url, openCallback, otherHeader) {
         let that = this;
         that.name = url;
-        that.messageList = [];
+        that.funcList = [];
         that.otherHeader = otherHeader;
+        that.ok = false;
 
-        let socket = new WebSocket(url);
-        socket.onopen = (e) => {
+        this.socket = new WebSocket(url);
+        this.socket.onopen = (e) => {
+            that.ok = true;
             openCallback(that)
         };
-        socket.onmessage = (e) => {
-            that.onmessage(e)
-        };
-        socket.onclose = (e) => {
 
-        };
-        socket.onerror = (e) => {
-
-        };
-
-        that.socket = socket;
+        this.socket.onmessage = (e) => { that.onmessage(e); };
+        this.socket.onclose = (e) => { };
+        this.socket.onerror = (e) => { };
     }
 
     onmessage(e) {
         let data = JSON.parse(e.data);
-        let msg = this.messageList[data.transactionId];
-        if (msg != null) {
-            msg(data, this);
+        let func = this.funcList[data.transactionId];
+        if (func != null) {
+            func(data, this);
         } else {
             this.otherHeader(data, this);
         }
     }
 
-    send(obj, callback) {
-        var uuid = new Date().getTime() + Math.random().toString(36);
-        this.messageList[uuid] = callback;
-        obj["transactionId"] = uuid
-        this.socket.send(JSON.stringify(obj))
+    async send(obj, callback) {
+        // 等待ok == true
+        let that = this;
+        if (this.ok) {
+            var uuid = new Date().getTime() + Math.random().toString(36);
+            that.funcList[uuid] = callback;
+            obj["transactionId"] = uuid
+            that.socket.send(JSON.stringify(obj))
+        } else {
+            setTimeout(function () {
+                that.send(obj, callback);
+            }, 50);
+        }
     }
 
     close() {

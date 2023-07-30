@@ -112,6 +112,15 @@ public class LocalSocket {
                 case "rejectVerify":
                     localSocketService.rejectVerify(data, session);
                     break;
+                case "updateMemberReadTime":
+                    localSocketService.updateMemberReadTime(data, session);
+                    break;
+                case "updateGroupReadTime":
+                    localSocketService.updateGroupReadTime(data, session);
+                    break;
+                case "recommendGroup":
+                    localSocketService.recommendGroup(data, session);
+                    break;
                 default:
                     System.out.println("未知类型:" + type);
                     session.getAsyncRemote().sendText(data.toJSONString());

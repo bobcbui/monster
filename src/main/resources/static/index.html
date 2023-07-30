@@ -11,6 +11,11 @@
 	<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.js"></script>
 	<script src="/lib/common.js"></script>
 	<style>
+
+		:root {
+            --topColor: white;
+            --bottomColor: white;
+        }
 		body {
 			margin: 0;
 		}
@@ -178,7 +183,7 @@
 				padding: 10px;
 			}
 			#app,.mode-body{
-				border-radius: 15px;
+				border-radius: 5px;
 				overflow: hidden;
 			}
         }
@@ -265,7 +270,6 @@ background: #000;
 				
 			]
 		},
-		
 		{
 			path: "/login", name: "login", component: () => import('./view/login.js')
 		},
@@ -296,8 +300,28 @@ background: #000;
 	})
 
 	router.afterEach((to) => {
+		// 路由拦截器
+		console.log("你路由了")
 	})
+
+
+	const root = document.documentElement;
+
+	let topColor = localStorage.getItem("--topColor");
+	let bottomColor = localStorage.getItem("--bottomColor");
 	
+	if(topColor){
+		root.style.setProperty("--topColor", topColor);
+	}else{
+		root.style.setProperty("--topColor", "rgb(255, 222, 252)");
+	}
+
+	if(bottomColor){
+		root.style.setProperty("--bottomColor", bottomColor);
+	}else{
+		root.style.setProperty("--bottomColor", "rgb(255, 248, 248)");
+	}
+
 	app.use(router)
 	app.use(store)
 	app.mount('#app')

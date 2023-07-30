@@ -1,6 +1,6 @@
 let template = // html
     `
-<cNav title='好友'>
+<cNav title='👤好友'>
 	<cModal buttonName='添加'>
         <input class='w-100 m-b-5' v-model="account" placeholder='账户地址'>
         <button class='w-100 m-b-5' @click="info()">查询好友</button>
@@ -16,7 +16,7 @@ let template = // html
 <div class='p-10'>
     <ul class='m-0'>
         <li  class='m-b-10 b-r-5 b-1 p-5' v-for='(item,index) in memberMap' :key='index' @click='toMemberMessage(item)'>
-            {{item.username}}
+            👤{{item.username}}
         </li>
     </ul>
 </div>
@@ -61,7 +61,6 @@ export default {
                 // 加载成功
                 socket.send({ type: "info" }, (data) => {
                     that.searchMember = data.data;
-                    socket.close();
                 })
             });
         },
@@ -73,7 +72,6 @@ export default {
                     that.$store.state.socketLocal.send({ type: "joinMember", data: data.data, context: that.context });
                     that.$store.state.socketLocal.send({ type: "memberMap" });
                     alert("申请成功");
-                    socket.close();
                 })
             });
         }

@@ -1,6 +1,6 @@
 let template = // html
 `
-<cNav v-if='group' :title='group.name' back='true'>
+<cNav v-if='group' :title='"👥" + group.name' back='true'>
     <button @click='$router.push({name:"message"})' class='h-100'>返回</button>&nbsp;
 	<cModal buttonName='设置'>
         <div class='p-b-5'>名称：{{group.name}}</div>
@@ -8,7 +8,7 @@ let template = // html
         <div class='p-b-5'><button class='w-100' @click='deleteGroup()'>退出</button></div>
 	</cModal>
 </cNav>
-<div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom: 10px;background: rgb(255, 248, 248);' v-if='group' :id='"show_words_" + group.account'>
+<div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom: 10px;background: var(--bottomColor);' v-if='group' :id='"show_words_" + group.account'>
   <div v-for='(item,index) in $store.state.groupMessageList[$route.query.account]'>
     <div v-if='item.sendAccount == member.account' class='m-10 m-b-0 text-right'>
         <strong class='name-color'>{{member.username}}</strong>
@@ -20,7 +20,7 @@ let template = // html
     </div>
   </div>
 </div>
-<div style="height:40px;border-top:1px solid black;padding:4px 10px;background: rgb(255, 222, 252);" v-if="group">
+<div style="height:40px;border-top:1px solid black;padding:4px 10px;background: var(--topColor);" v-if="group">
     <input v-model="message" style="width: calc(100% - 48px); height: 100%;"/>
     <button @click="send" style="float:right; height: 100%;">发送</button>
 </div>
@@ -43,6 +43,7 @@ export default {
                 this.$nextTick(() => {
                     down(this.$route.query.account);
                 });
+                this.updateGroupReadTime();
             },
             deep: true,
             immediate: true,
@@ -65,6 +66,10 @@ export default {
     methods: {
         send() {
             let that = this;
+            if(!this.message){
+                alert("消息不能为空！");
+                return
+            }
             this.groupSocket.send({
                 type: "message",
                 content: this.message,
@@ -79,12 +84,25 @@ export default {
                 })
                 that.message = "";
             })
+        },
+        updateGroupReadTime(){
+            // 等待this.$store.state.socketLocal 不为空
+            if(!this.$store.state.socketLocal){
+                setTimeout(() => {
+                    this.updateGroupReadTime();
+                }, 100);
+                return;
+            }
+            this.$store.state.socketLocal.send({ type: "updateGroupReadTime", account: this.$route.query.account }, (data, socket) => {
+                console.log("更新群组消息已读时间");
+                console.log(socket);
+            });
         }
     },
     created() {
-        // 100毫秒后执行
-        setTimeout(() => {
-            down(this.$route.query.account);
-        }, 100);
-    }
+        
+    },
+    mounted() {
+        this.updateGroupReadTime();
+     }
 }

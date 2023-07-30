@@ -1,6 +1,14 @@
 let template = // html
 `
-<cNav title='群组'>
+<cNav title='👥群组'>
+	<cModal buttonName='推荐群'>
+		<ul class='m-0'>
+			<li class='m-b-10 b-r-5 b-1 p-5' v-for='(item, index) in  $store.state.recommendGroupList'>
+				{{item.name}}
+				<span class='m-b-5 float-end' @click='joinGroupForm.account = item.account , join()' style='color:blue'>加入</span>
+			</li>
+		</ul>
+	</cModal>&nbsp;
 	<cModal buttonName='创建'>
 		<input class='w-100 m-b-5' placeholder='群号' v-model='createGroupForm.name'>
 		<input class='w-100 m-b-5' placeholder='群名称' v-model='createGroupForm.nickname'>
@@ -16,7 +24,8 @@ let template = // html
 <div class='p-10'>
 	<ul class='m-0'>
 		<li class='m-b-10 b-r-5 b-1 p-5' v-for='(item,index) in groupMap' :key='index' @click='toGroupMessage(item)'>
-		{{item.name}}</li>
+		👥{{item.name}}
+		</li>
 	</ul>
 </div>
 `
@@ -70,11 +79,13 @@ export default {
 		
 		},
 		join(){
-			
-			this.joinGroupForm.memberAccount = this.$store.state.member.account;
-			this.$store.state.socketGroup[this.joinGroupForm.account].send({ type: "join", data: this.joinGroupForm});
-			this.$store.state.socketLocal.send({ type: "join", data: this.joinGroupForm},(data) => {
-				this.$store.state.socketLocal.send({ type: "groupList"});
+			let that = this;
+			createGroupSocket(that.joinGroupForm.account, (socket) => {
+				that.joinGroupForm.memberAccount = that.$store.state.member.account;
+				socket.send({ type: "join", data: that.joinGroupForm});
+				that.$store.state.socketLocal.send({ type: "join", data: that.joinGroupForm},(data) => {
+					that.$store.state.socketLocal.send({ type: "groupList"});
+				});
 			});
 		}
 	},

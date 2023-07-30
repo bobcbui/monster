@@ -1,6 +1,6 @@
 let template = // html
 `
-<cNav v-if='withMember' :title='withMember.nickname'>
+<cNav v-if='withMember' :title='"👤" + withMember.nickname'>
     <button @click='backClick()' class='h-100'>返回</button>&nbsp;
 	<cModal buttonName='设置'>
         <div class='p-b-5'>名称: {{withMember.nickname}}</div>
@@ -8,7 +8,7 @@ let template = // html
         <div class='p-b-5'><button class='w-100' @click='deleteFriend()'>删除好友</button></div>
 	</cModal>
 </cNav>
-<div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom:10px;background: rgb(255, 248, 248);' v-if="withMember" :id='"show_words_" + withMember.account'>
+<div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom:10px;background: var(--bottomColor);' v-if="withMember" :id='"show_words_" + withMember.account'>
     <div v-for='(item,index) in $store.state.memberMessageList[$route.query.account]'>
         <div v-if='member && member.account != item.sendAccount ' class='m-10 m-b-0'>
             <strong class='name-color'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
@@ -20,7 +20,7 @@ let template = // html
         </div>
     </div>
 </div>
-<div style="height:40px;border-top:1px solid black;padding:4px 10px;background: rgb(255, 222, 252);" v-if="withMember">
+<div style="height:40px;border-top:1px solid black;padding:4px 10px;background: var(--topColor);" v-if="withMember">
     <input v-model="messageForm.content" style="width: calc(100% - 48px);" class='h-100'/>
     <button @click="send()" class='float-end h-100'>发送</button>
 </div>
@@ -61,6 +61,7 @@ export default {
             handler(val) {
                 this.$nextTick(() => {
                     down(this.$route.query.account);
+                    this.updateMemberReadTime();
                 });
             },
             deep: true,
@@ -94,6 +95,10 @@ export default {
         },
         send() {
             let that = this;
+            if(!that.messageForm.content){
+                alert("消息不能为空！");
+                return
+            }
             that.messageForm.type = "message";
             that.messageForm.serviceId = new Date().getTime();
             that.messageForm.sendAccount = that.$store.state.member.account;
@@ -124,12 +129,19 @@ export default {
                     }
                 })
             })
+        },
+        updateMemberReadTime(){
+            this.$store.state.socketLocal.send({ type: "updateMemberReadTime", account: this.$route.query.account }, (data, socket) => {
+                console.log("更新群组消息已读时间");
+                console.log(socket);
+            });
         }
     },
     created() {
-        this.createMemberSocket()
+        console.log('member-message')
     },
     mounted() {
-
+        this.createMemberSocket()
+        this.updateMemberReadTime();
     }
 }

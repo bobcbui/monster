@@ -1,6 +1,6 @@
 let template = // html
 `
-<cNav title='消息'>
+<cNav title='🙂消息'>
 	<cModal buttonName='验证消息'>
 		<div v-for="(item,index) in $store.state.verifyList" class='m-b-10 b-r-5 b-1 p-5'>
 			{{JSON.parse(item.data).username}} : {{JSON.parse(item.data).context}}
@@ -23,13 +23,19 @@ let template = // html
 </cNav>
 <div class='p-10'>
 	<div v-for="(item,index) in messageList" @click='openMessage(item)'>
-		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' class='m-b-10 b-r-5 b-1 p-5'>
-			{{memberMap[item.withAccount].username}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
+		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' class='m-b-10 b-r-5 b-1 p-5' style='position: relative;'>
+			<div style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
+				99
+			</div>
+			👤{{memberMap[item.withAccount].username}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
 			{{item.content}}
 		</div>
-		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' class='m-b-10 b-r-5 b-1 p-5'>
-			{{groupMap[item.withGroupAccount].name}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
+		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' class='m-b-10 b-r-5 b-1 p-5' style='position: relative;'>
+			<div style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
+				1
+			</div>
+			👥{{groupMap[item.withGroupAccount].name}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
 			{{item.content}}
 		</div>
@@ -137,7 +143,6 @@ export default {
 				}, (data) => {
 					console.log("同意了");
 				});
-				socket.close();
 				// 修改本地数据
 				that.$store.state.socketLocal.send({
 					type:"agreeVerify",
@@ -160,7 +165,6 @@ export default {
 				}, (data) => {
 					console.log("拒绝了");
 				});
-				socket.close();
 				// 修改本地数据
 				that.$store.state.socketLocal.send({
 					type:"rejectVerify",
@@ -168,7 +172,6 @@ export default {
 				}, (data) => {
 					console.log("拒绝了 并修改本地数据");
 				});
-
 			})
 		},
 		deleteVerify(item){
@@ -176,7 +179,6 @@ export default {
 				type:"deleteVerify",
 				verifyId: item.id
 			}, (data) => {
-				// 删除 this.$store.state.verifyList 中的 item
 				this.$store.state.verifyList = this.$store.state.verifyList.filter((verify)=>{
 					return verify.id != item.id
 				});

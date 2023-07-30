@@ -9,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.ooqn.chat.entity.CtsMemberRelation;
 
+import cn.hutool.core.date.DateTime;
 import jakarta.transaction.Transactional;
 
 public interface MemberRelationRepository extends CrudRepository<CtsMemberRelation,String>  {
@@ -23,6 +24,11 @@ public interface MemberRelationRepository extends CrudRepository<CtsMemberRelati
     void deleteByMemberIdAndAccount(String memberId, String account);
 
     CtsMemberRelation findByMemberIdAndAccount(String id, String account);
+
+    @Query(value = "update cts_member_relation set last_read_time = ?3 where account = ?1 and member_id = ?2",nativeQuery = true)
+    @Modifying
+    @Transactional
+    void updateReadTime(String account, String id, DateTime date);
     
     
 }

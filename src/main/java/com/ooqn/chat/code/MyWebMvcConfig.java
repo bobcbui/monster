@@ -1,7 +1,6 @@
 package com.ooqn.chat.code;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 
 /**

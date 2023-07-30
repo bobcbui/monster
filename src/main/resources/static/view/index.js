@@ -15,44 +15,40 @@ export default {
 
 	},
 	methods: {
-		createGroupSocket(account) {
+		async createGroupSocket(account) {
 			let that = this;
 			createGroupSocket(account, (socket) => {
+				that.$store.state.socketGroup[account] = socket;
 				// 获取群消息列表
 				socket.send({ type: "messages" }, (data) => {
 					that.$store.state.groupMessageList[account] = data.data;
 					//渲染完毕执行
 					that.$nextTick(() => {
 						down(account);
-					})
+					});
 				});
-
 				// 获取群信息
 				socket.send({ type: "info" }, (data) => {
 					if (that.$store.state.groupMap == null) {
-						that.$store.state.groupMap = {}
+						that.$store.state.groupMap = {};
 					}
 					that.$store.state.groupMap[account] = data.data;
 				});
-
-				// 保存socket到state在
-				that.$store.state.socketGroup[account] = socket;
 			})
-
 		},
 		createLocalWebSocket() {
 			let that = this;
 			createLocalSocket(
-
 				"ws://" + window.location.host + "/local?token=" + localStorage.getItem("token"),
 				(socket) => {
-					// 加载成功获取member 和 group 列表
 					that.$store.state.socketLocal = socket;
+					// 加载成功获取member 和 group 列表
 					socket.send({ type: "memberMap" });
 					socket.send({ type: "groupList" });
 					socket.send({ type: "loadMessage" });
 					socket.send({ type: "loadVerify" });
-					socket.send({ type: "asdfasdf" }, (data, socket) => { console.log(data); });
+					socket.send({ type: "loadVerify" });
+					socket.send({ type: "recommendGroup" });
 				}, (data, socket) => {
 					if (data.type == "memberMap") {
 						that.$store.state.memberMap = data.data;
@@ -91,9 +87,13 @@ export default {
 					if ("loadVerify" == data.type) {
 						that.$store.state.verifyList = data.data;
 					}
+
+					if ("recommendGroup" == data.type) {
+						that.$store.state.recommendGroupList = data.data;
+					}
 				}
 			);
-		}
+		},
 	},
 	created() {
 
@@ -101,11 +101,10 @@ export default {
 	mounted() {
 		request({
 			url: "/authenticate/info",
-			method: "GET",
-			async: false
+			method: "GET"
 		}).then((response) => {
-			this.$store.state.member = response.data;
-			this.createLocalWebSocket();
+			this.$store.state.member = response.data
+			this.createLocalWebSocket()
 		});
 	}
 }

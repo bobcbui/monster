@@ -25,6 +25,7 @@ import com.ooqn.chat.repository.MemberMessageRepository;
 import com.ooqn.chat.repository.MemberRelationRepository;
 import com.ooqn.chat.repository.VerifyRepository;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import jakarta.websocket.Session;
@@ -240,6 +241,30 @@ public class LocalSocketService {
         memberRelationRepository.save(memberRelation);
 
         session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "deleteVerify", Result.success));
+    }
+
+    public void updateMemberReadTime(JSONObject data, Session session) {
+        // memberAccount
+         String account = data.getString("account");
+         CtsMember member = (CtsMember) session.getUserProperties().get("member");
+         long time = DateUtil.date().getTime();
+         memberRelationRepository.updateReadTime(account, member.getId(), DateUtil.date());
+         session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "updateGroupReadTime", Result.success, time));
+
+    }
+
+    public void updateGroupReadTime(JSONObject data, Session session) {
+        // groupAccount
+        String account = data.getString("account");
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        long time = DateUtil.date().getTime();
+        groupRelationRepository.updateReadTime(account, member.getId(), DateUtil.date());
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "updateGroupReadTime", Result.success, time));
+    }
+
+    public void recommendGroup(JSONObject data, Session session) {
+        List<CtsGroup> groupList = groupRepository.findLimit10();
+        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "recommendGroup", Result.success, groupList));
     }
 
 

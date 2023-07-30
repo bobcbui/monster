@@ -1,6 +1,6 @@
 let template = // html
 `
-<cNav title='更多'>
+<cNav title='🔍更多'>
 	<cModal buttonName='添加'>
         sdfasdf
 	</cModal>

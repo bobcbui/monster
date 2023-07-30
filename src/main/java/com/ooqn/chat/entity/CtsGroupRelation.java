@@ -37,6 +37,8 @@ public class CtsGroupRelation implements Serializable {
 
     private String memberNickname;
 
+    private Date lastReadTime;
+
     private Date createTime;
 
 }

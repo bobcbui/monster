@@ -51,14 +51,15 @@ public class LocalSocketService {
     /**
      * 指令处理器
      */
-    public void groupList(JSONObject data, Session session) throws IOException {
+    public void groupMap(JSONObject data, Session session) throws IOException {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsGroupRelation> groupRelationList = groupRelationRepository.findByMemberAccount(member.getAccount());
-        JSONArray jsonArray = new  JSONArray();
+        Map<String, CtsGroupRelation> likeMap = new HashMap<>();
         for (CtsGroupRelation groupRelation : groupRelationList) {
-            jsonArray.add(groupRelation.getGroupAccount());
+            likeMap.put(groupRelation.getGroupAccount(), groupRelation);
         }
-        session.getBasicRemote().sendText(Result.r(data.getString("transactionId"), "groupList", Result.success, jsonArray));
+
+        session.getBasicRemote().sendText(Result.r(data.getString("transactionId"), "groupMap", Result.success, likeMap));
     }
 
     public void memberMap(JSONObject data, Session session) throws IOException {
@@ -249,7 +250,7 @@ public class LocalSocketService {
          CtsMember member = (CtsMember) session.getUserProperties().get("member");
          long time = DateUtil.date().getTime();
          memberRelationRepository.updateReadTime(account, member.getId(), DateUtil.date());
-         session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "updateGroupReadTime", Result.success, time));
+         session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "updateMemberReadTime", Result.success, time));
 
     }
 
@@ -258,7 +259,7 @@ public class LocalSocketService {
         String account = data.getString("account");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         long time = DateUtil.date().getTime();
-        groupRelationRepository.updateReadTime(account, member.getId(), DateUtil.date());
+        groupRelationRepository.updateReadTime(account, member.getAccount(), DateUtil.date());
         session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "updateGroupReadTime", Result.success, time));
     }
 

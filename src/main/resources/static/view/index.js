@@ -44,11 +44,9 @@ export default {
 					that.$store.state.socketLocal = socket;
 					// 加载成功获取member 和 group 列表
 					socket.send({ type: "memberMap" });
-					socket.send({ type: "groupList" });
+					socket.send({ type: "groupMap" });
 					socket.send({ type: "loadMessage" });
 					socket.send({ type: "loadVerify" });
-					socket.send({ type: "loadVerify" });
-					socket.send({ type: "recommendGroup" });
 				}, (data, socket) => {
 					if (data.type == "memberMap") {
 						that.$store.state.memberMap = data.data;
@@ -59,11 +57,11 @@ export default {
 						console.log(data);
 					}
 
-					if (data.type == "groupList") {
-						let groupList = data.data;
-						groupList.forEach((item) => {
+					if (data.type == "groupMap") {
+						let groupMap = data.data;
+						for (let item in groupMap) {
 							that.createGroupSocket(item);
-						})
+						}
 					}
 
 					if (data.type == "message") {
@@ -87,21 +85,17 @@ export default {
 					if ("loadVerify" == data.type) {
 						that.$store.state.verifyList = data.data;
 					}
-
-					if ("recommendGroup" == data.type) {
-						that.$store.state.recommendGroupList = data.data;
-					}
 				}
 			);
 		},
 	},
 	created() {
-
+		
 	},
 	mounted() {
 		request({
 			url: "/authenticate/info",
-			method: "GET"
+			method: "GET",
 		}).then((response) => {
 			this.$store.state.member = response.data
 			this.createLocalWebSocket()

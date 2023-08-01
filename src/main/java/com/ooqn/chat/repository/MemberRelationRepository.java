@@ -25,7 +25,7 @@ public interface MemberRelationRepository extends CrudRepository<CtsMemberRelati
 
     CtsMemberRelation findByMemberIdAndAccount(String id, String account);
 
-    @Query(value = "update cts_member_relation set last_read_time = ?3 where account = ?1 and member_id = ?2",nativeQuery = true)
+    @Query(value = "update cts_member_relation set read_time = ?3 where account = ?1 and member_id = ?2",nativeQuery = true)
     @Modifying
     @Transactional
     void updateReadTime(String account, String id, DateTime date);

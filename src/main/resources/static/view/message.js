@@ -190,7 +190,6 @@ export default {
 		
 	},
 	mounted(){
-		this.loadMessageList(this.$store.state.memberMessageList)
 		
 	}
 }

@@ -131,8 +131,10 @@ export default {
             })
         },
         updateMemberReadTime(){
+            let that = this;
             this.$store.state.socketLocal.send({ type: "updateMemberReadTime", account: this.$route.query.account }, (data, socket) => {
                 console.log("更新群组消息已读时间");
+                that.$store.state.memberMap[that.$route.query.account].readTime = data.data;
                 console.log(socket);
             });
         }
@@ -142,6 +144,5 @@ export default {
     },
     mounted() {
         this.createMemberSocket()
-        this.updateMemberReadTime();
     }
 }

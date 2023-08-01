@@ -35,7 +35,7 @@ public class CtsMemberRelation implements Serializable {
     /** 关系状态，0：已申请，1：申请通过，2：拒收消息 */
     private Integer state;
 
-    private Date lastReadTime;
+    private Date readTime;
     
     private Date createTime;
 

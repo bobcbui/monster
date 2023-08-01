@@ -55,18 +55,18 @@ class AppSocket {
 }
 
 
-export const createGroupSocket = (account, openCallback, otherHeader) => {
+export const createGroupSocket = async (account, openCallback, otherHeader) => {
     let ws = decodeWsAccount(account);
-    request({
+    let response = await request({
         method: 'get',
         url: '/one-token',
-    }).then(response => {
-        new AppSocket(
-            ws + "?checkUrl=" + document.location.origin + "/check/" + response.data,
-            openCallback,
-            otherHeader
-        );
-    });
+    })
+    
+    new AppSocket(
+        ws + "?checkUrl=" + document.location.origin + "/check/" + response.data,
+        openCallback,
+        otherHeader
+    );
 }
 
 export const createMemberSocket = (account, openCallback, otherHeader) => {

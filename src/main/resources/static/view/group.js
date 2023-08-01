@@ -84,7 +84,7 @@ export default {
 				that.joinGroupForm.memberAccount = that.$store.state.member.account;
 				socket.send({ type: "join", data: that.joinGroupForm});
 				that.$store.state.socketLocal.send({ type: "join", data: that.joinGroupForm},(data) => {
-					that.$store.state.socketLocal.send({ type: "groupList"});
+					that.$store.state.socketLocal.send({ type: "groupMap"});
 				});
 			});
 		}

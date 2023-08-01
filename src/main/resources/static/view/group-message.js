@@ -87,15 +87,17 @@ export default {
         },
         updateGroupReadTime(){
             // 等待this.$store.state.socketLocal 不为空
-            if(!this.$store.state.socketLocal){
+            if(!this.$store.state.socketLocal || !this.$store.state.groupMap[this.$route.query.account]){
                 setTimeout(() => {
                     this.updateGroupReadTime();
                 }, 100);
                 return;
             }
+            let that = this;
             this.$store.state.socketLocal.send({ type: "updateGroupReadTime", account: this.$route.query.account }, (data, socket) => {
                 console.log("更新群组消息已读时间");
-                console.log(socket);
+                debugger
+                that.$store.state.groupMap[that.$route.query.account].readTime = data.data;
             });
         }
     },
@@ -103,6 +105,6 @@ export default {
         
     },
     mounted() {
-        this.updateGroupReadTime();
+        //this.updateGroupReadTime();
      }
 }

@@ -73,6 +73,7 @@
 			position: absolute;
 			top:0;
 			left:0;
+			z-index: 10;
 		}
 		.mode-body{
 			width:800px;
@@ -188,46 +189,6 @@
 			}
         }
 
-
-		.visible-scrollbar, .invisible-scrollbar, .mostly-customized-scrollbar {
-
-display: block;
-
-width: 10em;
-
-overflow: auto;
-
-height: 2em;
-
-}
-
-.invisible-scrollbar::-webkit-scrollbar {
-
-display: none;
-
-}
-
-/* Demonstrate a "mostly customized" scrollbar
-
-* (won't be visible otherwise if width/height is specified) */
-
-.mostly-customized-scrollbar::-webkit-scrollbar {
-
-width: 5px;
-
-height: 8px;
-
-background-color: #aaa; /* or add it to the track */
-
-}
-
-/* Add a thumb */
-
-.mostly-customized-scrollbar::-webkit-scrollbar-thumb {
-
-background: #000;
-
-}
 	</style>
 </head>
 
@@ -295,7 +256,8 @@ background: #000;
 			groupMessageList:{},
 			memberMap:{},
 			memberMessageList:{},
-			verifyList:[]
+			verifyList:[],
+			unReadMessageCount:{}
 		}
 	})
 

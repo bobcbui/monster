@@ -9,7 +9,7 @@ let template = // html
 	</cModal>
 </cNav>
 <div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom: 10px;background: var(--bottomColor);' v-if='group' :id='"show_words_" + group.account'>
-  <div v-for='(item,index) in $store.state.groupMessageList[$route.query.account]'>
+  <div v-for='(item,index) in $store.state.groupMessageListMap[$route.query.account]'>
     <div v-if='item.sendAccount == member.account' class='m-10 m-b-0 text-right'>
         <strong class='name-color'>{{member.username}}</strong>
         <p class='message-body'>{{item.content}}</p>
@@ -38,7 +38,7 @@ export default {
         cNav,cModal
     },
     watch:{
-        "$store.state.groupMessageList":{
+        "$store.state.groupMessageListMap":{
             handler(val){
                 this.$nextTick(() => {
                     down(this.$route.query.account);
@@ -74,10 +74,10 @@ export default {
                 type: "message",
                 content: this.message,
             },(data) => {
-                if (that.$store.state.groupMessageList[that.group.account] == null) {
-                    that.$store.state.groupMessageList[that.group.account] = [];
+                if (that.$store.state.groupMessageListMap[that.group.account] == null) {
+                    that.$store.state.groupMessageListMap[that.group.account] = [];
                 }
-                that.$store.state.groupMessageList[that.group.account].push(data.data);
+                that.$store.state.groupMessageListMap[that.group.account].push(data.data);
                 //渲染完毕执行
                 that.$nextTick(() => {
                     down(that.group.account);

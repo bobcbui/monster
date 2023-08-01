@@ -21,7 +21,7 @@ export default {
 				that.$store.state.socketGroup[account] = socket;
 				// 获取群消息列表
 				socket.send({ type: "messages" }, (data) => {
-					that.$store.state.groupMessageList[account] = data.data;
+					that.$store.state.groupMessageListMap[account] = data.data;
 					//渲染完毕执行
 					that.$nextTick(() => {
 						down(account);
@@ -67,7 +67,7 @@ export default {
 					if (data.type == "message") {
 						data.data.state = true;
 						if (data.data.account != data.data.withAccount) {
-							that.$store.state.memberMessageList[data.data.withAccount].push(data.data);
+							that.$store.state.memberMessageListMap[data.data.withAccount].push(data.data);
 							that.$nextTick(() => { down(data.data.withAccount); });
 						}
 					}
@@ -76,7 +76,7 @@ export default {
 					if (data.type == "loadMessage") {
 						let account;
 						for (let item of data.data) {
-							that.$store.state.memberMessageList[item.account] = item.data;
+							that.$store.state.memberMessageListMap[item.account] = item.data;
 							account = item.account;
 						}
 						down(account)

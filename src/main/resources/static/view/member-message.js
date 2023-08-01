@@ -9,7 +9,7 @@ let template = // html
 	</cModal>
 </cNav>
 <div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom:10px;background: var(--bottomColor);' v-if="withMember" :id='"show_words_" + withMember.account'>
-    <div v-for='(item,index) in $store.state.memberMessageList[$route.query.account]'>
+    <div v-for='(item,index) in $store.state.memberMessageListMap[$route.query.account]'>
         <div v-if='member && member.account != item.sendAccount ' class='m-10 m-b-0'>
             <strong class='name-color'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
             <p class='message-body'>{{item.content}}&nbsp;</p>
@@ -49,15 +49,15 @@ export default {
         memberMap() {
             return this.$store.state.memberMap;
         },
-        memberMessageList() {
-            return this.$store.state.memberMessageList;
+        memberMessageListMap() {
+            return this.$store.state.memberMessageListMap;
         },
         account() {
             return this.$route.query.account;
         }
     },
     watch: {
-        "$store.state.memberMessageList": {
+        "$store.state.memberMessageListMap": {
             handler(val) {
                 this.$nextTick(() => {
                     down(this.$route.query.account);
@@ -105,14 +105,14 @@ export default {
             that.messageForm.createTime = new Date().getTime();
             that.messageForm.withAccount = that.$route.query.account;
             that.messageForm.state = 0;
-            that.memberMessageList[that.$route.query.account].push({ ...that.messageForm });
+            that.memberMessageListMap[that.$route.query.account].push({ ...that.messageForm });
             that.memberSocket.send(that.messageForm, (data, socket) => {
                 // 发送消息回调
                 that.$nextTick(() => {
                     down(that.$route.query.account);
                 });
                 // 修改消息状态
-                that.memberMessageList[that.$route.query.account].filter(item => {
+                that.memberMessageListMap[that.$route.query.account].filter(item => {
                     if (item.serviceId == data.data) {
                         item.state = 1;
                         // 保存消息

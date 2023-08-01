@@ -62,14 +62,14 @@ export default {
 		
 	},
 	watch: {
-		"$store.state.memberMessageList":{
+		"$store.state.memberMessageListMap":{
             handler(){
                 this.loadMessageList();
             },
             deep: true,
             immediate: true,
         },
-		"$store.state.groupMessageList":{
+		"$store.state.groupMessageListMap":{
             handler(){
                 this.loadMessageList();
             },
@@ -78,8 +78,8 @@ export default {
         }
 	},
 	computed: {
-		memberMessageList() {
-			this.$store.state.memberMessageList;
+		memberMessageListMap() {
+			this.$store.state.memberMessageListMap;
 		},
 		memberMap(){
 			return this.$store.state.memberMap;
@@ -114,16 +114,34 @@ export default {
 			}
 		},
 		loadMessageList(val){
-			let valMember = this.$store.state.memberMessageList;
-			let valGroup = this.$store.state.groupMessageList;
+			let memberMessageListMap = this.$store.state.memberMessageListMap;
+			let groupMessageListMap = this.$store.state.groupMessageListMap;
 			this.messageList = []
-			for (let m in valMember){
-				// val 最后一条消息
-				this.messageList.push(valMember[m][valMember[m].length - 1])
+			for (let memberAccount in memberMessageListMap){
+				this.messageList.push(memberMessageListMap[memberAccount].slice(-1)[0])
 			}
-			for (let m in valGroup){
-				// val 最后一条消息
-				this.messageList.push(valGroup[m][valGroup[m].length - 1])
+			for (let groupAccount in groupMessageListMap){
+				this.messageList.push(groupMessageListMap[groupAccount].slice(-1)[0])
+			}
+
+			for (let memberAccount in memberMessageListMap){
+				let i = 0;
+				memberMessageListMap[memberAccount].forEach((item)=>{
+					if(item.readTime > this.$store.state.memberMap[memberAccount].readTime){
+						i++;
+					}
+				});
+				this.$store.state.memberMap[memberAccount].unReadCount = i;
+			}
+			for (let groupAccount in groupMessageListMap){
+				let i = 0;
+				groupMessageListMap[groupAccount].forEach((item)=>{
+					debugger
+					if(item.readTime > this.$store.state.groupMap[groupAccount].readTime){
+						i++;
+					}
+				});
+				this.$store.state.groupMap[groupAccount].unReadCount = i;
 			}
 			// 通过createTime 排序，最新的在最下面
 			this.messageList.sort((a,b)=>{

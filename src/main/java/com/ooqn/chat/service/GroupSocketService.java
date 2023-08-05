@@ -131,7 +131,10 @@ public class GroupSocketService {
         groupRelation.setCreateTime(DateUtil.date());
         groupRelation.setAlias(sendMember.getString("username"));
         groupRelation.setNickname(sendMember.getString("username"));
-        groupRelationRepository.save(groupRelation);
+        CtsGroupRelation save = groupRelationRepository.save(groupRelation);
+        if(save == null){
+            return;
+        }
         session.getAsyncRemote().sendText(Result.r(jsonObject.getString("transactionId"), "join", Result.success, acceptGroup));
         // 通知群内其他成员
         for (Entry<String, List<Session>> entrySet : GroupSocket.groupSession.entrySet()) {

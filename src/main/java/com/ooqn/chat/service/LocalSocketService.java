@@ -268,5 +268,15 @@ public class LocalSocketService {
         session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "recommendGroup", Result.success, groupList));
     }
 
+    public void joinGroup(JSONObject data, Session session) {
+        CtsMember member = (CtsMember) session.getUserProperties().get("member");
+        CtsGroupRelation groupRelation = new CtsGroupRelation();
+        groupRelation.setId(IdUtil.objectId());
+        groupRelation.setGroupAccount(data.getJSONObject("data").getString("account"));
+        groupRelation.setMemberAccount(member.getAccount());
+        groupRelation.setCreateTime(DateUtil.date());
+        groupRelationRepository.save(groupRelation);
+    }
+
 
 }

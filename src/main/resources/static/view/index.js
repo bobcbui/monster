@@ -20,13 +20,7 @@ export default {
 			createGroupSocket(account, (socket) => {
 				that.$store.state.socketGroup[account] = socket;
 				// 获取群消息列表
-				socket.send({ type: "messages" }, (data) => {
-					that.$store.state.groupMessageListMap[account] = data.data;
-					//渲染完毕执行
-					that.$nextTick(() => {
-						down(account);
-					});
-				});
+				socket.send({ type: "messages" });
 				// 获取群信息
 				socket.send({ type: "info" }, (data) => {
 					if (that.$store.state.groupMap == null) {
@@ -34,6 +28,21 @@ export default {
 					}
 					that.$store.state.groupMap[account] = data.data;
 				});
+
+			},(data) => {
+				if(data.type == "groupSystemMessage"){
+					debugger
+					that.$store.state.groupMessageListMap[account].push(data.data);
+				}
+
+				if(data.type == "messages"){
+					that.$store.state.groupMessageListMap[account] = data.data;
+				}
+
+				if(data.type == "message"){
+					that.$store.state.groupMessageListMap[account].push(data.data);
+					that.$nextTick(() => { down(account); });
+				}
 			})
 		},
 		createLocalWebSocket() {
@@ -47,6 +56,9 @@ export default {
 					socket.send({ type: "groupMap" });
 					socket.send({ type: "loadMessage" });
 					socket.send({ type: "loadVerify" });
+					socket.send({ type: "recommendGroup" },(data) => {
+						that.$store.state.recommendGroup = data.data;
+					});
 				}, (data, socket) => {
 					if (data.type == "memberMap") {
 						that.$store.state.memberMap = data.data;
@@ -58,6 +70,7 @@ export default {
 					}
 
 					if (data.type == "groupMap") {
+						that.$store.state.groupMap = data.data;
 						let groupMap = data.data;
 						for (let item in groupMap) {
 							that.createGroupSocket(item);

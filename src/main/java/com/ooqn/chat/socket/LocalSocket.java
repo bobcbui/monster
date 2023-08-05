@@ -88,6 +88,9 @@ public class LocalSocket {
                 case "joinMember":
                     localSocketService.joinMember(data, session);
                     break;
+                case "joinGroup":
+                    localSocketService.joinGroup(data, session);
+                    break;
                 case "createGroup":
                     localSocketService.createGroup(data, session);
                     break;

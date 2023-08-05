@@ -18,7 +18,7 @@ public interface GroupRelationRepository extends CrudRepository<CtsGroupRelation
 
     List<CtsGroupRelation> findByMemberAccount(String account);
 
-    @Query(value = "update cts_group_relation set read_time = ?3 where member_account = ?1 and group_account = ?2", nativeQuery = true)
+    @Query(value = "update cts_group_relation set read_time = ?3 where member_account = ?2 and group_account = ?1", nativeQuery = true)
     @Modifying
     @Transactional
     void updateReadTime(String account, String id, DateTime date);

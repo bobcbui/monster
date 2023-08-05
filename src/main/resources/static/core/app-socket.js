@@ -24,7 +24,8 @@ class AppSocket {
         let func = this.funcList[data.transactionId];
         if (func != null) {
             func(data, this);
-        } else {
+        } 
+        if (this.otherHeader != null){
             this.otherHeader(data, this);
         }
     }

@@ -14,6 +14,9 @@ let template = // html
         <strong class='name-color'>{{member.username}}</strong>
         <p class='message-body'>{{item.content}}</p>
     </div>
+    <div v-else-if='item.sendAccount == "system"' class='m-10 m-b-0'>
+        <p class='message-body  text-center'>{{item.content}}</p>
+    </div>
     <div v-else class='m-10 m-b-0'>
         <strong class='name-color'>{{item.sendNickname}} </strong>
         <p class='message-body'>{{item.content}}</p>
@@ -61,6 +64,12 @@ export default {
         },
         groupSocket() {
             return this.$store.state.socketGroup[this.group.account];
+        },
+        groupMessageListMap(){
+            return this.$store.state.groupMessageListMap;
+        },
+        socketLocal(){
+            return this.$store.state.socketLocal;
         }
     },
     methods: {
@@ -74,37 +83,39 @@ export default {
                 type: "message",
                 content: this.message,
             },(data) => {
-                if (that.$store.state.groupMessageListMap[that.group.account] == null) {
-                    that.$store.state.groupMessageListMap[that.group.account] = [];
-                }
-                that.$store.state.groupMessageListMap[that.group.account].push(data.data);
-                //渲染完毕执行
-                that.$nextTick(() => {
-                    down(that.group.account);
-                })
                 that.message = "";
             })
         },
         updateGroupReadTime(){
-            // 等待this.$store.state.socketLocal 不为空
-            if(!this.$store.state.socketLocal || !this.$store.state.groupMap[this.$route.query.account]){
+            if(!this.socketLocal || !this.groupMap[this.group.account]){
                 setTimeout(() => {
                     this.updateGroupReadTime();
                 }, 100);
                 return;
             }
             let that = this;
-            this.$store.state.socketLocal.send({ type: "updateGroupReadTime", account: this.$route.query.account }, (data, socket) => {
+            this.socketLocal.send({ type: "updateGroupReadTime", account: this.group.account }, (data, socket) => {
                 console.log("更新群组消息已读时间");
-                debugger
-                that.$store.state.groupMap[that.$route.query.account].readTime = data.data;
+                that.groupMap[that.group.account].readTime = data.data;
+            });
+        },
+        deleteGroup(){
+            let that = this;
+            this.groupSocket.send({ type: "quit", account: this.group.account }, (data, socket) => {
+                that.socketLocal.send({ type: "quit", account: that.group.account }, (data, socket) => {
+                    console.log("退出群组");
+                    delete that.groupMap[that.group.account]
+                    that.$router.push({name:"group"});
+                   
+                });
             });
         }
+
     },
     created() {
         
     },
     mounted() {
-        //this.updateGroupReadTime();
-     }
+       
+    }
 }

@@ -90,6 +90,9 @@ public class GroupSocket {
                 case "join":
                     groupSocketService.join(jsonObject, session);
                     break;
+                case "quit":
+                    groupSocketService.quit(jsonObject, session);
+                    break;
                 case "info":
                     groupSocketService.info(jsonObject, session);
                     break;

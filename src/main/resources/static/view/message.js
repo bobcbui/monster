@@ -24,16 +24,16 @@ let template = // html
 <div class='p-10'>
 	<div v-for="(item,index) in messageList" @click='openMessage(item)'>
 		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' class='m-b-10 b-r-5 b-1 p-5' style='position: relative;'>
-			<div style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
-				99
+			<div v-if='memberMap[item.withAccount].unReadCount > 0'  style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
+				{{memberMap[item.withAccount].unReadCount}}
 			</div>
 			👤{{memberMap[item.withAccount].username}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
 			{{item.content}}
 		</div>
 		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' class='m-b-10 b-r-5 b-1 p-5' style='position: relative;'>
-			<div style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
-				1
+			<div v-if='groupMap[item.withGroupAccount].unReadCount > 0'  style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
+			{{groupMap[item.withGroupAccount].unReadCount}}
 			</div>
 			👥{{groupMap[item.withGroupAccount].name}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
@@ -42,7 +42,6 @@ let template = // html
 	</div>
 </div>
 `
-// 
 import cModal from '../component/modal.js';
 import cNav from '../component/nav.js';
 import { createMemberSocket } from '../core/app-socket.js';
@@ -127,21 +126,24 @@ export default {
 			for (let memberAccount in memberMessageListMap){
 				let i = 0;
 				memberMessageListMap[memberAccount].forEach((item)=>{
-					if(item.readTime > this.$store.state.memberMap[memberAccount].readTime){
+					if(item.createTime > this.$store.state.memberMap[memberAccount].readTime){
 						i++;
 					}
 				});
 				this.$store.state.memberMap[memberAccount].unReadCount = i;
 			}
+
 			for (let groupAccount in groupMessageListMap){
 				let i = 0;
 				groupMessageListMap[groupAccount].forEach((item)=>{
-					debugger
-					if(item.readTime > this.$store.state.groupMap[groupAccount].readTime){
+					if(item.createTime > this.$store.state.groupMap[groupAccount].readTime){
 						i++;
 					}
 				});
-				this.$store.state.groupMap[groupAccount].unReadCount = i;
+				if(this.$store.state.groupMap[groupAccount]){
+					this.$store.state.groupMap[groupAccount].unReadCount = i;
+					console.log("**************************");
+				}
 			}
 			// 通过createTime 排序，最新的在最下面
 			this.messageList.sort((a,b)=>{

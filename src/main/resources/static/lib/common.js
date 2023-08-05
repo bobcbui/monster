@@ -7,6 +7,17 @@ let decodeWsAccount = (account) => {
     return "ws://"+ym+"/"+name;
 }
 
+let awaitOk = (isOk) => {
+    // 等待 isOk() == true
+    if (isOk()) {
+        return;
+    }
+    setTimeout(function () {
+        awaitOk(isOk);
+    }
+    , 50);
+}
+
 let down = (id) => {
     try{
         var div = document.getElementById("show_words_"+id);

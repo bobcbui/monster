@@ -9,9 +9,10 @@ let template = // html
 	</cModal>
 </cNav>
 <div style='height: calc(100% - 84px);overflow-y: scroll;padding-bottom:10px;background: var(--bottomColor);' v-if="withMember" :id='"show_words_" + withMember.account'>
-    <div v-for='(item,index) in $store.state.memberMessageListMap[$route.query.account]'>
+
+<div v-for='(item,index) in memberMessageListMap[withMember.account]'>
         <div v-if='member && member.account != item.sendAccount ' class='m-10 m-b-0'>
-            <strong class='name-color'>{{$store.state.memberMap[item.sendAccount].username}} </strong>
+            <strong class='name-color'>{{memberMap[item.sendAccount].username}} </strong>
             <p class='message-body'>{{item.content}}&nbsp;</p>
         </div>
         <div v-if='member && member.account == item.sendAccount' class='m-10 m-b-0 text-right'>
@@ -41,7 +42,7 @@ export default {
     },
     computed: {
         withMember() {
-            return this.$store.state.memberMap[this.$route.query.account];
+            return this.memberMap[this.$route.query.account];
         },
         member() {
             return this.$store.state.member;
@@ -54,6 +55,9 @@ export default {
         },
         account() {
             return this.$route.query.account;
+        },
+        socketLocal() {
+            return this.$store.state.socketLocal;
         }
     },
     watch: {
@@ -86,12 +90,12 @@ export default {
             // 删除好友服务器记录
             this.memberSocket.send({ type: "delete" }, (data, socket) => {
                 if (data.code == "200") {
-                    delete that.$store.state.memberMap[that.$route.query.account];
+                    delete that.memberMap[that.$route.query.account];
                     that.backClick();
                 }
             });
             // 删除好友本地记录
-            this.$store.state.socketLocal.send({ type: "deleteMember", account: this.$route.query.account });
+            this.socketLocal.send({ type: "deleteMember", account: this.$route.query.account });
         },
         send() {
             let that = this;
@@ -116,7 +120,7 @@ export default {
                     if (item.serviceId == data.data) {
                         item.state = 1;
                         // 保存消息
-                        that.$store.state.socketLocal.send({
+                        that.socketLocal.send({
                             type: "saveMessage",
                             content: that.messageForm.content,
                             serviceId: data.data,
@@ -132,11 +136,17 @@ export default {
         },
         updateMemberReadTime(){
             let that = this;
-            this.$store.state.socketLocal.send({ type: "updateMemberReadTime", account: this.$route.query.account }, (data, socket) => {
-                console.log("更新群组消息已读时间");
-                that.$store.state.memberMap[that.$route.query.account].readTime = data.data;
-                console.log(socket);
-            });
+            if(this.socketLocal == null){
+                // 等待socket连接
+                setTimeout(() => {
+                    that.updateMemberReadTime();
+                }, 1000);
+            }else{
+                this.socketLocal.send({ type: "updateMemberReadTime", account: this.$route.query.account }, (data, socket) => {
+                    console.log("更新群组消息已读时间");
+                    that.memberMap[that.$route.query.account].readTime = data.data;
+                });
+            }
         }
     },
     created() {

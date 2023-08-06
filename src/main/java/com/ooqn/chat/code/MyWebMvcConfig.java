@@ -20,5 +20,4 @@ public class MyWebMvcConfig extends WebMvcConfigurationSupport {
                 .allowedMethods("*")
                 .allowedHeaders("*");
     }
-
 }

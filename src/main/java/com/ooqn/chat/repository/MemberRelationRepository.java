@@ -14,7 +14,7 @@ import jakarta.transaction.Transactional;
 
 public interface MemberRelationRepository extends CrudRepository<CtsMemberRelation,String>  {
 
-    List<CtsMemberRelation> findByMemberIdAndState(String id, int i);
+    List<CtsMemberRelation> findByMemberIdAndState(String memberId, int state);
 
     List<CtsMemberRelation> findByAccount(String account);
 

@@ -73,8 +73,8 @@ public class LocalSocket {
                 case "loadVerify":
                     localSocketService.loadVerify(data, session);
                     break;
-                case "groupMap":
-                    localSocketService.groupMap(data, session);
+                case "groupList":
+                    localSocketService.groupList(data, session);
                     break;
                 case "memberMap":
                     localSocketService.memberMap(data, session);

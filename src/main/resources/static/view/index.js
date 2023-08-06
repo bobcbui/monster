@@ -19,28 +19,40 @@ export default {
 			let that = this;
 			createGroupSocket(account, (socket) => {
 				that.$store.state.socketGroup[account] = socket;
-				// 获取群消息列表
-				socket.send({ type: "messages" });
 				// 获取群信息
 				socket.send({ type: "info" }, (data) => {
 					if (that.$store.state.groupMap == null) {
 						that.$store.state.groupMap = {};
 					}
 					that.$store.state.groupMap[account] = data.data;
+					// 获取群消息列表
+					socket.send({ type: "messages" });
 				});
 
 			},(data) => {
 				if(data.type == "groupSystemMessage"){
-					debugger
 					that.$store.state.groupMessageListMap[account].push(data.data);
 				}
 
 				if(data.type == "messages"){
 					that.$store.state.groupMessageListMap[account] = data.data;
+					let i = 0;
+					that.$store.state.groupMessageListMap[account].forEach((item)=>{
+						
+						if(item.createTime > that.$store.state.groupMap[account].readTime){
+							i++;
+						}
+					});
+					that.$store.state.unReadMessageCount[account] = i;
 				}
-
+				
 				if(data.type == "message"){
 					that.$store.state.groupMessageListMap[account].push(data.data);
+					debugger
+					if(data.data.createTime > that.$store.state.groupMap[account].readTime){
+						
+						that.$store.state.unReadMessageCount[account]++;
+					}
 					that.$nextTick(() => { down(account); });
 				}
 			})
@@ -53,7 +65,7 @@ export default {
 					that.$store.state.socketLocal = socket;
 					// 加载成功获取member 和 group 列表
 					socket.send({ type: "memberMap" });
-					socket.send({ type: "groupMap" });
+					socket.send({ type: "groupList" });
 					socket.send({ type: "loadMessage" });
 					socket.send({ type: "loadVerify" });
 					socket.send({ type: "recommendGroup" },(data) => {
@@ -69,11 +81,11 @@ export default {
 						console.log(data);
 					}
 
-					if (data.type == "groupMap") {
-						that.$store.state.groupMap = data.data;
-						let groupMap = data.data;
-						for (let item in groupMap) {
-							that.createGroupSocket(item);
+					if (data.type == "groupList") {
+						for (let item in data.data) {
+							if(item != null && item != "null"){
+								that.createGroupSocket(item);
+							}
 						}
 					}
 

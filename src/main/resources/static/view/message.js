@@ -24,16 +24,16 @@ let template = // html
 <div class='p-10'>
 	<div v-for="(item,index) in messageList" @click='openMessage(item)'>
 		<div v-if='item && item.withAccount != null && memberMap[item.withAccount]' class='m-b-10 b-r-5 b-1 p-5' style='position: relative;'>
-			<div v-if='memberMap[item.withAccount].unReadCount > 0'  style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
-				{{memberMap[item.withAccount].unReadCount}}
+			<div v-if='$store.state.unReadMessageCount[item.withAccount] > 0'  style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
+				{{$store.state.unReadMessageCount[item.withAccount]}}
 			</div>
 			👤{{memberMap[item.withAccount].username}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
 			{{item.content}}
 		</div>
 		<div v-if='item && item.withGroupAccount != null && groupMap[item.withGroupAccount]' class='m-b-10 b-r-5 b-1 p-5' style='position: relative;'>
-			<div v-if='groupMap[item.withGroupAccount].unReadCount > 0'  style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
-			{{groupMap[item.withGroupAccount].unReadCount}}
+			<div v-if='$store.state.unReadMessageCount[item.withGroupAccount] > 0'  style='width: 15px;text-align: center;font-size: 10px;height: 15px;border-radius: 10px;border:1px solid black;position: absolute;right: -5px;top: -5px;background: #ff5959;color: white;'>
+			{{$store.state.unReadMessageCount[item.withGroupAccount]}}
 			</div>
 			👥{{groupMap[item.withGroupAccount].name}}  <span class='float-end'>{{toDate(item.createTime)}}</span>
 			<br>
@@ -49,8 +49,8 @@ export default {
 	template: template,
 	data: () => {
 		return {
-			messageList:[],
-			show:false
+			show:false,
+			messageList: [],
 		}
 	},
 	components: {
@@ -112,44 +112,33 @@ export default {
 				})
 			}
 		},
-		loadMessageList(val){
+		loadMessageList(){
+			this.messageList = [];
+			this.loadMemberMessageList();
+			this.loadGroupMessageList();
+			this.messageList.sort((a,b)=>{
+				return b.createTime - a.createTime
+			})
+		},
+		loadMemberMessageList(){
 			let memberMessageListMap = this.$store.state.memberMessageListMap;
-			let groupMessageListMap = this.$store.state.groupMessageListMap;
-			this.messageList = []
 			for (let memberAccount in memberMessageListMap){
 				this.messageList.push(memberMessageListMap[memberAccount].slice(-1)[0])
-			}
-			for (let groupAccount in groupMessageListMap){
-				this.messageList.push(groupMessageListMap[groupAccount].slice(-1)[0])
-			}
-
-			for (let memberAccount in memberMessageListMap){
 				let i = 0;
 				memberMessageListMap[memberAccount].forEach((item)=>{
 					if(item.createTime > this.$store.state.memberMap[memberAccount].readTime){
 						i++;
 					}
 				});
-				this.$store.state.memberMap[memberAccount].unReadCount = i;
+				this.$store.state.unReadMessageCount[memberAccount] = i;
+				console.log("unReadMessageCount[memberAccount]"+i)
 			}
-
+		},
+		loadGroupMessageList(){
+			let groupMessageListMap = this.$store.state.groupMessageListMap;
 			for (let groupAccount in groupMessageListMap){
-				let i = 0;
-				groupMessageListMap[groupAccount].forEach((item)=>{
-					if(item.createTime > this.$store.state.groupMap[groupAccount].readTime){
-						i++;
-					}
-				});
-				if(this.$store.state.groupMap[groupAccount]){
-					this.$store.state.groupMap[groupAccount].unReadCount = i;
-					console.log("**************************");
-				}
+				this.messageList.push(groupMessageListMap[groupAccount].slice(-1)[0])
 			}
-			// 通过createTime 排序，最新的在最下面
-			this.messageList.sort((a,b)=>{
-				return b.createTime - a.createTime
-			})
-			
 		},
 		agreeVerify(item){
 			let that = this;
@@ -210,6 +199,7 @@ export default {
 		
 	},
 	mounted(){
+		// 通过createTime 排序，最新的在最下面
 		
 	}
 }

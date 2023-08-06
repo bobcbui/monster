@@ -6,6 +6,32 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 
 public class Result {
 
+    public static String success(JSONObject params, Object data){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", success);
+        jsonObject.put("type", params.getString("type"));
+        jsonObject.put("transactionId", params.getString("transactionId"));
+        jsonObject.put("data", data);
+        return JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
+    }
+
+    public static String success(JSONObject params){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", success);
+        jsonObject.put("type", params.getString("type"));
+        jsonObject.put("transactionId", params.getString("transactionId"));
+        return JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
+    }
+
+    public static String r(JSONObject parJsonObject, String code, Object data){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", code);
+        jsonObject.put("type", parJsonObject.getString("type"));
+        jsonObject.put("transactionId", parJsonObject.getString("transactionId"));
+        jsonObject.put("data", data);
+        return JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
+    }
+
     public static String r(String transactionId, String type, String code) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", code);

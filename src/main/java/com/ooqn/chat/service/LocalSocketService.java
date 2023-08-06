@@ -25,7 +25,6 @@ import com.ooqn.chat.repository.MemberMessageRepository;
 import com.ooqn.chat.repository.MemberRelationRepository;
 import com.ooqn.chat.repository.VerifyRepository;
 
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import jakarta.websocket.Session;
@@ -51,38 +50,35 @@ public class LocalSocketService {
     /**
      * 指令处理器
      */
-    public void groupMap(JSONObject data, Session session) throws IOException {
+    public void groupList(JSONObject param, Session session) throws IOException {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsGroupRelation> groupRelationList = groupRelationRepository.findByMemberAccount(member.getAccount());
         Map<String, CtsGroupRelation> likeMap = new HashMap<>();
         for (CtsGroupRelation groupRelation : groupRelationList) {
             likeMap.put(groupRelation.getGroupAccount(), groupRelation);
         }
-
-        session.getBasicRemote().sendText(Result.r(data.getString("transactionId"), "groupMap", Result.success, likeMap));
+        session.getBasicRemote().sendText(Result.success(param, likeMap));
     }
 
-    public void memberMap(JSONObject data, Session session) throws IOException {
+    public void memberMap(JSONObject param, Session session) throws IOException {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
-        List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberIdAndState(member.getId(), 1);
-        // memberList to Map 
+        List<CtsMemberRelation> memberRelationList = memberRelationRepository.findByMemberIdAndState(member.getId(), 1);
         Map<String,CtsMemberRelation> likeMap = new LinkedHashMap<>();
         CtsMemberRelation thisMember = new CtsMemberRelation();
         thisMember.setAccount(member.getAccount());
-        for (CtsMemberRelation memberRelation : memberList) {
+        for (CtsMemberRelation memberRelation : memberRelationList) {
             likeMap.put(memberRelation.getAccount(), memberRelation);
         }
-
-        session.getBasicRemote().sendText(Result.r(data.getString("transactionId"), "memberMap", Result.success,likeMap));
+        session.getBasicRemote().sendText(Result.success(param, likeMap));
     }
 
-    public void memberMessage(JSONObject parse, Session session) {
+    public void memberMessage(JSONObject param, Session session) {
     }
 
-    public void joinMember(JSONObject parse, Session session) {
+    public void joinMember(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         
-        JSONObject memberObject = parse.getJSONObject("data");
+        JSONObject memberObject = param.getJSONObject("data");
         CtsMemberRelation memberRelation = new CtsMemberRelation();
         memberRelation.setMemberId(member.getId());
         memberRelation.setId(IdUtil.objectId());
@@ -95,7 +91,7 @@ public class LocalSocketService {
 
         JSONObject dataJson = new JSONObject();
         dataJson.put("account", memberObject.getString("account"));
-        dataJson.put("context", parse.getString("context"));
+        dataJson.put("context", param.getString("context"));
         dataJson.put("username", memberObject.getString("username"));
 
         CtsVerify verify = new CtsVerify();
@@ -108,11 +104,13 @@ public class LocalSocketService {
         verify.setData(dataJson.toJSONString());
 
         verifyRepository.save(verify);
+
+        session.getAsyncRemote().sendText(Result.success(param));
     }
 
-    public void createGroup(JSONObject parse, Session session) {
+    public void createGroup(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
-        JSONObject groupObject = parse.getJSONObject("data");
+        JSONObject groupObject = param.getJSONObject("data");
 
         CtsGroup group = new CtsGroup();
         group.setId(IdUtil.objectId());
@@ -133,44 +131,44 @@ public class LocalSocketService {
         groupRelationRepository.save(groupRelation);
     }
 
-    public void saveMember(JSONObject parse, Session session) {
+    public void saveMember(JSONObject param, Session session) {
 
     }
 
-    public void saveMessage(JSONObject data, Session session) {
+    public void saveMessage(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         CtsMemberMessage memberMessage = new CtsMemberMessage();
         try {
             memberMessage.setId(IdUtil.objectId());
-            memberMessage.setServiceId(data.getString("serviceId"));
+            memberMessage.setServiceId(param.getString("serviceId"));
             memberMessage.setSendAccount(member.getAccount());
-            memberMessage.setAcceptAccount(data.getString("withAccount"));
+            memberMessage.setAcceptAccount(param.getString("withAccount"));
             memberMessage.setCreateTime(DateUtil.date());
-            memberMessage.setContent(data.getString("content"));
+            memberMessage.setContent(param.getString("content"));
             memberMessage.setAccount(member.getAccount());
-            memberMessage.setWithAccount(data.getString("withAccount"));
+            memberMessage.setWithAccount(param.getString("withAccount"));
             memberMessageRepository.save(memberMessage);
 
             // 保存成功
-            session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "saveMessage", Result.success));
+            session.getAsyncRemote().sendText(Result.success(param));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         
     }
 
-    public void loadMemberMessage(JSONObject data, Session session) {
+    public void loadMemberMessage(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         String beAccount = member.getAccount();
-        String withAccount = data.getString("account");
+        String withAccount = param.getString("account");
         List<CtsMemberMessage> messageList = memberMessageRepository.findByAccountAndWithAccount(beAccount, withAccount);
         Map<String, Object> result = new HashMap<>();
-        result.put("account", data.getString("account"));
+        result.put("account", param.getString("account"));
         result.put("data", messageList);
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "loadMemberMessage", Result.success,result));
+        session.getAsyncRemote().sendText(Result.success(param, result));
     }
 
-    public void loadMessage(JSONObject data, Session session) {
+    public void loadMessage(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsMemberRelation> memberList = memberRelationRepository.findByMemberIdAndState(member.getId(), 1);
         JSONArray jsonArray = new JSONArray();
@@ -182,33 +180,34 @@ public class LocalSocketService {
             jsonObject.put("data", memberMessage);
             jsonArray.add(jsonObject);
         });
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "loadMessage", Result.success,jsonArray));
+        session.getAsyncRemote().sendText(Result.success(param, jsonArray));
     }
 
-    public void deleteMember(JSONObject data, Session session) {
-        String account = data.getString("account");
+    public void deleteMember(JSONObject param, Session session) {
+        String account = param.getString("account");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         memberRelationRepository.deleteByMemberIdAndAccount(member.getId(), account);
+        session.getAsyncRemote().sendText(Result.success(param));
         
     }
 
 
-    public void loadVerify(JSONObject data, Session session) {
+    public void loadVerify(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         List<CtsVerify> verifyList = verifyRepository.findByMemberId(member.getId());
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "loadVerify", Result.success,verifyList));
+        session.getAsyncRemote().sendText(Result.success(param, verifyList));
     }
 
-    public void deleteVerify(JSONObject data, Session session) {
+    public void deleteVerify(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
-        verifyRepository.deleteByMemberIdAndId(member.getId(), data.getString("verifyId"));
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "deleteVerify", Result.success));
+        verifyRepository.deleteByMemberIdAndId(member.getId(), param.getString("verifyId"));
+        session.getAsyncRemote().sendText(Result.success(param));
 
     }
 
-    public void agreeVerify(JSONObject data, Session session) {
+    public void agreeVerify(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
-        Optional<CtsVerify> verify = verifyRepository.findById(data.getString("verifyId"));
+        Optional<CtsVerify> verify = verifyRepository.findById(param.getString("verifyId"));
         if(!verify.get().getMemberId().equals(member.getId())) {
             return;
         }
@@ -222,12 +221,12 @@ public class LocalSocketService {
         memberRelation.setUpdateTime(DateUtil.date());
         memberRelationRepository.save(memberRelation);
 
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "deleteVerify", Result.success));
+        session.getAsyncRemote().sendText(Result.success(param));
     }
 
-    public void rejectVerify(JSONObject data, Session session) {
+    public void rejectVerify(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
-        Optional<CtsVerify> verify = verifyRepository.findById(data.getString("verifyId"));
+        Optional<CtsVerify> verify = verifyRepository.findById(param.getString("verifyId"));
         if(!verify.get().getMemberId().equals(member.getId())) {
             return;
         }
@@ -241,41 +240,42 @@ public class LocalSocketService {
         memberRelation.setUpdateTime(DateUtil.date());
         memberRelationRepository.save(memberRelation);
 
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "deleteVerify", Result.success));
+        session.getAsyncRemote().sendText(Result.success(param));
     }
 
-    public void updateMemberReadTime(JSONObject data, Session session) {
+    public void updateMemberReadTime(JSONObject param, Session session) {
         // memberAccount
-         String account = data.getString("account");
+         String account = param.getString("account");
          CtsMember member = (CtsMember) session.getUserProperties().get("member");
          long time = DateUtil.date().getTime();
          memberRelationRepository.updateReadTime(account, member.getId(), DateUtil.date());
-         session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "updateMemberReadTime", Result.success, time));
+         session.getAsyncRemote().sendText(Result.success(param, time));
 
     }
 
-    public void updateGroupReadTime(JSONObject data, Session session) {
+    public void updateGroupReadTime(JSONObject param, Session session) {
         // groupAccount
-        String account = data.getString("account");
+        String account = param.getString("account");
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         long time = DateUtil.date().getTime();
         groupRelationRepository.updateReadTime(account, member.getAccount(), DateUtil.date());
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "updateGroupReadTime", Result.success, time));
+        session.getAsyncRemote().sendText(Result.success(param, time));
     }
 
-    public void recommendGroup(JSONObject data, Session session) {
+    public void recommendGroup(JSONObject param, Session session) {
         List<CtsGroup> groupList = groupRepository.findLimit10();
-        session.getAsyncRemote().sendText(Result.r(data.getString("transactionId"), "recommendGroup", Result.success, groupList));
+        session.getAsyncRemote().sendText(Result.success(param, groupList));
     }
 
-    public void joinGroup(JSONObject data, Session session) {
+    public void joinGroup(JSONObject param, Session session) {
         CtsMember member = (CtsMember) session.getUserProperties().get("member");
         CtsGroupRelation groupRelation = new CtsGroupRelation();
         groupRelation.setId(IdUtil.objectId());
-        groupRelation.setGroupAccount(data.getJSONObject("data").getString("account"));
+        groupRelation.setGroupAccount(param.getJSONObject("data").getString("account"));
         groupRelation.setMemberAccount(member.getAccount());
         groupRelation.setCreateTime(DateUtil.date());
         groupRelationRepository.save(groupRelation);
+        session.getAsyncRemote().sendText(Result.success(param));
     }
 
 

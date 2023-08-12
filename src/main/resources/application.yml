@@ -1,6 +1,9 @@
 server:
   port: 9090
 spring:
+  mvc:
+    static-path-pattern: /**
+    throwExceptionIfNoHandlerFound: true
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:~/chat
@@ -24,8 +27,6 @@ spring:
     date-format: yyyy.MM.dd
     time-zone: GMT+8
     locale: zh_CN
-  mvc:
-    throwExceptionIfNoHandlerFound: true
 chat:
   net-version: v1
   domain: localhost:9090

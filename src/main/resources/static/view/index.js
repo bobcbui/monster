@@ -48,7 +48,6 @@ export default {
 				
 				if(data.type == "message"){
 					that.$store.state.groupMessageListMap[account].push(data.data);
-					debugger
 					if(data.data.createTime > that.$store.state.groupMap[account].readTime){
 						
 						that.$store.state.unReadMessageCount[account]++;

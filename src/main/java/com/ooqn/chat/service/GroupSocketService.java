@@ -36,8 +36,8 @@ public class GroupSocketService {
 
         String memberRole = memberRole(sendMember.getString("account"), acceptGroup.getAccount());
 
-        if(memberRole == null){
-            session.getAsyncRemote().sendText(Result.r(param, Result.error,"您不是该群成员了！"));
+        if (memberRole == null) {
+            session.getAsyncRemote().sendText(Result.r(param, Result.error, "您不是该群成员了！"));
             return;
         }
 
@@ -47,13 +47,16 @@ public class GroupSocketService {
             JSONObject message = new JSONObject();
             CtsGroupRelation relation = groupRelationRepository
                     .findByMemberAccountAndGroupAccount(groupMessage.getAccount(), acceptGroup.getAccount());
-            message.put("type", "message");
-            message.put("content", groupMessage.getContent());
-            message.put("sendAccount", relation.getMemberAccount());
-            message.put("sendNickname", relation.getMemberNickname());
-            message.put("createTime", groupMessage.getCreateTime());
-            message.put("withGroupAccount", acceptGroup.getAccount());
-            resultObject.add(0, message);
+            if (relation != null) {
+                message.put("type", "message");
+                message.put("content", groupMessage.getContent());
+                message.put("sendAccount", relation.getMemberAccount());
+                message.put("sendNickname", relation.getMemberNickname());
+                message.put("createTime", groupMessage.getCreateTime());
+                message.put("withGroupAccount", acceptGroup.getAccount());
+                resultObject.add(0, message);
+            }
+
         });
         session.getAsyncRemote().sendText(Result.success(param, resultObject));
     }
@@ -67,17 +70,18 @@ public class GroupSocketService {
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
 
         JSONObject resultObj = JSONObject.parseObject(JSONObject.toJSONString(acceptGroup));
-        String account = sendMember.getString("account"); 
+        String account = sendMember.getString("account");
         String memberRole = memberRole(account, acceptGroup.getAccount());
 
-        CtsGroupRelation groupRelation = groupRelationRepository.findByMemberAccountAndGroupAccount(sendMember.getString("account"), acceptGroup.getAccount());
+        CtsGroupRelation groupRelation = groupRelationRepository
+                .findByMemberAccountAndGroupAccount(sendMember.getString("account"), acceptGroup.getAccount());
         resultObj.put("readTime", groupRelation.getReadTime());
-        
-        if(memberRole != null){
+
+        if (memberRole != null) {
             JSONObject parseObject = JSONObject.parseObject(JSONObject.toJSONString(acceptGroup));
             parseObject.put("memberRole", memberRole);
         }
-        
+
         session.getAsyncRemote().sendText(Result.success(param, resultObj));
     }
 
@@ -136,7 +140,7 @@ public class GroupSocketService {
         groupRelation.setAlias(sendMember.getString("username"));
         groupRelation.setNickname(sendMember.getString("username"));
         CtsGroupRelation save = groupRelationRepository.save(groupRelation);
-        if(save == null){
+        if (save == null) {
             return;
         }
         session.getAsyncRemote().sendText(Result.success(param, acceptGroup));
@@ -169,13 +173,15 @@ public class GroupSocketService {
     public void quit(JSONObject param, Session session) {
         CtsGroup acceptGroup = (CtsGroup) session.getUserProperties().get("acceptGroup");
         JSONObject sendMember = (JSONObject) session.getUserProperties().get("sendMember");
-        CtsGroupRelation groupRelation = groupRelationRepository.findByMemberAccountAndGroupAccount(sendMember.getString("account"), acceptGroup.getAccount());
+        CtsGroupRelation groupRelation = groupRelationRepository
+                .findByMemberAccountAndGroupAccount(sendMember.getString("account"), acceptGroup.getAccount());
         groupRelationRepository.delete(groupRelation);
-        session.getAsyncRemote().sendText(Result.success(param,groupRelation));
+        session.getAsyncRemote().sendText(Result.success(param, groupRelation));
     }
 
     private String memberRole(String account, String groupAccount) {
-        CtsGroupRelation groupRelation = groupRelationRepository.findByMemberAccountAndGroupAccount(account, groupAccount);
+        CtsGroupRelation groupRelation = groupRelationRepository.findByMemberAccountAndGroupAccount(account,
+                groupAccount);
         if (groupRelation != null) {
             return groupRelation.getMemberRole();
         }

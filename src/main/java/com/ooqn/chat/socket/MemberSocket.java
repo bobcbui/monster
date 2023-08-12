@@ -1,6 +1,7 @@
 package com.ooqn.chat.socket;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -41,27 +42,25 @@ public class MemberSocket {
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
-
-        // 将所有的参数放入到pathParameters中
+        
         Map<String, List<String>> requestParameterMap = session.getRequestParameterMap();
         for (Map.Entry<String, List<String>> me : requestParameterMap.entrySet()) {
             session.getPathParameters().put(me.getKey(), me.getValue().stream().findFirst().orElseThrow());
         }
-
-        String checkUrl = session.getPathParameters().get("checkUrl");
+        
         String username = session.getPathParameters().get("username");
 
-        // 获取发送者的信息
-        String body = HttpUtil.get(checkUrl);
-        // 发送者的信息
-        JSONObject sendMember = JSONObject.parseObject(body);
         // 接收者的信息
         CtsMember acceptMember = memberRepository.findByUsername(username);
-
         if (acceptMember == null) {
             session.getBasicRemote().sendText("用户不存在");
             session.close();
         } else {
+            // 获取发送者的信息
+            String checkUrl = session.getPathParameters().get("checkUrl");
+            String body = HttpUtil.get(checkUrl);
+            // 发送者的信息
+            JSONObject sendMember = JSONObject.parseObject(body);
             session.getUserProperties().put("acceptMember", acceptMember);
             session.getUserProperties().put("sendMember", sendMember);
         }
@@ -70,37 +69,14 @@ public class MemberSocket {
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-        JSONObject jsonObject = JSON.parseObject(message);
-        String type = jsonObject.getString("type");
         try {
-            switch (type) {
-                case "join":
-                    memberSocketService.join(jsonObject, session);
-                    break;
-                case "info":
-                    memberSocketService.info(jsonObject, session);
-                    break;
-                case "message":
-                    memberSocketService.message(jsonObject, session);
-                    break;
-                case "delete":
-                    memberSocketService.delete(jsonObject, session);
-                    break;  
-                case "agree":
-                    memberSocketService.agree(jsonObject, session);
-                    break;
-                case "reject":
-                    memberSocketService.reject(jsonObject, session);
-                    break;
-                default:
-                    System.out.println("喀什酱豆腐空间打开");
-                    break;
-            }
+            JSONObject jsonObject = JSON.parseObject(message);
+            String type = jsonObject.getString("type");
+            Method method = memberSocketService.getClass().getDeclaredMethod(type, JSONObject.class, Session.class);
+            method.invoke(memberSocketService, jsonObject, session);
         } catch (Exception e) {
-            System.out.println("******************************");
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-
     }
     
     @OnClose

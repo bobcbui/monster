@@ -52,14 +52,8 @@
 
         <dependency>
             <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
-            <version>5.8.20</version>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-http</artifactId>
-            <version>5.8.9</version>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.21</version>
         </dependency>
 
         <dependency>

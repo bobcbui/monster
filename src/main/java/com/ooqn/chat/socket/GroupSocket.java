@@ -1,6 +1,7 @@
 package com.ooqn.chat.socket;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,7 @@ public class GroupSocket {
         String groupName = session.getPathParameters().get("groupName");
         CtsGroup group = groupRepository.findByName(groupName);
         if (group == null) {
-            session.getBasicRemote().sendText(Result.r("error", Result.success, "群不存在"));
+            session.getBasicRemote().sendText(Result.error("群不存在"));
             session.close();
             return;
         } else {
@@ -83,39 +84,14 @@ public class GroupSocket {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        JSONObject jsonObject = JSON.parseObject(message);
-        String type = jsonObject.getString("type");
-        try {
-            switch (type) {
-                case "join":
-                    groupSocketService.join(jsonObject, session);
-                    break;
-                case "quit":
-                    groupSocketService.quit(jsonObject, session);
-                    break;
-                case "info":
-                    groupSocketService.info(jsonObject, session);
-                    break;
-                case "members":
-                    groupSocketService.members(jsonObject, session);
-                    break;
-                case "message":
-                    groupSocketService.message(jsonObject, session);
-                    break;
-                case "messages":
-                    groupSocketService.messages(jsonObject, session);
-                    break;
-                case "notion":
-                    groupSocketService.notion(jsonObject, session);
-                    break;
-                default:
-                    System.out.println("喀什酱豆腐空间打开");
-                    break;
-            }
+         try {
+            JSONObject jsonObject = JSON.parseObject(message);
+            String type = jsonObject.getString("type");
+            Method method = groupSocketService.getClass().getDeclaredMethod(type, JSONObject.class, Session.class);
+            method.invoke(groupSocketService, jsonObject, session);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("ERROR:" + e.getMessage());
-        }
+        } 
     }
 
     @OnError

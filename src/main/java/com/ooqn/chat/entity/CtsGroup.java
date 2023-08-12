@@ -3,8 +3,7 @@ package com.ooqn.chat.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.ooqn.chat.util.SpringUtil;
-
+import cn.hutool.extra.spring.SpringUtil;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
@@ -38,6 +37,7 @@ public class CtsGroup implements Serializable {
     public String getAccount(){
         String prefix = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.group-prefix");
         String domain = SpringUtil.getApplicationContext().getEnvironment().getProperty("chat.domain");
+
         return "@"+prefix+"."+name+"@"+domain;
     }
 

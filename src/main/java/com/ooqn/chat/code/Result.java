@@ -6,6 +6,13 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 
 public class Result {
 
+     public static String error(String message){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", error);
+        jsonObject.put("data", message);
+        return JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
+    }
+
     public static String success(JSONObject params, Object data){
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", success);

@@ -1,7 +1,9 @@
 ### 账户
+```
 @bobcbui:ooqn.com -> ws://ooqn.com/bobcbui
 @bobcbui:user:ooqn.com -> ws://ooqn.com/user/bobcbui
 @bobcbui:api:ooqn.com -> ws://ooqn.com/api/bobcbui
+```
 
 ### 获取信息
 #### request:

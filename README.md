@@ -1,3 +1,7 @@
+
+Monster 聊天协议
+
+
 ### 账户
 ```
 @bobcbui:ooqn.com -> ws://ooqn.com/bobcbui
@@ -108,14 +112,14 @@ info：作者对你公开的信息
 {
     messageId:"aksjdfkajkjdkfjkdjf",
     code:"2004",
-    text: base64(context)
+    recallMessageId: "12312312"
 }
 ```
 #### response:
 ```json
 {
     messageId:"aksjdfkajkjdkfjkdjf",
-    statusCode:"200",
+    statusCode:"200"
 }
 ```
 

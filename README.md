@@ -12,7 +12,7 @@ Monster 聊天协议
 
 ### 获取信息
 #### request:
-```json
+```
 {
     messageId:"121111",
     code:"1000"
